@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'ads/AdBanner.dart';
@@ -118,7 +117,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
           timer.cancel();
           launchWhenResumed(() {
             // pushReplacementNamed - навигация без возврата бекпрессом
-            AdOpen.show(() => {Navigator.pushNamed(context, "/todo")});
+            AdOpen.show(() => {Navigator.pushReplacementNamed(context, "/todo")});
           });
           return;
         }
