@@ -4,7 +4,7 @@ import 'package:hello_flutter/ads/ad_id_helper.dart';
 import '../main.dart';
 
 class AdOpen {
-  static late AppOpenAd _appOpenAd;
+  static AppOpenAd? _appOpenAd;
 
   static load(Function onLoadDoneFun) {
     AppOpenAd.load(
@@ -24,7 +24,7 @@ class AdOpen {
   }
 
   static _setFSCallBack(Function function) {
-    _appOpenAd.fullScreenContentCallback = FullScreenContentCallback(
+    _appOpenAd?.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (AppOpenAd ad) => lol("OPEN_WAS_SHOWED_FS"),
       onAdDismissedFullScreenContent: (AppOpenAd ad) {
         lol("OPEN_WAS_DISMISSED");
@@ -36,12 +36,11 @@ class AdOpen {
         lol("OPEN_WAS_FAILED_TO_SHOW");
         ad.dispose();
       },
-      // onAdImpression: (InterstitialAd ad) => lol("lol INTER_WAS_SHOWED"),
     );
   }
 
   static show(Function function) {
     _setFSCallBack(function);
-    _appOpenAd.show();
+    _appOpenAd?.show() ?? function();
   }
 }

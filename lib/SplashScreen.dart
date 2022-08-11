@@ -87,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
                   child: LinearProgressIndicator(value: _progressValue)),
             ),
             Visibility(
-              visible: !_loading,
+              // visible: !_loading,
               child: TextButton(
                   onPressed: () => {
                         setState(() {
@@ -110,20 +110,53 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
 
   void _startProgress() {
     var delay = Duration(milliseconds: maxSplashTime ~/ 100);
-
+    lol("here 0");
     Timer.periodic(delay, (Timer timer) {
       setState(() {
         _progressValue += 100 / maxSplashTime * speedProgress;
         if (_progressValue >= 1.0) {
           timer.cancel();
-          _progressValue = 0.0;
-          AdOpen.show(() => {Navigator.pushNamed(context, "/todo")});
-          // Navigator.pushReplacementNamed(context, "/todo") // навигация без возврата бекпрессом
+          launchWhenResumed(() {
+            // pushReplacementNamed - навигация без возврата бекпрессом
+            AdOpen.show(() => {Navigator.pushNamed(context, "/todo")});
+          });
           return;
         }
       });
     });
   }
 
-  void setFSCallBack() {}
+  void launchWhenResumed(Function fn) {
+    if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
+      fn();
+    } else {
+      WidgetsBinding.instance
+          .addObserver(LifecycleEventHandler(resumeCallBack: () async => fn(), suspendingCallBack: () async => {}));
+    }
+  }
+}
+
+class LifecycleEventHandler extends WidgetsBindingObserver {
+  final AsyncCallback resumeCallBack;
+  final AsyncCallback suspendingCallBack;
+
+  LifecycleEventHandler({
+    required this.resumeCallBack,
+    required this.suspendingCallBack,
+  });
+
+  @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    state = state;
+    switch (state) {
+      case AppLifecycleState.resumed:
+        await resumeCallBack();
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        await suspendingCallBack();
+        break;
+    }
+  }
 }

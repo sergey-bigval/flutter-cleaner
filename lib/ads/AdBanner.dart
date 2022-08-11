@@ -19,15 +19,18 @@ class _BannerBlockState extends State<BannerBlock> {
     size: AdSize.banner,
     request: const AdRequest(),
     listener: BannerAdListener(
-      onAdLoaded: (Ad ad) => banner = ad as BannerAd,
-      onAdFailedToLoad: (Ad ad, LoadAdError error) {
-        ad.dispose();
-      },
-      onAdOpened: (Ad ad) => lol("BANNER_OPENED"),
-      onAdClosed: (Ad ad) => lol("BANNER_CLOSED"),
-      onAdImpression: (Ad ad) => lol("BANNER_SHOWED"),
-      onAdClicked:  (Ad ad) => lol("BANNER_CLICKED")
-    ),
+        onAdLoaded: (Ad ad) {
+          lol("BANNER_LOADED");
+          banner = ad as BannerAd;
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          lol("BANNER_LOAD_FAILED");
+          ad.dispose();
+        },
+        onAdOpened: (Ad ad) => lol("BANNER_OPENED"),
+        onAdClosed: (Ad ad) => lol("BANNER_CLOSED"),
+        onAdImpression: (Ad ad) => lol("BANNER_SHOWED"),
+        onAdClicked: (Ad ad) => lol("BANNER_CLICKED")),
   );
 
   @override
