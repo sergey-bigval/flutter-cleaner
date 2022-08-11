@@ -1,7 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+import '../main.dart';
+import 'ad_id_helper.dart';
 
 class BannerBlock extends StatefulWidget {
   const BannerBlock({Key? key}) : super(key: key);
@@ -22,9 +23,10 @@ class _BannerBlockState extends State<BannerBlock> {
       onAdFailedToLoad: (Ad ad, LoadAdError error) {
         ad.dispose();
       },
-      onAdOpened: (Ad ad) => print('Ad opened.'),
-      onAdClosed: (Ad ad) => print('Ad closed.'),
-      onAdImpression: (Ad ad) => print('Ad impression.'),
+      onAdOpened: (Ad ad) => lol("BANNER_OPENED"),
+      onAdClosed: (Ad ad) => lol("BANNER_CLOSED"),
+      onAdImpression: (Ad ad) => lol("BANNER_SHOWED"),
+      onAdClicked:  (Ad ad) => lol("BANNER_CLICKED")
     ),
   );
 
@@ -42,17 +44,5 @@ class _BannerBlockState extends State<BannerBlock> {
   void initState() {
     super.initState();
     banner.load();
-  }
-}
-
-class AdHelper {
-  static String get bannerAdUnitId {
-    if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/6300978111';
-    } else if (Platform.isIOS) {
-      return "ca-app-pub-3940256099942544/2934735716";
-    } else {
-      throw UnsupportedError("Unsupported platform");
-    }
   }
 }

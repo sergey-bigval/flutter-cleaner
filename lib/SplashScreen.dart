@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'ads/AdBanner.dart';
-import 'ads/AdInter.dart';
 import 'ads/AdOpen.dart';
 import 'main.dart';
 
@@ -17,13 +15,11 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver  {
+class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver {
   late bool _loading;
   late double _progressValue;
   final maxSplashTime = 10000;
   var speedProgress = 1.0;
-
-  // late InterstitialAd _interstitialAd;
 
   @override
   void initState() {
@@ -42,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    lol("lol ${state.name}");
+    lol(state.name);
   }
 
   @override
@@ -63,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
               child: Image(image: AssetImage('assets/imgs/darth_vader.png')),
             ),
             const Text(
-              "Flutter Monkyyy Maker",
+              "Flutter Monkey Maker",
               style: TextStyle(
                 decoration: TextDecoration.none,
                 color: Colors.black54,
@@ -72,9 +68,24 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
                 fontFamily: "MouseMemoirs",
               ),
             ),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: LinearProgressIndicator(value: _progressValue)),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                "By proceeding, you confirm that you have read and acknowledged Privacy Policy and Terms of Service",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  decoration: TextDecoration.none,
+                  color: Colors.black54,
+                  fontSize: 14.0,
+                ),
+              ),
+            ),
+            Visibility(
+              visible: _loading,
+              child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: LinearProgressIndicator(value: _progressValue)),
+            ),
             Visibility(
               visible: !_loading,
               child: TextButton(
@@ -86,7 +97,6 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
                             speedProgress = 4.0;
                           });
                         })
-                        // Navigator.pushReplacementNamed(context, "/todo")
                       },
                   child: const Text(
                     "START",
@@ -108,6 +118,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
           timer.cancel();
           _progressValue = 0.0;
           AdOpen.show(() => {Navigator.pushNamed(context, "/todo")});
+          // Navigator.pushReplacementNamed(context, "/todo") // навигация без возврата бекпрессом
           return;
         }
       });
