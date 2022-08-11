@@ -29,6 +29,7 @@ class AdOpen {
       onAdDismissedFullScreenContent: (AppOpenAd ad) {
         lol("OPEN_WAS_DISMISSED");
         ad.dispose();
+        _appOpenAd = null;
         function();
       },
       onAdClicked: (AppOpenAd ad) => lol("OPEN_WAS_CLICKED"),

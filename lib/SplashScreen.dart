@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'ads/AdBanner.dart';
 import 'ads/AdOpen.dart';
+import 'lifecycles/extentions.dart';
 import 'main.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -110,7 +111,6 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
 
   void _startProgress() {
     var delay = Duration(milliseconds: maxSplashTime ~/ 100);
-    lol("here 0");
     Timer.periodic(delay, (Timer timer) {
       setState(() {
         _progressValue += 100 / maxSplashTime * speedProgress;
@@ -124,39 +124,5 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
         }
       });
     });
-  }
-
-  void launchWhenResumed(Function fn) {
-    if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
-      fn();
-    } else {
-      WidgetsBinding.instance
-          .addObserver(LifecycleEventHandler(resumeCallBack: () async => fn(), suspendingCallBack: () async => {}));
-    }
-  }
-}
-
-class LifecycleEventHandler extends WidgetsBindingObserver {
-  final AsyncCallback resumeCallBack;
-  final AsyncCallback suspendingCallBack;
-
-  LifecycleEventHandler({
-    required this.resumeCallBack,
-    required this.suspendingCallBack,
-  });
-
-  @override
-  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    state = state;
-    switch (state) {
-      case AppLifecycleState.resumed:
-        await resumeCallBack();
-        break;
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.paused:
-      case AppLifecycleState.detached:
-        await suspendingCallBack();
-        break;
-    }
   }
 }
