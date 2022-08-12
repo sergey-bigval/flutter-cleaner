@@ -36,6 +36,7 @@ class AdOpen {
       onAdFailedToShowFullScreenContent: (AppOpenAd ad, AdError error) {
         lol("OPEN_WAS_FAILED_TO_SHOW");
         ad.dispose();
+        _appOpenAd = null;
       },
     );
   }

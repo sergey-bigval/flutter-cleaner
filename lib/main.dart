@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:hello_flutter/SplashScreen.dart';
-import 'package:hello_flutter/second_screen.dart';
+import 'package:hello_flutter/screens/home_screen.dart';
+import 'utils/constants.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,10 +12,10 @@ void main() {
     debugShowCheckedModeBanner: false,
     theme: ThemeData(canvasColor: Colors.grey),
     // home: const Scaffold(body: SplashScreen()), // не нужно при routes
-    initialRoute: '/',
+    initialRoute: splashScreen,
     routes: {
-      '/': (context) => const SplashScreen(),
-      '/todo': (context) => const SecondScreen(),
+      splashScreen: (context) => const SplashScreen(),
+      homeScreen: (context) => const HomeScreen(),
     },
   ));
 }

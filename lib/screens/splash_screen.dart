@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-
-import 'ads/AdBanner.dart';
-import 'ads/AdOpen.dart';
-import 'lifecycles/extentions.dart';
-import 'main.dart';
+import 'package:hello_flutter/utils/constants.dart';
+import '../ads/AdBanner.dart';
+import '../ads/AdOpen.dart';
+import '../lifecycles/extentions.dart';
+import '../main.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -15,7 +13,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver {
+class _SplashScreenState extends State<SplashScreen>
+    with WidgetsBindingObserver {
   late bool _loading;
   late double _progressValue;
   final maxSplashTime = 10000;
@@ -117,7 +116,8 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
           timer.cancel();
           launchWhenResumed(() {
             // pushReplacementNamed - навигация без возврата бекпрессом
-            AdOpen.show(() => {Navigator.pushReplacementNamed(context, "/todo")});
+            AdOpen.show(
+                () => {Navigator.pushReplacementNamed(context, homeScreen)});
           });
           return;
         }
