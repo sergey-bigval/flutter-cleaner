@@ -1,12 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hello_flutter/utils/constants.dart';
-import '../ads/AdBanner.dart';
+
 import '../ads/AdOpen.dart';
 import '../lifecycles/extentions.dart';
 import '../lifecycles/orientation.dart';
-import '../main.dart';
 import '../utils/logging.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -105,7 +104,6 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
                     textScaleFactor: 2.4,
                   )),
             ),
-            const BannerBlock()
           ],
         ));
   }
@@ -119,8 +117,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
           timer.cancel();
           launchWhenResumed(() {
             // pushReplacementNamed - навигация без возврата бекпрессом
-            AdOpen.show(
-                () => {Navigator.pushReplacementNamed(context, homeScreen)});
+            AdOpen.show(() => {Navigator.pushReplacementNamed(context, homeScreen)});
           });
           return;
         }
