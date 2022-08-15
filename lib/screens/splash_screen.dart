@@ -7,6 +7,7 @@ import '../ads/AdOpen.dart';
 import '../lifecycles/extentions.dart';
 import '../lifecycles/orientation.dart';
 import '../main.dart';
+import '../utils/logging.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
