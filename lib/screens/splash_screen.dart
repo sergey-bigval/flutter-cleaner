@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hello_flutter/utils/constants.dart';
 import '../ads/AdBanner.dart';
 import '../ads/AdOpen.dart';
 import '../lifecycles/extentions.dart';
+import '../lifecycles/orientation.dart';
 import '../main.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -14,7 +16,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, PortraitStatefulModeMixin<SplashScreen> {
   late bool _loading;
   late double _progressValue;
   final maxSplashTime = 10000;
@@ -58,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Image(image: AssetImage('assets/imgs/darth_vader.png')),
             ),
             const Text(
-              "Flutter Monkey Maker",
+              "Flutter Monkey Cleaner",
               style: TextStyle(
                 decoration: TextDecoration.none,
                 color: Colors.black54,
