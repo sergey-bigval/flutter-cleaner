@@ -15,8 +15,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with WidgetsBindingObserver, PortraitStatefulModeMixin<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver {
   late bool _loading;
   late double _progressValue;
   final maxSplashTime = 10000;
@@ -25,6 +24,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+    setOrientation(ScreenOrientation.portraitOnly);
     _loading = false;
     _progressValue = 0.0;
     WidgetsBinding.instance.addObserver(this);
