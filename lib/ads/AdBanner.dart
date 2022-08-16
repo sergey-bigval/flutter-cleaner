@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-import '../main.dart';
+import '../utils/logging.dart';
 import 'ad_id_helper.dart';
 
 class BannerBlock extends StatefulWidget {

@@ -1,10 +1,13 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/utils/constants.dart';
-import '../ads/AdBanner.dart';
+import 'package:lottie/lottie.dart';
+
 import '../ads/AdOpen.dart';
 import '../lifecycles/extentions.dart';
-import '../main.dart';
+import '../lifecycles/orientation.dart';
+import '../utils/logging.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -13,8 +16,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with WidgetsBindingObserver {
+class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver {
   late bool _loading;
   late double _progressValue;
   final maxSplashTime = 10000;
@@ -23,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+    setOrientation(ScreenOrientation.portraitOnly);
     _loading = false;
     _progressValue = 0.0;
     WidgetsBinding.instance.addObserver(this);
@@ -52,13 +55,15 @@ class _SplashScreenState extends State<SplashScreen>
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            const SizedBox(
+            SizedBox(
               height: 250,
               width: 250,
-              child: Image(image: AssetImage('assets/imgs/darth_vader.png')),
+              child: Lottie.asset("assets/lottie/monkey.json"),
+              // child: Lottie.network("https://assets7.lottiefiles.com/packages/lf20_bburfggv.json"),
+              // child: Image(image: AssetImage('assets/imgs/darth_vader.png')),
             ),
             const Text(
-              "Flutter Monkey Maker",
+              "Flutter Monkey Cleaner",
               style: TextStyle(
                 decoration: TextDecoration.none,
                 color: Colors.black54,
@@ -102,7 +107,6 @@ class _SplashScreenState extends State<SplashScreen>
                     textScaleFactor: 2.4,
                   )),
             ),
-            const BannerBlock()
           ],
         ));
   }
@@ -116,8 +120,7 @@ class _SplashScreenState extends State<SplashScreen>
           timer.cancel();
           launchWhenResumed(() {
             // pushReplacementNamed - навигация без возврата бекпрессом
-            AdOpen.show(
-                () => {Navigator.pushReplacementNamed(context, homeScreen)});
+            AdOpen.show(() => {Navigator.pushReplacementNamed(context, homeScreen)});
           });
           return;
         }
