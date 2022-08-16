@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/utils/constants.dart';
+import 'package:lottie/lottie.dart';
 
 import '../ads/AdOpen.dart';
 import '../lifecycles/extentions.dart';
@@ -54,10 +55,12 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            const SizedBox(
+            SizedBox(
               height: 250,
               width: 250,
-              child: Image(image: AssetImage('assets/imgs/darth_vader.png')),
+              child: Lottie.asset("assets/lottie/monkey.json"),
+              // child: Lottie.network("https://assets7.lottiefiles.com/packages/lf20_bburfggv.json"),
+              // child: Image(image: AssetImage('assets/imgs/darth_vader.png')),
             ),
             const Text(
               "Flutter Monkey Cleaner",
