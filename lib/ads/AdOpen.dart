@@ -1,7 +1,7 @@
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hello_flutter/ads/ad_id_helper.dart';
 
-import '../main.dart';
+import '../utils/logging.dart';
 
 class AdOpen {
   static AppOpenAd? _appOpenAd;
@@ -19,7 +19,8 @@ class AdOpen {
           onAdFailedToLoad: (LoadAdError error) {
             lol("OPEN_LOAD_FAILED");
           },
-        ), orientation: AppOpenAd.orientationPortrait);
+        ),
+        orientation: AppOpenAd.orientationPortrait);
     lol("OPEN_REQUESTED");
   }
 
