@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdBanner.dart';
+import 'package:hello_flutter/screens/photos_screen.dart';
 
 import 'battery_info.dart';
 
@@ -47,18 +48,13 @@ class _HomeScreenState extends State<HomeScreen> {
               child: PageView(
                 controller: controller,
                 onPageChanged: _onPageViewChange,
-                children: <Widget>[
-                  Align(
-                      alignment: const Alignment(0, 0),
-                      child: Text(
-                          'The first functionality of the new super cleaner written in Flutter \n\n\n <<<- SWIPE ->>>',
-                          textAlign: TextAlign.center,
-                          style: mainTextStyle)),
-                  const BatteryInfoPage(),
-                  Align(
-                      alignment: const Alignment(0, 0),
-                      child: Text('Third functionality of the new super cleaner written in Flutter',
-                          textAlign: TextAlign.center, style: mainTextStyle))
+                children: const <Widget>[
+                  PhotosScreen(),
+                  BatteryInfoPage(),
+                  // Align( // ЭТО ТРЕТЬЯ ВКЛАДКА - ОНА ПОКА НЕ НУЖНА
+                  //     alignment: const Alignment(0, 0),
+                  //     child: Text('Third functionality of the new super cleaner written in Flutter',
+                  //         textAlign: TextAlign.center, style: mainTextStyle))
                 ],
               ),
             ),

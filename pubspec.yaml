@@ -40,6 +40,9 @@ dependencies:
   url_launcher: ^6.1.5
   disk_space: ^0.2.1
   path_provider: ^2.0.11
+  system_info: ^1.0.1
+  permission_handler: ^10.0.0
+  photo_manager: ^2.2.0
 
 dev_dependencies:
   flutter_test:

@@ -93,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         children: <TextSpan>[
                           TextSpan(
-                              text: 'Terms of Service',
+                              text: 'Privacy Policy',
                               style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.blueAccent,
@@ -109,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
                                   fontSize: 16, color: Colors.black87),
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: 'Privacy Policy',
+                                    text: 'Terms of Service',
                                     style: const TextStyle(
                                         fontSize: 16,
                                         color: Colors.blueAccent,
