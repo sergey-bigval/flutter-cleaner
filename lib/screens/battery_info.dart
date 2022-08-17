@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:battery_plus/battery_plus.dart';
+import 'package:disk_space/disk_space.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_flutter/utils/logging.dart';
+import 'package:path_provider/path_provider.dart';
 
 class BatteryInfoPage extends StatefulWidget {
   const BatteryInfoPage({Key? key}) : super(key: key);
@@ -25,9 +29,13 @@ class _BatteryInfoPageState extends State<BatteryInfoPage> {
     fontSize: 14.0,
     letterSpacing: 1,);
 
+  double _diskSpace = 0;
+  Map<Directory, double> _directorySpace = {};
+
   @override
   void initState() {
     super.initState();
+    initDiskSpace();
     getBatteryState();
     checkBatterSaveMode();
     Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -55,6 +63,44 @@ class _BatteryInfoPageState extends State<BatteryInfoPage> {
     if (_batteryStateSubscription != null) {
       _batteryStateSubscription!.cancel();
     }
+  }
+
+  void initDiskSpace() async {
+    double? diskSpace = 0;
+
+    diskSpace = await DiskSpace.getFreeDiskSpace;
+
+    List<Directory> directories;
+    Map<Directory, double> directorySpace = {};
+
+    if (Platform.isIOS) {
+      directories = [await getApplicationDocumentsDirectory()];
+    } else if (Platform.isAndroid) {
+      directories =
+      await getExternalStorageDirectories(type: StorageDirectory.movies)
+          .then(
+            (list) async => list ?? [await getApplicationDocumentsDirectory()],
+      );
+    } else {
+      return;
+    }
+
+    for (var directory in directories) {
+      var space = await DiskSpace.getFreeDiskSpaceForPath(directory.path);
+      directorySpace.addEntries([MapEntry(directory, space!)]);
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _diskSpace = diskSpace!;
+      _directorySpace = directorySpace;
+      lol("disc SPACE = ${diskSpace/1024}");
+      lol("directory SPACE = $directorySpace");
+      // values are in GB
+      DiskSpace.getFreeDiskSpace.then((value) => lol("FREE DISK SPACE: ${value! / 1024} MB"));
+      DiskSpace.getTotalDiskSpace.then((value) => lol("TOTAL DISK SPACE: ${value! / 1024} MB"));
+    });
   }
 
   void getBatteryState() {

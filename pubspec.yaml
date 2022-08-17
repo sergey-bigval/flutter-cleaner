@@ -37,6 +37,8 @@ dependencies:
   google_mobile_ads: ^1.2.0
   lottie: ^1.4.1
   battery_plus: ^2.1.4
+  disk_space: ^0.2.1
+  path_provider: ^2.0.11
 
 dev_dependencies:
   flutter_test:

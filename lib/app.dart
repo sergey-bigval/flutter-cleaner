@@ -16,7 +16,7 @@ class FlutterCleanerApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(canvasColor: Colors.grey),
       // home: const Scaffold(body: SplashScreen()), // не нужно при routes
-      initialRoute: splashScreen,
+      initialRoute: homeScreen,
       routes: {
         splashScreen: (context) => const SplashScreen(),
         homeScreen: (context) => const HomeScreen(),
