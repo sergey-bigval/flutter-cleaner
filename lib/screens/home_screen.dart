@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdBanner.dart';
 
+import 'battery_info.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -52,11 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           'The first functionality of the new super cleaner written in Flutter \n\n\n <<<- SWIPE ->>>',
                           textAlign: TextAlign.center,
                           style: mainTextStyle)),
-                  Align(
-                    alignment: const Alignment(0, 0),
-                    child: Text('Second functionality of the new super cleaner written in Flutter',
-                        textAlign: TextAlign.center, style: mainTextStyle),
-                  ),
+                  const BatteryInfoPage(),
                   Align(
                       alignment: const Alignment(0, 0),
                       child: Text('Third functionality of the new super cleaner written in Flutter',
