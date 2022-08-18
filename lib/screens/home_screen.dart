@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdBanner.dart';
 import 'package:hello_flutter/screens/photos_screen.dart';
 
-import 'battery_info.dart';
+import 'device_info.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -31,19 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        color: Colors.pink[200],
+        color: Colors.white,
         child: Column(
           children: [
-            SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: Text(_title,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      decoration: TextDecoration.none,
-                      color: Colors.black,
-                      fontSize: 33.0,
-                    ))),
             Expanded(
               child: PageView(
                 controller: controller,
