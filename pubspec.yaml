@@ -92,5 +92,8 @@ flutter:
     - family:  CustomIcons
       fonts:
        - asset: assets/fonts/CustomIcons.ttf
+    - family:  Comfortaa
+      fonts:
+       - asset: assets/fonts/Comfortaa-Medium.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
