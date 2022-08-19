@@ -32,9 +32,25 @@ class _PhotosScreenState extends State<PhotosScreen> {
     final PermissionState ps = await PhotoManager.requestPermissionExtend();
     if (ps.isAuth) {
       // Granted.
+      final List<AssetPathEntity> paths = await PhotoManager.getAssetPathList();
+      paths.forEach((element) async {
+        var range = await element.getAssetListRange(start: 0, end: 10);
+        range.forEach((element) async {
+          var fff = await element.originFile;
+          lol(fff?.path ?? "NON");
+        });
+      });
     } else {
       // Limited(iOS) or Rejected, use `==` for more precise judgements.
       // You can call `PhotoManager.openSetting()` to open settings for further steps.
+      final List<AssetPathEntity> paths = await PhotoManager.getAssetPathList();
+      paths.forEach((element) async {
+        var range = await element.getAssetListRange(start: 0, end: 10);
+        range.forEach((element) async {
+          var fff = await element.originFile;
+          lol(fff?.path ?? "NON");
+        });
+      });
       lol('here 1');
       Navigator.pushNamed(context, permScreen);
     }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdBanner.dart';
 import 'package:hello_flutter/screens/photos_screen.dart';
 
-import 'battery_info.dart';
+import '../battery_info.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

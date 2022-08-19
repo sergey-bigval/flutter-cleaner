@@ -22,3 +22,9 @@
 // },
 // ),
 // ),
+
+// width: 360, // my Xiaomi Mi A3 points
+// height: 732, // my Xiaomi Mi A3 points
+
+// child: Lottie.network("https://assets7.lottiefiles.com/packages/lf20_bburfggv.json"),
+// child: Image(image: AssetImage('assets/imgs/darth_vader.png')),

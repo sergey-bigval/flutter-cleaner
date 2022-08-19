@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/screens/home_screen.dart';
+import 'package:hello_flutter/screens/splash/home_screen.dart';
 import 'package:hello_flutter/screens/photos_screen.dart';
 import 'package:hello_flutter/screens/splash_screen.dart';
 import 'package:hello_flutter/utils/constants.dart';

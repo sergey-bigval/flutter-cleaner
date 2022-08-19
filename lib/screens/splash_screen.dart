@@ -1,15 +1,16 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_flutter/assets/styles.dart';
+import 'package:hello_flutter/screens/splash/widgets/policy_widget.dart';
 import 'package:hello_flutter/utils/constants.dart';
 import 'package:lottie/lottie.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 import '../ads/AdOpen.dart';
 import '../lifecycles/extentions.dart';
 import '../lifecycles/orientation.dart';
 import '../utils/logging.dart';
-import 'package:flutter/gestures.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -24,6 +25,14 @@ class _SplashScreenState extends State<SplashScreen>
   late double _progressValue;
   final maxSplashTime = 10000;
   var speedProgress = 1.0;
+  // bool switchValue = false;
+  bool isVisible = true;
+
+
+  late SharedPreferences _prefs;
+  bool _boolpref = false;
+
+  static const String kBoolPrefKey = 'bool_pref';
 
   @override
   void initState() {
@@ -32,6 +41,24 @@ class _SplashScreenState extends State<SplashScreen>
     _loading = false;
     _progressValue = 0.0;
     WidgetsBinding.instance.addObserver(this);
+    SharedPreferences.getInstance()
+    .then((prefs) {
+      setState(() => _prefs = prefs);
+      _loadBoolPref();
+    }).then((value) {
+     nat('nat');
+      if(_boolpref) {
+        setState(() {
+          _loading = !_loading;
+          // isVisible = !isVisible;
+          nat("nat");
+          _startProgress();
+          AdOpen.load(() {
+            speedProgress = 4.0;
+          });
+        });
+      }
+    });
   }
 
   @override
@@ -48,10 +75,9 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       color: Colors.pink[200],
-      // width: 360, // my Xiaomi Mi A3 points
-      // height: 732, // my Xiaomi Mi A3 points
       alignment: Alignment.center,
       padding: const EdgeInsets.only(top: 100),
       child: Column(
@@ -62,66 +88,11 @@ class _SplashScreenState extends State<SplashScreen>
             height: 250,
             width: 250,
             child: Lottie.asset("assets/lottie/monkey.json"),
-            // child: Lottie.network("https://assets7.lottiefiles.com/packages/lf20_bburfggv.json"),
-            // child: Image(image: AssetImage('assets/imgs/darth_vader.png')),
+
           ),
           const Text(
             "Flutter Monkey Cleaner",
-            style: TextStyle(
-              decoration: TextDecoration.none,
-              color: Colors.black54,
-              fontSize: 32.0,
-              letterSpacing: 4,
-              fontFamily: "MouseMemoirs",
-            ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            padding: const EdgeInsets.all(20),
-            child: Center(
-                child: DefaultTextStyle(
-              style: const TextStyle(),
-                child: Text.rich(
-                    textAlign: TextAlign.center,
-                    TextSpan(
-                        text:
-                            'By proceeding, you confirm that you have read and acknowledged ',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black87,
-                          fontFamily: "CustomIcons.ttf",
-                        ),
-                        children: <TextSpan>[
-                          TextSpan(
-                              text: 'Privacy Policy',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.blueAccent,
-                                decoration: TextDecoration.underline,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  launchUrl(Uri.parse(urlPolicy));
-                                }),
-                          TextSpan(
-                              text: ' and ',
-                              style: const TextStyle(
-                                  fontSize: 16, color: Colors.black87),
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text: 'Terms of Service',
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.blueAccent,
-                                        decoration: TextDecoration.underline),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        launchUrl(Uri.parse(urlTerms));
-                                      }),
-                              ]),
-                        ])),
-
-            )),
+            style: Styles.titleStyle
           ),
           Visibility(
             visible: _loading,
@@ -131,29 +102,52 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
           Visibility(
-            // visible: !_loading,
-            child: TextButton(
-              onPressed: () => {
-                setState(() {
-                  _loading = !_loading;
-                  _startProgress();
-                  AdOpen.load(() {
-                    speedProgress = 4.0;
-                  });
-                }),
-              },
-              child: const Text(
-                "START",
-                textScaleFactor: 2.4,
+            visible: !_boolpref,
+            child: Visibility(
+              // visible: isVisible,
+              // maintainState: false,
+              child: TextButton(
+                onPressed: () => {
+                  setState(() {
+                    ('$this._boolPref');
+                    _setBoolPref(!_boolpref);
+                    _loading = !_loading;
+                    _startProgress();
+                    AdOpen.load(() {
+                      speedProgress = 4.0;
+                    });
+                  }),
+                },
+                child: const Text(
+                  "START",
+                  textScaleFactor: 2.4,
+                ),
               ),
             ),
           ),
+          const Visibility(visible: true,
+              maintainState: false,
+              child : policy_widget()),
+
         ],
       ),
     );
   }
 
+  void _setBoolPref(bool value)  {
+    _prefs.setBool(kBoolPrefKey, value);
+    _loadBoolPref();
+  }
+
+  void _loadBoolPref() {
+    setState(() {
+      _boolpref = _prefs.getBool(kBoolPrefKey) ?? false;
+      nat('nat');
+    });
+  }
+
   void _startProgress() {
+    isVisible = !isVisible;
     var delay = Duration(milliseconds: maxSplashTime ~/ 100);
     Timer.periodic(delay, (Timer timer) {
       setState(() {
@@ -170,4 +164,7 @@ class _SplashScreenState extends State<SplashScreen>
       });
     });
   }
+
 }
+
+
