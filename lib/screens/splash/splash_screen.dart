@@ -5,10 +5,10 @@ import 'package:hello_flutter/assets/styles.dart';
 import 'package:hello_flutter/screens/splash/widgets/policy_widget.dart';
 import 'package:hello_flutter/utils/constants.dart';
 import 'package:lottie/lottie.dart';
-import '../ads/AdOpen.dart';
-import '../lifecycles/extentions.dart';
-import '../lifecycles/orientation.dart';
-import '../utils/logging.dart';
+import '../../ads/AdOpen.dart';
+import '../../lifecycles/extentions.dart';
+import '../../lifecycles/orientation.dart';
+import '../../utils/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
