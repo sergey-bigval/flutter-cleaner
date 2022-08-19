@@ -124,9 +124,6 @@ SPEC CHECKSUMS:
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
 
-PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
-  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
-
 PODFILE CHECKSUM: dbcb67eadfcf4c7a008a644d7c7438bcf50eb1c0
 
 COCOAPODS: 1.11.3

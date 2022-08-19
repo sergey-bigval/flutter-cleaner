@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/assets/styles.dart';
 import 'package:hello_flutter/screens/splash/widgets/policy_widget.dart';
@@ -25,7 +24,6 @@ class _SplashScreenState extends State<SplashScreen>
   late double _progressValue;
   final maxSplashTime = 10000;
   var speedProgress = 1.0;
-  // bool switchValue = false;
   bool isVisible = true;
 
 
@@ -50,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen>
       if(_boolpref) {
         setState(() {
           _loading = !_loading;
-          // isVisible = !isVisible;
+          isVisible = !isVisible;
           nat("nat");
           _startProgress();
           AdOpen.load(() {
@@ -103,31 +101,33 @@ class _SplashScreenState extends State<SplashScreen>
           ),
           Visibility(
             visible: !_boolpref,
-            child: Visibility(
-              // visible: isVisible,
-              // maintainState: false,
-              child: TextButton(
-                onPressed: () => {
-                  setState(() {
-                    ('$this._boolPref');
-                    _setBoolPref(!_boolpref);
-                    _loading = !_loading;
-                    _startProgress();
-                    AdOpen.load(() {
-                      speedProgress = 4.0;
-                    });
-                  }),
-                },
-                child: const Text(
-                  "START",
-                  textScaleFactor: 2.4,
+              child: Visibility(
+                visible: isVisible,
+                child: TextButton(
+                  onPressed: () => {
+                    setState(() {
+                      ('$this._boolPref');
+                      _setBoolPref(!_boolpref);
+                      _loading = !_loading;
+                      _startProgress();
+                      isVisible = !isVisible;
+                      AdOpen.load(() {
+                        speedProgress = 4.0;
+                      });
+                    }),
+                  },
+                  child: const Text(
+                    "START",
+                    textScaleFactor: 2.4,
+                  ),
                 ),
               ),
             ),
-          ),
-          const Visibility(visible: true,
-              maintainState: false,
-              child : policy_widget()),
+           Visibility(
+             visible: isVisible,
+               maintainState: false,
+               maintainInteractivity: false,
+               child: const policy_widget()),
 
         ],
       ),
@@ -147,7 +147,6 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _startProgress() {
-    isVisible = !isVisible;
     var delay = Duration(milliseconds: maxSplashTime ~/ 100);
     Timer.periodic(delay, (Timer timer) {
       setState(() {
@@ -164,7 +163,6 @@ class _SplashScreenState extends State<SplashScreen>
       });
     });
   }
-
 }
 
 
