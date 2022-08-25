@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdBanner.dart';
 import 'package:hello_flutter/screens/doubles/doubles_screen.dart';
-import 'device_info.dart';
+import 'device_info/device_info.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
