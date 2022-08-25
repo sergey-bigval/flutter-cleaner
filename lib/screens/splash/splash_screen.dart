@@ -19,16 +19,20 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   late bool _loading;
   late double _progressValue;
   final maxSplashTime = 10000;
   var speedProgress = 1.0;
   bool isVisible = true;
 
+  late AnimationController animationController;
+  late Tween<double> _tween;
+  late Animation<double> _animation;
+
 
   late SharedPreferences _prefs;
-  bool _boolpref = false;
+  bool _boolPref = false;
 
   static const String kBoolPrefKey = 'bool_pref';
 
@@ -36,6 +40,9 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     setOrientation(ScreenOrientation.portraitOnly);
+
+    initAnimation();
+
     _loading = false;
     _progressValue = 0.0;
     WidgetsBinding.instance.addObserver(this);
@@ -45,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
       _loadBoolPref();
     }).then((value) {
      nat('nat');
-      if(_boolpref) {
+      if(_boolPref) {
         setState(() {
           _loading = !_loading;
           isVisible = !isVisible;
@@ -58,10 +65,11 @@ class _SplashScreenState extends State<SplashScreen>
       }
     });
   }
-
+/// execute when widget dies
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    animationController.dispose();
     super.dispose();
   }
 
@@ -96,18 +104,25 @@ class _SplashScreenState extends State<SplashScreen>
             visible: _loading,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: LinearProgressIndicator(value: _progressValue),
+              child: AnimatedBuilder(
+                animation: _animation,
+                builder: (context, child) {
+                  return LinearProgressIndicator(
+                    value: _animation.value,
+                  );
+                },
+              ),
             ),
           ),
           Visibility(
-            visible: !_boolpref,
+            visible: !_boolPref,
               child: Visibility(
                 visible: isVisible,
                 child: TextButton(
                   onPressed: () => {
                     setState(() {
                       ('$this._boolPref');
-                      _setBoolPref(!_boolpref);
+                      _setBoolPref(!_boolPref);
                       _loading = !_loading;
                       _startProgress();
                       isVisible = !isVisible;
@@ -141,7 +156,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _loadBoolPref() {
     setState(() {
-      _boolpref = _prefs.getBool(kBoolPrefKey) ?? false;
+      _boolPref = _prefs.getBool(kBoolPrefKey) ?? false;
       nat('nat');
     });
   }
@@ -150,7 +165,7 @@ class _SplashScreenState extends State<SplashScreen>
     var delay = Duration(milliseconds: maxSplashTime ~/ 100);
     Timer.periodic(delay, (Timer timer) {
       setState(() {
-        _progressValue += 100 / maxSplashTime * speedProgress;
+        animateProgress();
         if (_progressValue >= 1.0) {
           timer.cancel();
           launchWhenResumed(() {
@@ -162,6 +177,36 @@ class _SplashScreenState extends State<SplashScreen>
         }
       });
     });
+  }
+
+  void initAnimation() {
+    animationController = AnimationController(
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+
+    _tween = Tween(begin: 0, end: 0);
+    _animation = _tween.animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.easeIn,
+      ),
+    );
+  }
+
+  void animateProgress() {
+    _progressValue += 100 / maxSplashTime * speedProgress;
+    _tween = Tween(begin: _tween.end, end: _progressValue);
+    _animation = _tween.animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.easeIn,
+      ),
+    );
+
+    animationController
+      ..reset()
+      ..forward();
   }
 }
 

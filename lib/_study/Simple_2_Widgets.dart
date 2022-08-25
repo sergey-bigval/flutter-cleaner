@@ -35,7 +35,7 @@ class StateForWidget extends State<StateFULL> {
 
   @override
   Widget build(BuildContext context) {
-    print("--- BUILD");
+    debugPrint("--- BUILD");
     return Center(
       child: ElevatedButton(
         onPressed: _changeMyWidgetFunction,
