@@ -1,12 +1,14 @@
 import 'dart:core';
 import 'dart:io';
+import 'package:hello_flutter/models/photo_filter_info.dart';
+import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_controller.dart';
 import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
 import 'package:hello_flutter/utils/logging.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class PhotosFilerLogic {
 
-  Future<List<PhotoModel>> loadPhotos() async {
+  Future<void> loadPhotos() async {
     int photosCount = 0;
     int videoCount = 0;
     List<AssetEntity> allPhotosEntities = [];
@@ -40,6 +42,12 @@ class PhotosFilerLogic {
 
           if (mimeType.contains('image')) {
             photosCount++;
+            PhotosController.filterCounter.value = PhotoFilterInfo(
+                photoCount: photosCount,
+                duplicateCount: PhotosController.filterCounter
+                    .value.duplicateCount
+            );
+
             allPhotosEntities.add(mediaFile);
             allPhotos.add(PhotoModel(
               absolutePath: path,
@@ -52,31 +60,80 @@ class PhotosFilerLogic {
           if (mimeType.contains("video")) {
             videoCount++;
           }
+
+          if (allPhotos.length > 100 && allPhotos.length % 100 == 0) {
+            List<PhotoModel> newDuplicates = _getDuplicates(
+                photos: [...allPhotos.getRange(
+                    _getStartRange(allPhotos.length),
+                    allPhotos.indexOf(allPhotos.last))],
+                photosCount: photosCount,
+                videoCount: videoCount,
+            );
+            plainDoubles.addAll(newDuplicates);
+
+            plainDoubles.sort((m1, m2) {
+              if (m1.timeInSeconds > m2.timeInSeconds) return 1;
+              if (m1.timeInSeconds < m2.timeInSeconds) return -1;
+              return 0;
+            });
+          } else {
+            List<PhotoModel> newDuplicates = _getDuplicates(
+              photos: allPhotos,
+              photosCount: photosCount,
+              videoCount: videoCount,
+            );
+
+            plainDoubles.addAll(newDuplicates);
+
+            plainDoubles.sort((m1, m2) {
+              if (m1.timeInSeconds > m2.timeInSeconds) return 1;
+              if (m1.timeInSeconds < m2.timeInSeconds) return -1;
+              return 0;
+            });
+          }
+
+          PhotosController.duplicatedPhotos.value = plainDoubles;
           // lol(path);
           // lol(mimeType);
         }
       }
+    }
+  }
 
-      lol('Found: photos - $photosCount , videos - $videoCount');
-      List<List<PhotoModel>> dou = filterPhotosToGetDouble(allPhotos);
+  int _getStartRange(int allPhotosLength) {
+    int hundreds = allPhotosLength ~/ 100;
 
-      for (List<PhotoModel> row in dou) {
-        lol('-----------------------ROW----------------------------');
-        for (PhotoModel item in row) {
-          lol('----DOUBLE----');
-          lol('size = ${item.size}');
-          plainDoubles.add(item);
-        }
+    return hundreds == 1
+        ? 0
+        : (hundreds * 100) - 1;
+  }
+
+  List<PhotoModel> _getDuplicates({
+    required int photosCount,
+    required int videoCount,
+    required List<PhotoModel> photos,
+  }) {
+    List<PhotoModel> plainDoubles = [];
+
+    lol('Found: photos - $photosCount , videos - $videoCount');
+    List<List<PhotoModel>> dou = filterPhotosToGetDouble(photos);
+
+    for (List<PhotoModel> row in dou) {
+      lol('-----------------------ROW----------------------------');
+      for (PhotoModel item in row) {
+        lol('----DOUBLE----');
+        lol('size = ${item.size}');
+        plainDoubles.add(item);
+
+        PhotosController.filterCounter.value = PhotoFilterInfo(
+          photoCount: PhotosController.filterCounter
+              .value.photoCount,
+          duplicateCount: plainDoubles.length,
+        );
       }
-
-      plainDoubles.sort((m1, m2) {
-        if (m1.timeInSeconds > m2.timeInSeconds) return 1;
-        if (m1.timeInSeconds < m2.timeInSeconds) return -1;
-        return 0;
-      });
     }
 
-    return allPhotos;
+    return plainDoubles;
   }
 
   List<List<PhotoModel>> filterPhotosToGetDouble(List<PhotoModel> imageList) {

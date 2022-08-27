@@ -15,7 +15,7 @@ class DuplicatesScreen extends StatelessWidget {
           children: const [
             SizedBox(height: 20),
             Center(child: DuplicateButton()),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             Expanded(child: PhotoList()),
           ],
         ),

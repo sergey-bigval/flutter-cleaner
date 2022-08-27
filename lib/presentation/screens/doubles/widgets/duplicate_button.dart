@@ -54,10 +54,8 @@ class _DuplicateButtonState extends State<DuplicateButton> {
   Future<void> checkDoubles() async {
     if (isActive) {
       setState(() => isActive = false);
-      PhotosController.duplicatedPhotos.value = await PhotosFilerLogic()
-          .loadPhotos();
+      await PhotosFilerLogic().loadPhotos();
+      setState(() => isActive = true);
     }
-
-    setState(() => isActive = true);
   }
 }
