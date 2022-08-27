@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/assets/styles.dart';
+import 'package:hello_flutter/presentation/widgets/visibility.dart';
 import 'package:hello_flutter/screens/splash/widgets/policy_widget.dart';
+import 'package:hello_flutter/services/shared_preference.dart';
 import 'package:hello_flutter/utils/constants.dart';
 import 'package:lottie/lottie.dart';
 import '../../ads/AdOpen.dart';
@@ -24,14 +26,15 @@ class _SplashScreenState extends State<SplashScreen>
   late double _progressValue;
   final maxSplashTime = 10000;
   var speedProgress = 1.0;
-  bool isVisible = true;
+  // bool isVisible = true;
+  ValueNotifier<bool> visibilityNotifier = ValueNotifier(true);
 
   late AnimationController animationController;
   late Tween<double> _tween;
   late Animation<double> _animation;
 
 
-  late SharedPreferences _prefs;
+  // late SharedPreferences _prefs;
   bool _boolPref = false;
 
   static const String kBoolPrefKey = 'bool_pref';
@@ -46,16 +49,15 @@ class _SplashScreenState extends State<SplashScreen>
     _loading = false;
     _progressValue = 0.0;
     WidgetsBinding.instance.addObserver(this);
-    SharedPreferences.getInstance()
-    .then((prefs) {
-      setState(() => _prefs = prefs);
-      _loadBoolPref();
-    }).then((value) {
-     nat('nat');
-      if(_boolPref) {
+    SharedPref.getStartButtonVisibility()
+        .then((value) {
+      _boolPref = value;
+
+      if (_boolPref) {
         setState(() {
           _loading = !_loading;
-          isVisible = !isVisible;
+          visibilityNotifier.value = !visibilityNotifier.value;
+          // isVisible = !isVisible;
           nat("nat");
           _startProgress();
           AdOpen.load(() {
@@ -63,6 +65,7 @@ class _SplashScreenState extends State<SplashScreen>
           });
         });
       }
+
     });
   }
 /// execute when widget dies
@@ -116,8 +119,8 @@ class _SplashScreenState extends State<SplashScreen>
           ),
           Visibility(
             visible: !_boolPref,
-              child: Visibility(
-                visible: isVisible,
+              child: VisibilityWidget(
+                notifier: visibilityNotifier,
                 child: TextButton(
                   onPressed: () => {
                     setState(() {
@@ -125,7 +128,8 @@ class _SplashScreenState extends State<SplashScreen>
                       _setBoolPref(!_boolPref);
                       _loading = !_loading;
                       _startProgress();
-                      isVisible = !isVisible;
+                      visibilityNotifier.value = !visibilityNotifier.value;
+                      // isVisible = !isVisible;
                       AdOpen.load(() {
                         speedProgress = 4.0;
                       });
@@ -138,10 +142,8 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             ),
-           Visibility(
-             visible: isVisible,
-               maintainState: false,
-               maintainInteractivity: false,
+           VisibilityWidget(
+             notifier: visibilityNotifier,
                child: const policy_widget()),
 
         ],
@@ -150,13 +152,13 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _setBoolPref(bool value)  {
-    _prefs.setBool(kBoolPrefKey, value);
+    SharedPref.saveStartButtonVisibility(value: value);
     _loadBoolPref();
   }
 
   void _loadBoolPref() {
     setState(() {
-      _boolPref = _prefs.getBool(kBoolPrefKey) ?? false;
+      SharedPref.getStartButtonVisibility().then((value) => _boolPref = value);
       nat('nat');
     });
   }

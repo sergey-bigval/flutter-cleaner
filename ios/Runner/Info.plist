@@ -206,7 +206,7 @@
     <string>Example: You should fill this in</string>
 
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Example: You should fill this in</string>
+    <string>To access photo</string>
 
 </dict>
 </plist>
