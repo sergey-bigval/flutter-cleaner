@@ -1,6 +1,5 @@
 import 'dart:core';
-
-import 'package:hello_flutter/screens/doubles/doubles_screen.dart';
+import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
 
 List<List<PhotoModel>> filterPhotosToGetDouble(List<PhotoModel> imageList) {
   List<List<PhotoModel>> listOfAllDoubleImages = [];

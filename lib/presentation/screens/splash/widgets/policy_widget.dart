@@ -1,11 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_flutter/utils/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../utils/constants.dart';
-
-class policy_widget extends StatelessWidget {
-  const policy_widget({
+class PolicyWidget extends StatelessWidget {
+  const PolicyWidget({
     Key? key,
   }) : super(key: key);
 

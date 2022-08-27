@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/screens/doubles/bloc/photos_filter.dart';
+import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_filter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -39,9 +39,9 @@ class _PhotosScreenState extends State<PhotosScreen> {
 
   var _photosCount = 0;
   var _videoCount = 0;
-  List<AssetEntity> _allPhotosEntities = [];
-  List<PhotoModel> _allPhotos = [];
-  List<PhotoModel> _plainDoubles = [];
+  final List<AssetEntity> _allPhotosEntities = [];
+  final List<PhotoModel> _allPhotos = [];
+  final List<PhotoModel> _plainDoubles = [];
 
   @override
   void initState() {

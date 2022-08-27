@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/screens/home_screen.dart';
-import 'package:hello_flutter/screens/doubles/doubles_screen.dart';
-import 'package:hello_flutter/screens/splash/splash_screen.dart';
+import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
+import 'package:hello_flutter/presentation/screens/home_screen.dart';
+import 'package:hello_flutter/presentation/screens/splash/splash_screen.dart';
 import 'package:hello_flutter/utils/constants.dart';
 
 import 'lifecycles/nav_observer.dart';

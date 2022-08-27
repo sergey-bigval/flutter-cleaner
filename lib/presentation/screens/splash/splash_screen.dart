@@ -1,17 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:hello_flutter/ads/AdOpen.dart';
 import 'package:hello_flutter/assets/styles.dart';
+import 'package:hello_flutter/lifecycles/extentions.dart';
+import 'package:hello_flutter/lifecycles/orientation.dart';
+import 'package:hello_flutter/presentation/screens/splash/widgets/policy_widget.dart';
 import 'package:hello_flutter/presentation/widgets/visibility.dart';
-import 'package:hello_flutter/screens/splash/widgets/policy_widget.dart';
 import 'package:hello_flutter/services/shared_preference.dart';
 import 'package:hello_flutter/utils/constants.dart';
+import 'package:hello_flutter/utils/logging.dart';
 import 'package:lottie/lottie.dart';
-import '../../ads/AdOpen.dart';
-import '../../lifecycles/extentions.dart';
-import '../../lifecycles/orientation.dart';
-import '../../utils/logging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -36,8 +35,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   // late SharedPreferences _prefs;
   bool _boolPref = false;
-
-  static const String kBoolPrefKey = 'bool_pref';
 
   @override
   void initState() {
@@ -144,7 +141,7 @@ class _SplashScreenState extends State<SplashScreen>
             ),
            VisibilityWidget(
              notifier: visibilityNotifier,
-               child: const policy_widget()),
+               child: const PolicyWidget()),
 
         ],
       ),
