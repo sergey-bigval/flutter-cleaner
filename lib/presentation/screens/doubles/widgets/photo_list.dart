@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_controller.dart';
 import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
-import 'package:hello_flutter/presentation/screens/doubles/widgets/filtering_info.dart';
 
 class PhotoList extends StatelessWidget {
   const PhotoList({super.key});
@@ -17,9 +16,7 @@ class PhotoList extends StatelessWidget {
     return ValueListenableBuilder<List<PhotoModel>>(
       valueListenable: PhotosController.duplicatedPhotos,
       builder: (context, photoList, _) {
-        return photoList.isEmpty
-            ? const FilteringInfo()
-            : photoGrid(photoList);
+        return photoGrid(photoList);
       },
     );
   }

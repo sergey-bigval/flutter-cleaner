@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/presentation/screens/doubles/widgets/duplicate_button.dart';
+import 'package:hello_flutter/presentation/screens/doubles/widgets/filtering_info.dart';
 import 'package:hello_flutter/presentation/screens/doubles/widgets/photo_list.dart';
 
 class DuplicatesScreen extends StatelessWidget {
@@ -15,6 +16,8 @@ class DuplicatesScreen extends StatelessWidget {
           children: const [
             SizedBox(height: 20),
             Center(child: DuplicateButton()),
+            SizedBox(height: 20),
+            FilteringInfo(),
             SizedBox(height: 20),
             Expanded(child: PhotoList()),
           ],

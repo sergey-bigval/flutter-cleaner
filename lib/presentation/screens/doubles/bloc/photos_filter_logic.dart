@@ -32,56 +32,56 @@ class PhotosFilerLogic {
             end: num,
         );
 
-        for (AssetEntity mediaFile in medias) {
-          File? file = await mediaFile.originFile;
-          String path = file?.path ?? 'NON';
-          int size = file?.lengthSync() ?? 0;
-          String mimeType = mediaFile.mimeType ?? 'NON';
-          int timeInSeconds = mediaFile
-              .createDateTime.millisecondsSinceEpoch ~/ 1000;
+        List<List<AssetEntity>> mediasByHundreds = _getMediaByHundreds(medias);
 
-          if (mimeType.contains('image')) {
-            photosCount++;
-            PhotosController.filterCounter.value = PhotoFilterInfo(
-                photoCount: photosCount,
-                duplicateCount: PhotosController.filterCounter
-                    .value.duplicateCount
-            );
+        for (List<AssetEntity> hundred in mediasByHundreds) {
+          for (AssetEntity media in hundred) {
+            File? file = await media.originFile;
+            String path = file?.path ?? 'NON';
+            int size = file?.lengthSync() ?? 0;
+            String mimeType = media.mimeType ?? 'NON';
+            int timeInSeconds = media
+                .createDateTime.millisecondsSinceEpoch ~/ 1000;
 
-            allPhotosEntities.add(mediaFile);
-            allPhotos.add(PhotoModel(
-              absolutePath: path,
-              size: size,
-              timeInSeconds: timeInSeconds,
-              isSelected: false,
-            ));
-          }
+            if (mimeType.contains('image')) {
+              photosCount++;
+              PhotosController.filterCounter.value = PhotoFilterInfo(
+                  photoCount: photosCount,
+                  duplicateCount: PhotosController.filterCounter
+                      .value.duplicateCount
+              );
 
-          if (mimeType.contains("video")) {
-            videoCount++;
-          }
+              allPhotosEntities.add(media);
+              allPhotos.add(PhotoModel(
+                absolutePath: path,
+                size: size,
+                timeInSeconds: timeInSeconds,
+                isSelected: false,
+              ));
+            }
 
-          if (allPhotos.length > 100 && allPhotos.length % 100 == 0) {
-            List<PhotoModel> newDuplicates = _getDuplicates(
+            if (mimeType.contains("video")) {
+              videoCount++;
+            }
+
+            List<PhotoModel> newDuplicates = [];
+
+            if (allPhotos.length > 100 && allPhotos.length % 100 == 0) {
+              newDuplicates = _getDuplicates(
                 photos: [...allPhotos.getRange(
                     _getStartRange(allPhotos.length),
                     allPhotos.indexOf(allPhotos.last))],
                 photosCount: photosCount,
                 videoCount: videoCount,
-            );
-            plainDoubles.addAll(newDuplicates);
+              );
+            } else {
+              newDuplicates = _getDuplicates(
+                photos: allPhotos,
+                photosCount: photosCount,
+                videoCount: videoCount,
+              );
 
-            plainDoubles.sort((m1, m2) {
-              if (m1.timeInSeconds > m2.timeInSeconds) return 1;
-              if (m1.timeInSeconds < m2.timeInSeconds) return -1;
-              return 0;
-            });
-          } else {
-            List<PhotoModel> newDuplicates = _getDuplicates(
-              photos: allPhotos,
-              photosCount: photosCount,
-              videoCount: videoCount,
-            );
+            }
 
             plainDoubles.addAll(newDuplicates);
 
@@ -90,14 +90,38 @@ class PhotosFilerLogic {
               if (m1.timeInSeconds < m2.timeInSeconds) return -1;
               return 0;
             });
+
+            // lol(path);
+            // lol(mimeType);
           }
-
           PhotosController.duplicatedPhotos.value = plainDoubles;
-          // lol(path);
-          // lol(mimeType);
         }
       }
     }
+  }
+
+  List<List<AssetEntity>> _getMediaByHundreds(List<AssetEntity> mediaList) {
+    List<List<AssetEntity>> hundredsList= [];
+
+    int hundreds = mediaList.length ~/ 100;
+    
+    print(mediaList.length);
+    print(hundreds);
+
+    if (hundreds == 0) {
+      hundredsList.add(mediaList);
+    } else {
+      for (int i = 0; i < hundreds; i++) {
+        hundredsList.add(mediaList.getRange(
+            i == 0 ? 0 : (i * 100) + 1,
+            mediaList.length <= ((i * 100) + 99)
+                ? mediaList.length 
+                : (i * 100) + 99).toList()
+        );
+      }
+    }
+
+    return hundredsList;
   }
 
   int _getStartRange(int allPhotosLength) {
