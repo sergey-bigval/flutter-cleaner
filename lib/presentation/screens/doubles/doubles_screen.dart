@@ -1,7 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_filter.dart';
+import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_filter_logic.dart';
+import 'package:hello_flutter/themes/styles.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -30,12 +31,6 @@ class PhotosScreen extends StatefulWidget {
 }
 
 class _PhotosScreenState extends State<PhotosScreen> {
-  final mainTextStyle = const TextStyle(
-      decoration: TextDecoration.none,
-      color: Colors.black54,
-      fontSize: 33.0,
-      letterSpacing: 6,
-      fontFamily: "MouseMemoirs");
 
   var _photosCount = 0;
   var _videoCount = 0;
@@ -46,69 +41,6 @@ class _PhotosScreenState extends State<PhotosScreen> {
   @override
   void initState() {
     super.initState();
-  }
-
-  Future<void> loadPhotos() async {
-    final PermissionState permState = await PhotoManager.requestPermissionExtend();
-    if (permState.isAuth) {
-      // если есть доступ (т.е. дан пермишен), то можем запрашивать медиа-контент
-      final List<AssetPathEntity> folders = await PhotoManager.getAssetPathList();
-      lol('Number of folders = ${folders.length}');
-
-      for (var folder in folders) {
-        // final subFolders = await folder.getSubPathList();
-        // lol('In folder <${folder.name}> are ${subFolders.length} subfolders');
-        final num = folder.assetCount;
-        lol('In folder <${folder.name}> are ${num} files');
-        final medias = await folder.getAssetListRange(start: 0, end: num);
-        medias.forEach((mediaFile) async {
-          final file = await mediaFile.originFile;
-          final path = file?.path ?? "NON";
-          final size = file?.lengthSync() ?? 0;
-          final mimeType = mediaFile.mimeType ?? "NON";
-          final timeInSeconds = mediaFile.createDateTime.millisecondsSinceEpoch ~/ 1000;
-          if (mimeType.contains("image")) {
-            _photosCount++;
-            _allPhotosEntities.add(mediaFile);
-            _allPhotos.add(PhotoModel(
-              absolutePath: path,
-              size: size,
-              timeInSeconds: timeInSeconds,
-              isSelected: false,
-            ));
-          }
-          if (mimeType.contains("video")) _videoCount++;
-          // lol(path);
-          // lol(mimeType);
-        });
-      }
-
-      lol('Found: photos - $_photosCount , videos - $_videoCount');
-      var dou = filterPhotosToGetDouble(_allPhotos);
-      for (var row in dou) {
-        lol('-----------------------ROW----------------------------');
-        for (var item in row) {
-          lol('----DOUBLE----');
-          lol('size = ${item.size}');
-          _plainDoubles.add(item);
-        }
-      }
-      _plainDoubles.sort((m1, m2) {
-        if (m1.timeInSeconds > m2.timeInSeconds) return 1;
-        if (m1.timeInSeconds < m2.timeInSeconds) return -1;
-        return 0;
-      });
-      setState(() {});
-
-      // allPhotosEntities.getRange(0, 10).forEach((element) async {
-      //   var file = await element.file;
-      // });
-
-    } else {
-      // Limited(iOS) or Rejected, use `==` for more precise judgements.
-      // You can call `PhotoManager.openSetting()` to open settings for further steps.
-      Navigator.pushNamed(context, permScreen);
-    }
   }
 
   @override
@@ -131,12 +63,16 @@ class _PhotosScreenState extends State<PhotosScreen> {
                 alignment: const Alignment(0, 0),
                 child: InkWell(
                   onTap: () {
-                    loadPhotos();
+                    // loadPhotos();
                   },
                   onLongPress: () {
                     Navigator.pushNamed(context, permScreen);
                   },
-                  child: Text('Press or LongPress', textAlign: TextAlign.center, style: mainTextStyle),
+                  child: const Text(
+                      'Press or LongPress',
+                      textAlign: TextAlign.center,
+                      style: Styles.titleStyle,
+                  ),
                 )),
           ),
         ),

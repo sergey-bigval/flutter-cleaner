@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
 import '../utils/logging.dart';
-import 'orientation.dart';
 
 class NavigatorObserverWithOrientation extends NavigatorObserver {
   @override

@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdOpen.dart';
-import 'package:hello_flutter/assets/styles.dart';
 import 'package:hello_flutter/lifecycles/extentions.dart';
 import 'package:hello_flutter/lifecycles/orientation.dart';
 import 'package:hello_flutter/presentation/screens/splash/widgets/policy_widget.dart';
 import 'package:hello_flutter/presentation/widgets/visibility.dart';
 import 'package:hello_flutter/services/shared_preference.dart';
+import 'package:hello_flutter/themes/styles.dart';
 import 'package:hello_flutter/utils/constants.dart';
 import 'package:hello_flutter/utils/logging.dart';
 import 'package:lottie/lottie.dart';
@@ -93,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen>
           SizedBox(
             height: 250,
             width: 250,
-            child: Lottie.asset("assets/lottie/monkey.json"),
+            child: Lottie.asset("themes/lottie/monkey.json"),
 
           ),
           const Text(
