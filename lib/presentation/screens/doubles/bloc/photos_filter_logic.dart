@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:core';
 import 'dart:io';
 import 'package:hello_flutter/models/photo_filter_info.dart';
@@ -13,7 +14,8 @@ class PhotosFilerLogic {
     int videoCount = 0;
     List<AssetEntity> allPhotosEntities = [];
     List<PhotoModel> allPhotos = [];
-    List<PhotoModel> plainDoubles = [];
+    // List<PhotoModel> plainDoubles = [];
+    HashSet<PhotoModel> plainDoubles = HashSet();
 
     PermissionState permState = await PhotoManager.requestPermissionExtend();
 
@@ -85,16 +87,20 @@ class PhotosFilerLogic {
 
             plainDoubles.addAll(newDuplicates);
 
-            plainDoubles.sort((m1, m2) {
-              if (m1.timeInSeconds > m2.timeInSeconds) return 1;
-              if (m1.timeInSeconds < m2.timeInSeconds) return -1;
-              return 0;
-            });
-
-            // lol(path);
-            // lol(mimeType);
+            // plainDoubles.sort((m1, m2) {
+            //   if (m1.timeInSeconds > m2.timeInSeconds) return 1;
+            //   if (m1.timeInSeconds < m2.timeInSeconds) return -1;
+            //   return 0;
+            // });
+            // plainDoubles.forEach((element) {lol('element is ${element.hashCode} and ${element.size}');});
           }
-          PhotosController.duplicatedPhotos.value = plainDoubles;
+          List<PhotoModel> finalList = plainDoubles.toList();
+          finalList.sort((m1, m2) {
+            if (m1.timeInSeconds > m2.timeInSeconds) return 1;
+            if (m1.timeInSeconds < m2.timeInSeconds) return -1;
+            return 0;
+          });
+          PhotosController.duplicatedPhotos.value = finalList;
         }
       }
     }
@@ -105,8 +111,8 @@ class PhotosFilerLogic {
 
     int hundreds = mediaList.length ~/ 100;
     
-    print(mediaList.length);
-    print(hundreds);
+    lol('hundreads ${hundreds}');
+    lol('mediaList ${mediaList}');
 
     if (hundreds == 0) {
       hundredsList.add(mediaList);
@@ -143,10 +149,10 @@ class PhotosFilerLogic {
     List<List<PhotoModel>> dou = filterPhotosToGetDouble(photos);
 
     for (List<PhotoModel> row in dou) {
-      lol('-----------------------ROW----------------------------');
+      // lol('-----------------------ROW----------------------------');
       for (PhotoModel item in row) {
-        lol('----DOUBLE----');
-        lol('size = ${item.size}');
+        // lol('----DOUBLE----');
+        // lol('size = ${item.size}');
         plainDoubles.add(item);
 
         PhotosController.filterCounter.value = PhotoFilterInfo(
@@ -175,7 +181,7 @@ class PhotosFilerLogic {
       double filter2 = ((imageModelCurrent.size - imageModelNext.size)
           / (imageModelCurrent.size / 2 + imageModelNext.size / 2)).abs();
 
-      if (filter1 < 3 && filter2 < 0.10 && imageModelCurrent.size > 600000) {
+      if (filter1 < 3 && filter2 < 0.10 && imageModelCurrent.size > 100000) {
         if (isNewDoublePhotoList) {
           doublePhotosList.add(imageList[currentIndex]); // original
           isNewDoublePhotoList = false;
