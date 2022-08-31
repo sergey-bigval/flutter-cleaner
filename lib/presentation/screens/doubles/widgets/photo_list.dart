@@ -35,16 +35,16 @@ class PhotoList extends StatelessWidget {
   Widget getPhotoRow({required List<PhotoModel> photoRow}) {
     return SizedBox(
       width: double.infinity,
-      height: 100,
+      height: 120,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.symmetric(vertical: 2),
         child: GridView.builder(
           itemCount: photoRow.length,
           scrollDirection: Axis.horizontal,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 1,
-            crossAxisSpacing: 5,
-            mainAxisSpacing: 5,
+            crossAxisSpacing: 4,
+            mainAxisSpacing: 4,
           ),
           itemBuilder: (BuildContext context, int index) {
             return getPhotoItem(photoModel: photoRow[index]);
@@ -61,6 +61,7 @@ class PhotoList extends StatelessWidget {
         image: DecorationImage(
           image: Image.file(
             File(photoModel.absolutePath),
+            cacheHeight: 400,
           ).image,
           fit: BoxFit.cover,
         ),

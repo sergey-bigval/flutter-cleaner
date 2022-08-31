@@ -14,11 +14,11 @@ class DuplicatesScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: const [
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             Center(child: DuplicateButton()),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             FilteringInfo(),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             Expanded(child: PhotoList()),
           ],
         ),
