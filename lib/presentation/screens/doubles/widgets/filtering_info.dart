@@ -12,15 +12,18 @@ class FilteringInfo extends StatelessWidget {
         builder: (context, info, _) {
           return Column(
             children: [
-              foundPhotos(info.photoCount),
+              getFoundPhotosText(info.photoCount),
               const SizedBox(height: 5),
-              foundDuplicatedPhotos(info.duplicateCount),
+              getFoundDuplicatedPhotosText(info.duplicateCount),
+              const SizedBox(height: 5),
+              getCurrentFolderText(info.folder),
             ],
           );
         }
     );
   }
 
-  Widget foundPhotos(int count) => Text('Found photos : $count');
-  Widget foundDuplicatedPhotos(int count) => Text('Found duplicates : $count');
+  Widget getFoundPhotosText(int count) => Text('Found photos : $count');
+  Widget getFoundDuplicatedPhotosText(int count) => Text('Found duplicates : $count');
+  Widget getCurrentFolderText(String folder) => Text('Scanning in folder : \n $folder');
 }

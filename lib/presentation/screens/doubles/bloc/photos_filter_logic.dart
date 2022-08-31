@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'dart:io';
+
 import 'package:hello_flutter/models/photo_filter_info.dart';
 import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_controller.dart';
 import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
@@ -7,13 +8,13 @@ import 'package:hello_flutter/utils/logging.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class PhotosFilerLogic {
-
   Future<void> loadPhotos() async {
     int photosCount = 0;
     int videoCount = 0;
     List<AssetEntity> allPhotosEntities = [];
     List<PhotoModel> allPhotos = [];
     List<PhotoModel> plainDoubles = [];
+    List<PhotoModel> totalPlainDoubles = [];
 
     PermissionState permState = await PhotoManager.requestPermissionExtend();
 
@@ -23,123 +24,59 @@ class PhotosFilerLogic {
       lol('Number of folders = ${folders.length}');
 
       for (AssetPathEntity folder in folders) {
-        // final subFolders = await folder.getSubPathList();
-        // lol('In folder <${folder.name}> are ${subFolders.length} subfolders');
+        ///////// цикл по папкам
         int num = await folder.assetCountAsync;
         lol('In folder <${folder.name}> are $num files');
-        List<AssetEntity> medias = await folder.getAssetListRange(
-            start: 0,
-            end: num,
-        );
+        List<AssetEntity> mediasInFolder = await folder.getAssetListRange(start: 0, end: num);
 
-        List<List<AssetEntity>> mediasByHundreds = _getMediaByHundreds(medias);
+        PhotosController.filterCounter.value = PhotosController.filterCounter.value.copyWith(folder: folder.name);
+        List<PhotoModel> folderPhotos = [];
+        for (AssetEntity media in mediasInFolder) {
+          ///////// цикл по файлам в папке
+          File? file = await media.originFile;
+          String path = file?.path ?? 'NON';
+          int size = file?.lengthSync() ?? 0;
+          String mimeType = media.mimeType ?? 'NON';
+          int timeInSeconds = media.createDateTime.millisecondsSinceEpoch ~/ 1000;
 
-        for (List<AssetEntity> hundred in mediasByHundreds) {
-          for (AssetEntity media in hundred) {
-            File? file = await media.originFile;
-            String path = file?.path ?? 'NON';
-            int size = file?.lengthSync() ?? 0;
-            String mimeType = media.mimeType ?? 'NON';
-            int timeInSeconds = media
-                .createDateTime.millisecondsSinceEpoch ~/ 1000;
+          if (mimeType.contains('image')) {
+            photosCount++;
+            PhotosController.filterCounter.value =
+                PhotosController.filterCounter.value.copyWith(photoCount: photosCount);
 
-            if (mimeType.contains('image')) {
-              photosCount++;
-              PhotosController.filterCounter.value = PhotoFilterInfo(
-                  photoCount: photosCount,
-                  duplicateCount: PhotosController.filterCounter
-                      .value.duplicateCount
-              );
-
-              allPhotosEntities.add(media);
-              allPhotos.add(PhotoModel(
-                absolutePath: path,
-                size: size,
-                timeInSeconds: timeInSeconds,
-                isSelected: false,
-              ));
-            }
-
-            if (mimeType.contains("video")) {
-              videoCount++;
-            }
-
-            List<PhotoModel> newDuplicates = [];
-
-            if (allPhotos.length > 100 && allPhotos.length % 100 == 0) {
-              newDuplicates = _getDuplicates(
-                photos: [...allPhotos.getRange(
-                    _getStartRange(allPhotos.length),
-                    allPhotos.indexOf(allPhotos.last))],
-                photosCount: photosCount,
-                videoCount: videoCount,
-              );
-            } else {
-              newDuplicates = _getDuplicates(
-                photos: allPhotos,
-                photosCount: photosCount,
-                videoCount: videoCount,
-              );
-
-            }
-
-            plainDoubles.addAll(newDuplicates);
-
-            plainDoubles.sort((m1, m2) {
-              if (m1.timeInSeconds > m2.timeInSeconds) return 1;
-              if (m1.timeInSeconds < m2.timeInSeconds) return -1;
-              return 0;
-            });
-
-            // lol(path);
-            // lol(mimeType);
+            allPhotosEntities.add(media);
+            allPhotos.add(PhotoModel(
+              // возможно удалить
+              absolutePath: path,
+              size: size,
+              timeInSeconds: timeInSeconds,
+              isSelected: false,
+            ));
+            folderPhotos.add(PhotoModel(
+              absolutePath: path,
+              size: size,
+              timeInSeconds: timeInSeconds,
+              isSelected: false,
+            ));
           }
-          PhotosController.duplicatedPhotos.value = plainDoubles;
-        }
-      }
-    }
-  }
+        } ///////// цикл по файлам в папке
+        lol("folderPhotos.length = ${folderPhotos.length}");
+        var plainDoublesInFolder = _getDuplicatesInFolder(photos: folderPhotos);
+        totalPlainDoubles.addAll(plainDoublesInFolder);
 
-  List<List<AssetEntity>> _getMediaByHundreds(List<AssetEntity> mediaList) {
-    List<List<AssetEntity>> hundredsList= [];
-
-    int hundreds = mediaList.length ~/ 100;
-    
-    print(mediaList.length);
-    print(hundreds);
-
-    if (hundreds == 0) {
-      hundredsList.add(mediaList);
-    } else {
-      for (int i = 0; i < hundreds; i++) {
-        hundredsList.add(mediaList.getRange(
-            i == 0 ? 0 : (i * 100) + 1,
-            mediaList.length <= ((i * 100) + 99)
-                ? mediaList.length 
-                : (i * 100) + 99).toList()
+        PhotosController.duplicatedPhotos.value = totalPlainDoubles;
+        PhotosController.filterCounter.value = PhotoFilterInfo(
+          photoCount: photosCount,
+          duplicateCount: totalPlainDoubles.length,
         );
-      }
+      } ///////// цикл по папкам
     }
-
-    return hundredsList;
   }
 
-  int _getStartRange(int allPhotosLength) {
-    int hundreds = allPhotosLength ~/ 100;
-
-    return hundreds == 1
-        ? 0
-        : (hundreds * 100) - 1;
-  }
-
-  List<PhotoModel> _getDuplicates({
-    required int photosCount,
-    required int videoCount,
+  List<PhotoModel> _getDuplicatesInFolder({
     required List<PhotoModel> photos,
   }) {
-    List<PhotoModel> plainDoubles = [];
-
-    lol('Found: photos - $photosCount , videos - $videoCount');
+    List<PhotoModel> plainDoublesInFolder = [];
     List<List<PhotoModel>> dou = filterPhotosToGetDouble(photos);
 
     for (List<PhotoModel> row in dou) {
@@ -147,17 +84,11 @@ class PhotosFilerLogic {
       for (PhotoModel item in row) {
         lol('----DOUBLE----');
         lol('size = ${item.size}');
-        plainDoubles.add(item);
-
-        PhotosController.filterCounter.value = PhotoFilterInfo(
-          photoCount: PhotosController.filterCounter
-              .value.photoCount,
-          duplicateCount: plainDoubles.length,
-        );
+        plainDoublesInFolder.add(item);
       }
     }
 
-    return plainDoubles;
+    return plainDoublesInFolder;
   }
 
   List<List<PhotoModel>> filterPhotosToGetDouble(List<PhotoModel> imageList) {
@@ -170,12 +101,12 @@ class PhotosFilerLogic {
       var imageModelCurrent = imageList[currentIndex]; // текущий для сравнения
       var imageModelNext = imageList[currentIndex + 1]; // следующий для сравнения
 
-      int filter1 = (imageModelCurrent.timeInSeconds
-          - imageModelNext.timeInSeconds).abs();
-      double filter2 = ((imageModelCurrent.size - imageModelNext.size)
-          / (imageModelCurrent.size / 2 + imageModelNext.size / 2)).abs();
+      int filter1 = (imageModelCurrent.timeInSeconds - imageModelNext.timeInSeconds).abs();
+      double filter2 =
+          ((imageModelCurrent.size - imageModelNext.size) / (imageModelCurrent.size / 2 + imageModelNext.size / 2))
+              .abs();
 
-      if (filter1 < 3 && filter2 < 0.10 && imageModelCurrent.size > 600000) {
+      if (filter1 < 3 && filter2 < 0.05 && imageModelCurrent.size > 100000) {
         if (isNewDoublePhotoList) {
           doublePhotosList.add(imageList[currentIndex]); // original
           isNewDoublePhotoList = false;
