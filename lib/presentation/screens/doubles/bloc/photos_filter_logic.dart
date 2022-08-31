@@ -1,7 +1,6 @@
 import 'dart:core';
 import 'dart:io';
 
-import 'package:hello_flutter/models/photo_filter_info.dart';
 import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_controller.dart';
 import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
 import 'package:hello_flutter/utils/logging.dart';
@@ -10,11 +9,8 @@ import 'package:photo_manager/photo_manager.dart';
 class PhotosFilerLogic {
   Future<void> loadPhotos() async {
     int photosCount = 0;
-    int videoCount = 0;
-    List<AssetEntity> allPhotosEntities = [];
-    List<PhotoModel> allPhotos = [];
-    List<PhotoModel> plainDoubles = [];
-    List<PhotoModel> totalPlainDoubles = [];
+    List<List<PhotoModel>> totalGroupedDoubles = [];
+    int totalGroupedDoublesCount = 0;
 
     PermissionState permState = await PhotoManager.requestPermissionExtend();
 
@@ -40,18 +36,11 @@ class PhotosFilerLogic {
           int timeInSeconds = media.createDateTime.millisecondsSinceEpoch ~/ 1000;
 
           if (mimeType.contains('image')) {
+            // тут выбираем только фотки по MIME-типу
             photosCount++;
             PhotosController.filterCounter.value =
                 PhotosController.filterCounter.value.copyWith(photoCount: photosCount);
 
-            allPhotosEntities.add(media);
-            allPhotos.add(PhotoModel(
-              // возможно удалить
-              absolutePath: path,
-              size: size,
-              timeInSeconds: timeInSeconds,
-              isSelected: false,
-            ));
             folderPhotos.add(PhotoModel(
               absolutePath: path,
               size: size,
@@ -61,34 +50,39 @@ class PhotosFilerLogic {
           }
         } ///////// цикл по файлам в папке
         lol("folderPhotos.length = ${folderPhotos.length}");
-        var plainDoublesInFolder = _getDuplicatesInFolder(photos: folderPhotos);
-        totalPlainDoubles.addAll(plainDoublesInFolder);
 
-        PhotosController.duplicatedPhotos.value = totalPlainDoubles;
-        PhotosController.filterCounter.value = PhotoFilterInfo(
+        folderPhotos.sort((m1, m2) {
+          // сортируем по времени
+          if (m1.timeInSeconds > m2.timeInSeconds) return 1;
+          if (m1.timeInSeconds < m2.timeInSeconds) return -1;
+          return 0;
+        });
+
+        List<List<PhotoModel>> groupedDoublesInFolder = _getGroupedDuplicatesInFolder(photos: folderPhotos);
+        totalGroupedDoubles.addAll(groupedDoublesInFolder);
+
+        groupedDoublesInFolder.forEach((element) {
+          // подсчёт дублей всего
+          element.forEach((element) {
+            totalGroupedDoublesCount++;
+          });
+        });
+
+        PhotosController.duplicatedPhotos.value = totalGroupedDoubles;
+        PhotosController.filterCounter.value = PhotosController.filterCounter.value.copyWith(
           photoCount: photosCount,
-          duplicateCount: totalPlainDoubles.length,
+          duplicateCount: totalGroupedDoublesCount,
+          folder: folder.name,
         );
       } ///////// цикл по папкам
     }
   }
 
-  List<PhotoModel> _getDuplicatesInFolder({
+  List<List<PhotoModel>> _getGroupedDuplicatesInFolder({
     required List<PhotoModel> photos,
   }) {
-    List<PhotoModel> plainDoublesInFolder = [];
     List<List<PhotoModel>> dou = filterPhotosToGetDouble(photos);
-
-    for (List<PhotoModel> row in dou) {
-      lol('-----------------------ROW----------------------------');
-      for (PhotoModel item in row) {
-        lol('----DOUBLE----');
-        lol('size = ${item.size}');
-        plainDoublesInFolder.add(item);
-      }
-    }
-
-    return plainDoublesInFolder;
+    return dou;
   }
 
   List<List<PhotoModel>> filterPhotosToGetDouble(List<PhotoModel> imageList) {
@@ -106,6 +100,7 @@ class PhotosFilerLogic {
           ((imageModelCurrent.size - imageModelNext.size) / (imageModelCurrent.size / 2 + imageModelNext.size / 2))
               .abs();
 
+      // настройка определения дублей (3 степени фильтрации)
       if (filter1 < 3 && filter2 < 0.05 && imageModelCurrent.size > 100000) {
         if (isNewDoublePhotoList) {
           doublePhotosList.add(imageList[currentIndex]); // original

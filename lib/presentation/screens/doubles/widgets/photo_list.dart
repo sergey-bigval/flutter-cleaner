@@ -9,33 +9,52 @@ class PhotoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return photosList();
+    return getPhotosList();
   }
 
-  Widget photosList() {
-    return ValueListenableBuilder<List<PhotoModel>>(
+  Widget getPhotosList() {
+    return ValueListenableBuilder<List<List<PhotoModel>>>(
       valueListenable: PhotosController.duplicatedPhotos,
       builder: (context, photoList, _) {
-        return photoGrid(photoList);
+        return getPhotoGrid(photoList);
       },
     );
   }
 
-  Widget photoGrid(List<PhotoModel> photoList) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
+  Widget getPhotoGrid(List<List<PhotoModel>> photoList) {
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      physics: const BouncingScrollPhysics(),
       itemCount: photoList.length,
       itemBuilder: (context, index) {
-        return photo(photoModel: photoList[index]);
+        return getPhotoRow(photoRow: photoList[index]);
       },
     );
   }
 
-  Widget photo({required PhotoModel photoModel}) {
+  Widget getPhotoRow({required List<PhotoModel> photoRow}) {
+    return SizedBox(
+      width: double.infinity,
+      height: 100,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: GridView.builder(
+          itemCount: photoRow.length,
+          scrollDirection: Axis.horizontal,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 1,
+            crossAxisSpacing: 5,
+            mainAxisSpacing: 5,
+          ),
+          itemBuilder: (BuildContext context, int index) {
+            return getPhotoItem(photoModel: photoRow[index]);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget getPhotoItem({required PhotoModel photoModel}) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
