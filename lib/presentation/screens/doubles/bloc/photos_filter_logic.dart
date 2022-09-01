@@ -7,29 +7,27 @@ import 'package:hello_flutter/utils/logging.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class PhotosFilerLogic {
+  int photosCount = 0;
+  List<List<PhotoModel>> totalGroupedDoubles = [];
+  int totalGroupedDoublesCount = 0;
+
   Future<void> loadPhotos() async {
-    int photosCount = 0;
-    List<List<PhotoModel>> totalGroupedDoubles = [];
-    int totalGroupedDoublesCount = 0;
 
     PermissionState permState = await PhotoManager.requestPermissionExtend();
 
     if (permState.isAuth) {
       // если есть доступ (т.е. дан пермишен), то можем запрашивать медиа-контент
-      List<AssetPathEntity> folders = await PhotoManager.getAssetPathList();
-      lol('Number of folders = ${folders.length}');
+      List<AssetPathEntity> allFolders = await PhotoManager.getAssetPathList();
 
-      for (AssetPathEntity folder in folders) {
+      for (AssetPathEntity folder in allFolders) { ///////// цикл по папкам
         if (Platform.isAndroid && folder.name == "Recent") continue;
-        ///////// цикл по папкам
-        int num = await folder.assetCountAsync;
-        lol('In folder <${folder.name}> are $num files');
-        List<AssetEntity> mediasInFolder = await folder.getAssetListRange(start: 0, end: num);
+
+        int countOfAssets = await folder.assetCountAsync;
+        List<AssetEntity> mediasInFolder = await folder.getAssetListRange(start: 0, end: countOfAssets);
 
         PhotosController.filterCounter.value = PhotosController.filterCounter.value.copyWith(folder: folder.name);
         List<PhotoModel> folderPhotos = [];
-        for (AssetEntity media in mediasInFolder) {
-          ///////// цикл по файлам в папке
+        for (AssetEntity media in mediasInFolder) { ///////// цикл по файлам в папке
           File? file = await media.originFile;
           String path = file?.path ?? 'NON';
           int size = file?.lengthSync() ?? 0;
@@ -37,9 +35,7 @@ class PhotosFilerLogic {
           int timeInSeconds = media.createDateTime.millisecondsSinceEpoch ~/ 1000;
 
           if (mimeType.contains('image')) {
-            // тут выбираем только фотки по MIME-типу
             photosCount++;
-            // lol("${folder.name} : $photosCount : $path");
             PhotosController.filterCounter.value =
                 PhotosController.filterCounter.value.copyWith(photoCount: photosCount);
 
@@ -51,10 +47,8 @@ class PhotosFilerLogic {
             ));
           }
         } ///////// цикл по файлам в папке
-        lol("folderPhotos.length = ${folderPhotos.length}");
 
         folderPhotos.sort((m1, m2) {
-          // сортируем по времени
           if (m1.timeInSeconds > m2.timeInSeconds) return 1;
           if (m1.timeInSeconds < m2.timeInSeconds) return -1;
           return 0;
@@ -62,15 +56,11 @@ class PhotosFilerLogic {
 
         List<List<PhotoModel>> groupedDoublesInFolder = _getGroupedDuplicatesInFolder(photos: folderPhotos);
         totalGroupedDoubles.addAll(groupedDoublesInFolder);
+        _addCurrentFolderDoublesToTotalCount(groupedDoublesInFolder);
 
-        groupedDoublesInFolder.forEach((element) {
-          // подсчёт дублей всего
-          element.forEach((element) {
-            totalGroupedDoublesCount++;
-          });
-        });
-
-        PhotosController.duplicatedPhotos.value = totalGroupedDoubles;
+        List<List<PhotoModel>> newDoublesList = [];
+        newDoublesList.addAll(totalGroupedDoubles);
+        PhotosController.duplicatedPhotos.value = newDoublesList;
         PhotosController.filterCounter.value = PhotosController.filterCounter.value.copyWith(
           photoCount: photosCount,
           duplicateCount: totalGroupedDoublesCount,
@@ -78,6 +68,14 @@ class PhotosFilerLogic {
         );
       } ///////// цикл по папкам
     }
+  }
+
+  void _addCurrentFolderDoublesToTotalCount(List<List<PhotoModel>> groupedDoublesInFolder) {
+    groupedDoublesInFolder.forEach((element) {
+      element.forEach((element) {
+        totalGroupedDoublesCount++;
+      });
+    });
   }
 
   List<List<PhotoModel>> _getGroupedDuplicatesInFolder({
