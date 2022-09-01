@@ -19,11 +19,12 @@ class FilteringInfo extends StatelessWidget {
               getCurrentFolderText(info.folder),
             ],
           );
-        }
-    );
+        });
   }
 
-  Widget getFoundPhotosText(int count) => Text('Found photos : $count');
+  Widget getFoundPhotosText(int count) => Text('Photos processed : $count');
+
   Widget getFoundDuplicatedPhotosText(int count) => Text('Found duplicates : $count');
-  Widget getCurrentFolderText(String folder) => Text('Scanning in folder : \n $folder');
+
+  Widget getCurrentFolderText(String folder) => Center(child: Text('Scanning in folder : \n $folder'));
 }

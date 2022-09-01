@@ -17,7 +17,7 @@ class PhotosFilerLogic {
 
     if (permState.isAuth) {
       // если есть доступ (т.е. дан пермишен), то можем запрашивать медиа-контент
-      List<AssetPathEntity> allFolders = await PhotoManager.getAssetPathList();
+      List<AssetPathEntity> allFolders = await PhotoManager.getAssetPathList(type: RequestType.image);
 
       for (AssetPathEntity folder in allFolders) { ///////// цикл по папкам
         if (Platform.isAndroid && folder.name == "Recent") continue;
@@ -31,10 +31,10 @@ class PhotosFilerLogic {
           File? file = await media.originFile;
           String path = file?.path ?? 'NON';
           int size = file?.lengthSync() ?? 0;
-          String mimeType = media.mimeType ?? 'NON';
+          // String mimeType = media.mimeType ?? 'NON';
           int timeInSeconds = media.createDateTime.millisecondsSinceEpoch ~/ 1000;
 
-          if (mimeType.contains('image')) {
+          // if (mimeType.contains('image')) {
             photosCount++;
             PhotosController.filterCounter.value =
                 PhotosController.filterCounter.value.copyWith(photoCount: photosCount);
@@ -45,7 +45,8 @@ class PhotosFilerLogic {
               timeInSeconds: timeInSeconds,
               isSelected: false,
             ));
-          }
+          // }
+
         } ///////// цикл по файлам в папке
 
         folderPhotos.sort((m1, m2) {
