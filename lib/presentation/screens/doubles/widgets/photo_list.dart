@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_controller.dart';
 import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
 
-import '../../../../utils/logging.dart';
-
 class PhotoList extends StatelessWidget {
   const PhotoList({super.key});
 
@@ -57,17 +55,36 @@ class PhotoList extends StatelessWidget {
   }
 
   Widget getPhotoItem({required PhotoModel photoModel}) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        image: DecorationImage(
-          image: Image.file(
-            File(photoModel.absolutePath),
-            cacheHeight: 400,
-          ).image,
-          fit: BoxFit.cover,
-        ),
-      ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: photoModel.isSelectedVN,
+      builder: (context, photoList, _) {
+        return Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: Image.file(
+                    File(photoModel.absolutePath),
+                    cacheHeight: 300,
+                  ).image,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                photoModel.isSelected = !photoModel.isSelected;
+                photoModel.isSelectedVN.value = photoModel.isSelected;
+              },
+              child: Row(children: [
+                const Spacer(),
+                Checkbox(value: photoModel.isSelected, onChanged: (_) => {}),
+              ]),
+            )
+          ],
+        );
+      },
     );
   }
 }

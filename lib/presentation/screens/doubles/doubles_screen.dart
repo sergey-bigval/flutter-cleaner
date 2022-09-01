@@ -21,6 +21,7 @@ class PhotoModel {
   int size;
   int timeInSeconds;
   bool isSelected = false;
+  ValueNotifier<bool> isSelectedVN = ValueNotifier(false);
 }
 
 class PhotosScreen extends StatefulWidget {
