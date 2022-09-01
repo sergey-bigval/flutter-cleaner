@@ -20,6 +20,7 @@ class PhotosFilerLogic {
       lol('Number of folders = ${folders.length}');
 
       for (AssetPathEntity folder in folders) {
+        if (Platform.isAndroid && folder.name == "Recent") continue;
         ///////// цикл по папкам
         int num = await folder.assetCountAsync;
         lol('In folder <${folder.name}> are $num files');
@@ -38,6 +39,7 @@ class PhotosFilerLogic {
           if (mimeType.contains('image')) {
             // тут выбираем только фотки по MIME-типу
             photosCount++;
+            // lol("${folder.name} : $photosCount : $path");
             PhotosController.filterCounter.value =
                 PhotosController.filterCounter.value.copyWith(photoCount: photosCount);
 
@@ -101,7 +103,7 @@ class PhotosFilerLogic {
               .abs();
 
       // настройка определения дублей (3 степени фильтрации)
-      if (filter1 < 3 && filter2 < 0.05 && imageModelCurrent.size > 100000) {
+      if (filter1 < 3 && filter2 < 0.05 && imageModelCurrent.size > 600000) {
         if (isNewDoublePhotoList) {
           doublePhotosList.add(imageList[currentIndex]); // original
           isNewDoublePhotoList = false;
