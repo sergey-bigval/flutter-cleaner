@@ -52,8 +52,6 @@ class DeviceInfoBloc extends Bloc<DeviceInfoEvent, DeviceInfoState> {
           }
       }
 
-      lol("STATE КФКФКФКФ");
-
     });
     emitter(state.copyWith(batteryState: batteryState));
   }

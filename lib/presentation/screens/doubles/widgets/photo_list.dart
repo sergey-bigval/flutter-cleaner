@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_controller.dart';
 import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
 
+import '../../../../utils/logging.dart';
+
 class PhotoList extends StatelessWidget {
   const PhotoList({super.key});
 
