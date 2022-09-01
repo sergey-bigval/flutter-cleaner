@@ -3,23 +3,45 @@ import 'dart:io';
 
 import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_controller.dart';
 import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
-import 'package:hello_flutter/utils/logging.dart';
 import 'package:photo_manager/photo_manager.dart';
+
+import '../../../../utils/logging.dart';
 
 class PhotosFilerLogic {
   int photosCount = 0;
   List<List<PhotoModel>> totalGroupedDoubles = [];
   int totalGroupedDoublesCount = 0;
 
-  Future<void> loadPhotos() async {
+  static List<List<PhotoModel>> totalGroupedDoublesStatic = [];
 
+  static Future<void> deletePhotos() async {
+    lol("deletePhotos() async --===--");
+    List<String> listToDelete = [];
+    for (List<PhotoModel> list in totalGroupedDoublesStatic) {
+      for (PhotoModel photo in list) {
+        if (photo.isSelected) {
+          lol("ADDED === ${photo.entity.id}");
+          listToDelete.add(photo.entity.id);
+        }
+      }
+    }
+    lol("PREPARE ===== listToDelete.length = ${listToDelete.length} / list below:");
+    listToDelete.forEach((element) {
+      lol(element);
+    });
+    final List<String> result = await PhotoManager.editor.deleteWithIds(listToDelete);
+    lol("DELETED ============== ${result.length}");
+  }
+
+  Future<void> loadPhotos() async {
     PermissionState permState = await PhotoManager.requestPermissionExtend();
 
     if (permState.isAuth) {
       // если есть доступ (т.е. дан пермишен), то можем запрашивать медиа-контент
       List<AssetPathEntity> allFolders = await PhotoManager.getAssetPathList(type: RequestType.image);
 
-      for (AssetPathEntity folder in allFolders) { ///////// цикл по папкам
+      for (AssetPathEntity folder in allFolders) {
+        ///////// цикл по папкам
         if (Platform.isAndroid && folder.name == "Recent") continue;
 
         int countOfAssets = await folder.assetCountAsync;
@@ -27,7 +49,8 @@ class PhotosFilerLogic {
 
         PhotosController.filterCounter.value = PhotosController.filterCounter.value.copyWith(folder: folder.name);
         List<PhotoModel> folderPhotos = [];
-        for (AssetEntity media in mediasInFolder) { ///////// цикл по файлам в папке
+        for (AssetEntity media in mediasInFolder) {
+          ///////// цикл по файлам в папке
           File? file = await media.originFile;
           String path = file?.path ?? 'NON';
           int size = file?.lengthSync() ?? 0;
@@ -35,16 +58,11 @@ class PhotosFilerLogic {
           int timeInSeconds = media.createDateTime.millisecondsSinceEpoch ~/ 1000;
 
           // if (mimeType.contains('image')) {
-            photosCount++;
-            PhotosController.filterCounter.value =
-                PhotosController.filterCounter.value.copyWith(photoCount: photosCount);
+          photosCount++;
+          PhotosController.filterCounter.value = PhotosController.filterCounter.value.copyWith(photoCount: photosCount);
 
-            folderPhotos.add(PhotoModel(
-              absolutePath: path,
-              size: size,
-              timeInSeconds: timeInSeconds,
-              isSelected: false,
-            ));
+          folderPhotos.add(PhotoModel(
+              absolutePath: path, size: size, timeInSeconds: timeInSeconds, isSelected: false, entity: media));
           // }
 
         } ///////// цикл по файлам в папке
@@ -62,6 +80,9 @@ class PhotosFilerLogic {
         List<List<PhotoModel>> newDoublesList = [];
         newDoublesList.addAll(totalGroupedDoubles);
         PhotosController.duplicatedPhotos.value = newDoublesList;
+
+        totalGroupedDoublesStatic.addAll(newDoublesList); //////////////
+
         PhotosController.filterCounter.value = PhotosController.filterCounter.value.copyWith(
           photoCount: photosCount,
           duplicateCount: totalGroupedDoublesCount,

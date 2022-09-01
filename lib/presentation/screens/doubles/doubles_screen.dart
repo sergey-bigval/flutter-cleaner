@@ -15,6 +15,7 @@ class PhotoModel {
     required this.size,
     required this.timeInSeconds,
     required this.isSelected,
+    required this.entity,
   });
 
   String absolutePath;
@@ -22,6 +23,7 @@ class PhotoModel {
   int timeInSeconds;
   bool isSelected = false;
   ValueNotifier<bool> isSelectedVN = ValueNotifier(false);
+  AssetEntity entity;
 }
 
 class PhotosScreen extends StatefulWidget {
