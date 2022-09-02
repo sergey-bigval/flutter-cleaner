@@ -72,16 +72,16 @@ class PhotoList extends StatelessWidget {
                 ),
               ),
             ),
-            InkWell(
-              onTap: () {
-                photoModel.isSelected = !photoModel.isSelected;
-                photoModel.isSelectedVN.value = photoModel.isSelected;
-              },
-              child: Row(children: [
-                const Spacer(),
-                Checkbox(value: photoModel.isSelected, onChanged: (_) => {}),
-              ]),
-            )
+            Row(children: [
+              const Spacer(),
+              Checkbox(
+                value: photoModel.isSelected,
+                onChanged: (value) {
+                  photoModel.isSelected = value ?? false;
+                  photoModel.isSelectedVN.value = photoModel.isSelected;
+                },
+              ),
+            ])
           ],
         );
       },
