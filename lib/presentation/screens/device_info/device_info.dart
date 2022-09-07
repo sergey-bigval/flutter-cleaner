@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hello_flutter/screens/device_info/widgets/app_bar.dart';
-import 'package:hello_flutter/screens/device_info/widgets/battery_text.dart';
-import 'package:hello_flutter/screens/device_info/widgets/memory_card.dart';
+import 'package:hello_flutter/presentation/screens/device_info/widgets/app_bar.dart';
+import 'package:hello_flutter/presentation/screens/device_info/widgets/battery_text.dart';
+import 'package:hello_flutter/presentation/screens/device_info/widgets/memory_card.dart';
 import 'package:hello_flutter/utils/logging.dart';
 
 import 'bloc/device_info_bloc.dart';

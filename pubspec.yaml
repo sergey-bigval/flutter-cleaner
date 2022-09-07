@@ -45,6 +45,8 @@ dependencies:
   photo_manager: ^2.2.1
   shared_preferences: ^2.0.15
   flutter_bloc: ^8.1.1
+  video_thumbnail: ^0.5.2
+  video_player: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -70,7 +72,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
+  # To add themes to your application, add an themes section, like this:
   assets:
     - assets/imgs/
     - assets/lottie/
@@ -78,7 +80,7 @@ flutter:
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
-  # For details regarding adding assets from package dependencies, see
+  # For details regarding adding themes from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
 
   # To add custom fonts to your application, add a fonts section here,

@@ -10,7 +10,7 @@ class ContainerTesting extends StatelessWidget {
         decoration: const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage(
-                  "assets/imgs/darth_vader.png",
+                  "themes/imgs/darth_vader.png",
                 ),
                 fit: BoxFit.fill)
             // gradient: RadialGradient(
