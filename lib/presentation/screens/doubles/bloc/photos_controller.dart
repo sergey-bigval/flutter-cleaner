@@ -4,6 +4,6 @@ import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
 
 class PhotosController {
   static ValueNotifier<List<List<PhotoModel>>> duplicatedPhotos = ValueNotifier([]);
-  static ValueNotifier<PhotoFilterInfo> filterCounter
+  static ValueNotifier<PhotoFilterInfo> filterCounterInfo
     = ValueNotifier(PhotoFilterInfo());
 }

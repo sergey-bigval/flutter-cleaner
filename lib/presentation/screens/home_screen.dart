@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdBanner.dart';
 import 'device_info/device_info.dart';
+import 'videos/dupli_video_screen.dart';
 import 'doubles/duplicates_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -50,11 +51,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPageChanged: _onPageViewChange,
                   children: const <Widget>[
                     DuplicatesScreen(),
+                    DupliVideoScreen(),
                     BatteryInfoPage(),
-                    // Align( // ЭТО ТРЕТЬЯ ВКЛАДКА - ОНА ПОКА НЕ НУЖНА
-                    //     alignment: const Alignment(0, 0),
-                    //     child: Text('Third functionality of the new super cleaner written in Flutter',
-                    //         textAlign: TextAlign.center, style: mainTextStyle))
                   ],
                 ),
               ),

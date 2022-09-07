@@ -47,7 +47,7 @@ class PhotosFilerLogic {
         int countOfAssets = await folder.assetCountAsync;
         List<AssetEntity> mediasInFolder = await folder.getAssetListRange(start: 0, end: countOfAssets);
 
-        PhotosController.filterCounter.value = PhotosController.filterCounter.value.copyWith(folder: folder.name);
+        PhotosController.filterCounterInfo.value = PhotosController.filterCounterInfo.value.copyWith(folder: folder.name);
         List<PhotoModel> folderPhotos = [];
         for (AssetEntity media in mediasInFolder) {
           ///////// цикл по файлам в папке
@@ -59,7 +59,7 @@ class PhotosFilerLogic {
 
           // if (mimeType.contains('image')) {
           photosCount++;
-          PhotosController.filterCounter.value = PhotosController.filterCounter.value.copyWith(photoCount: photosCount);
+          PhotosController.filterCounterInfo.value = PhotosController.filterCounterInfo.value.copyWith(photoCount: photosCount);
 
           folderPhotos.add(PhotoModel(
               absolutePath: path, size: size, timeInSeconds: timeInSeconds, isSelected: false, entity: media));
@@ -83,7 +83,7 @@ class PhotosFilerLogic {
 
         totalGroupedDoublesStatic.addAll(newDoublesList); //////////////
 
-        PhotosController.filterCounter.value = PhotosController.filterCounter.value.copyWith(
+        PhotosController.filterCounterInfo.value = PhotosController.filterCounterInfo.value.copyWith(
           photoCount: photosCount,
           duplicateCount: totalGroupedDoublesCount,
           folder: folder.name,
