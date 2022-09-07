@@ -6,8 +6,8 @@ import 'package:hello_flutter/presentation/screens/videos/widgets/dupli_video_bu
 import 'package:hello_flutter/presentation/screens/videos/widgets/video_found_info.dart';
 import 'package:hello_flutter/presentation/screens/videos/widgets/video_list.dart';
 
-class DupliVideoScreen extends StatelessWidget {
-  const DupliVideoScreen({super.key});
+class MyVideosScreen extends StatelessWidget {
+  const MyVideosScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
