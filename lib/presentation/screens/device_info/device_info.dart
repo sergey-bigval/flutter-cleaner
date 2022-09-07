@@ -38,109 +38,104 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.grey[100],
-        appBar: const MyAppBar(),
-        body: Column(
+    return Column(
+      children: [
+        const MyAppBar(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Card(
-                    color: Colors.green[300],
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                    shadowColor: Colors.white54,
-                    margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
-                    elevation: 14,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(children: [
-                            Icon(Icons.battery_charging_full_rounded,
-                                color: Colors.green[700], size: 60),
-                            BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
-                              bloc: _bloc,
-                              listener: (context, state) {
-                                lol("STATE IS: ${state.batteryLevel}");
-                              },
-                              builder: (context, state) {
-                                return Text(
-                                  "${state.batteryLevel}%",
-                                  style: const TextStyle(
-                                      fontSize: 35,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                );
-                              },
-                            ),
-                            BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
-                              bloc: _bloc,
-                              listener: (context, state) {
-                                lol("STATE2 IS: ${state.batteryState}");
-                                lol("STATE3 IS: ${state.batteryIsSaveMode}");
-                              },
-                              builder: (context, state) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    BatteryText(
-                                        title: "Battery State: ",
-                                        value: state.batteryState),
-                                    BatteryText(
-                                        title: "Save mode: ",
-                                        value: state.batteryIsSaveMode),
-                                  ],
-                                );
-                              },
-                            )
-                          ]),
-                        ],
-                      ),
-                    ),
+            Expanded(
+              child: Card(
+                color: Colors.green[300],
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+                shadowColor: Colors.white54,
+                margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
+                elevation: 14,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [
+                        Icon(Icons.battery_charging_full_rounded,
+                            color: Colors.green[700], size: 60),
+                        BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
+                          bloc: _bloc,
+                          listener: (context, state) {
+                            lol("STATE IS: ${state.batteryLevel}");
+                          },
+                          builder: (context, state) {
+                            return Text(
+                              "${state.batteryLevel}%",
+                              style: const TextStyle(
+                                  fontSize: 35,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            );
+                          },
+                        ),
+                        BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
+                          bloc: _bloc,
+                          listener: (context, state) {
+                            lol("STATE2 IS: ${state.batteryState}");
+                            lol("STATE3 IS: ${state.batteryIsSaveMode}");
+                          },
+                          builder: (context, state) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                BatteryText(
+                                    title: "Battery State: ",
+                                    value: state.batteryState),
+                                BatteryText(
+                                    title: "Save mode: ",
+                                    value: state.batteryIsSaveMode),
+                              ],
+                            );
+                          },
+                        )
+                      ]),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-            Row(
-              children: [
-                BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
-                  bloc: _bloc,
-                  listener: (context, state) {},
-                  builder: (context, state) {
-                    return MemoryCard(
-                      cardColor: Colors.deepPurpleAccent,
-                      iconColor: Colors.deepPurpleAccent.shade100,
-                      icon: Icons.sd_storage_rounded,
-                      totalMemory: state.totalMemory,
-                      freeMemory: state.freeMemory,
-                      unit: "GB",
-                    );
-                  },
-                ),
-                BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
-                  bloc: _bloc,
-                  listener: (context, state) {},
-                  builder: (context, state) {
-                    return MemoryCard(
-                      cardColor: Colors.orangeAccent.shade200,
-                      iconColor: Colors.deepOrangeAccent,
-                      icon: Icons.memory_rounded,
-                      totalMemory: state.totalRam,
-                      freeMemory: state.freeRam,
-                      unit: "MB",
-                    );
-                  },
-                ),
-              ],
-            )
           ],
         ),
-      ),
+        Row(
+          children: [
+            BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
+              bloc: _bloc,
+              listener: (context, state) {},
+              builder: (context, state) {
+                return MemoryCard(
+                  cardColor: Colors.deepPurpleAccent,
+                  iconColor: Colors.deepPurpleAccent.shade100,
+                  icon: Icons.sd_storage_rounded,
+                  totalMemory: state.totalMemory,
+                  freeMemory: state.freeMemory,
+                  unit: "GB",
+                );
+              },
+            ),
+            BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
+              bloc: _bloc,
+              listener: (context, state) {},
+              builder: (context, state) {
+                return MemoryCard(
+                  cardColor: Colors.orangeAccent.shade200,
+                  iconColor: Colors.deepOrangeAccent,
+                  icon: Icons.memory_rounded,
+                  totalMemory: state.totalRam,
+                  freeMemory: state.freeRam,
+                  unit: "MB",
+                );
+              },
+            ),
+          ],
+        )
+      ],
     );
   }
 }

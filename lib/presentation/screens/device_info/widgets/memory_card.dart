@@ -20,8 +20,7 @@ class MemoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      flex: 1,
+    return Expanded(
       child: Card(
         color: cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -33,16 +32,17 @@ class MemoryCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                Icon(icon, color: iconColor, size: 30),
-                Text(
-                  "${totalMemory.toStringAsFixed(1)}/${(totalMemory - freeMemory).toStringAsFixed(1)}$unit",
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-              ]),
+              FittedBox(
+                child: Row(children: [
+                  Icon(icon, color: iconColor),
+                  Text(
+                    "${totalMemory.toStringAsFixed(1)}/${(totalMemory - freeMemory).toStringAsFixed(1)}$unit",
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ]),
+              ),
               const SizedBox(height: 5),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
