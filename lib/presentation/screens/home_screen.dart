@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Scaffold(
         body: Container(
-          color: Colors.pink[200],
+          color: Colors.grey[100],
           child: Column(
             children: [
               SizedBox(

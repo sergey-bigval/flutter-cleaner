@@ -6,6 +6,8 @@ import 'package:hello_flutter/presentation/screens/device_info/widgets/memory_ca
 import 'package:hello_flutter/utils/logging.dart';
 
 import 'bloc/device_info_bloc.dart';
+import 'bloc/events.dart';
+import 'bloc/states.dart';
 
 class BatteryInfoPage extends StatefulWidget {
   const BatteryInfoPage({Key? key}) : super(key: key);
@@ -30,16 +32,14 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
     _bloc = DeviceInfoBloc();
 
     _bloc.listenBatteryStream();
-
-    _bloc.add(InfoBatteryLevel());
-    _bloc.add(InfoBatteryState());
-    _bloc.add(InfoBatteryIsSaveMode());
-    _bloc.add(InfoMemory());
-    _bloc.add(InfoRam());
+    _bloc.add(InfoStorageEvent());
+    _bloc.add(InfoRamEvent());
   }
 
   @override
   void dispose() {
+    bat("BATTERY INFO CALLED DISPOSE");
+
     _bloc.cancelBatteryListener();
     super.dispose();
   }
@@ -70,9 +70,7 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
                             color: Colors.green[700], size: 60),
                         BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
                           bloc: _bloc,
-                          listener: (context, state) {
-                            lol("STATE IS: ${state.batteryLevel}");
-                          },
+                          listener: (context, state) {},
                           builder: (context, state) {
                             return Text(
                               "${state.batteryLevel}%",
@@ -85,10 +83,7 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
                         ),
                         BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
                           bloc: _bloc,
-                          listener: (context, state) {
-                            lol("STATE2 IS: ${state.batteryState}");
-                            lol("STATE3 IS: ${state.batteryIsSaveMode}");
-                          },
+                          listener: (context, state) {},
                           builder: (context, state) {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
