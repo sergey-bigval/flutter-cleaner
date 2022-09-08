@@ -29,11 +29,19 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
     super.initState();
     _bloc = DeviceInfoBloc();
 
+    _bloc.listenBatteryStream();
+
     _bloc.add(InfoBatteryLevel());
     _bloc.add(InfoBatteryState());
     _bloc.add(InfoBatteryIsSaveMode());
     _bloc.add(InfoMemory());
     _bloc.add(InfoRam());
+  }
+
+  @override
+  void dispose() {
+    _bloc.cancelBatteryListener();
+    super.dispose();
   }
 
   @override

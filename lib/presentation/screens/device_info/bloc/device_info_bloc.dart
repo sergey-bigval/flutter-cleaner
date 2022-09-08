@@ -6,12 +6,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:system_info/system_info.dart';
 
 class DeviceInfoBloc extends Bloc<DeviceInfoEvent, DeviceInfoState> {
+  final batteryStateStream = Battery().onBatteryStateChanged;
+  late StreamSubscription<BatteryState> batteryListener;
+
   DeviceInfoBloc() : super(DeviceInfoState.initial()) {
     on<InfoBatteryLevel>(_onInfoBatteryLevel);
-      on<_InfoBatteryLevel>(_onPrivateInfoBatteryLevel);
+    on<_InfoBatteryLevel>(_onPrivateInfoBatteryLevel);
 
     on<InfoBatteryState>(_onInfoBatteryState);
-      on<_InfoBatteryState>(_onPrivateInfoBatteryState);
+    on<_InfoBatteryState>(_onPrivateInfoBatteryState);
 
     on<InfoBatteryIsSaveMode>(_onInfoBatteryIsSaveMode);
 
@@ -19,24 +22,9 @@ class DeviceInfoBloc extends Bloc<DeviceInfoEvent, DeviceInfoState> {
     on<InfoRam>(_onRamData);
   }
 
-  Future<void> _onInfoBatteryLevel(
-      InfoBatteryLevel event, Emitter emitter) async {
-    Timer.periodic(const Duration(seconds: 5), (timer) async {
-      add(_InfoBatteryLevel(batteryLevel: await Battery().batteryLevel));
-    });
-  }
-
-  Future<void> _onPrivateInfoBatteryLevel(
-      _InfoBatteryLevel event, Emitter emitter) async {
-    emitter(state.copyWith(batteryLevel: event.batteryLevel));
-  }
-
-  Future<void> _onInfoBatteryState(
-    InfoBatteryState event,
-    Emitter emitter,
-  ) async {
-    var batteryState = "";
-    Battery().onBatteryStateChanged.listen((BatteryState batState) {
+  void listenBatteryStream() {
+    batteryListener = batteryStateStream.listen((batState) async {
+      var batteryState = "";
       switch (batState) {
         case BatteryState.charging:
           {
@@ -60,11 +48,30 @@ class DeviceInfoBloc extends Bloc<DeviceInfoEvent, DeviceInfoState> {
           }
       }
       add(_InfoBatteryState(batteryState: batteryState));
+      add(_InfoBatteryLevel(batteryLevel: await Battery().batteryLevel));
     });
   }
 
-  Future<void> _onPrivateInfoBatteryState(
-      _InfoBatteryState event, Emitter emitter) async {
+  void cancelBatteryListener() {
+    batteryListener.cancel();
+  }
+
+  Future<void> _onInfoBatteryLevel(InfoBatteryLevel event, Emitter emitter) async {
+    // Timer.periodic(const Duration(seconds: 1), (timer) async {
+    //   add(_InfoBatteryLevel(batteryLevel: await Battery().batteryLevel));
+    // });
+  }
+
+  Future<void> _onPrivateInfoBatteryLevel(_InfoBatteryLevel event, Emitter emitter) async {
+    emitter(state.copyWith(batteryLevel: event.batteryLevel));
+  }
+
+  Future<void> _onInfoBatteryState(
+    InfoBatteryState event,
+    Emitter emitter,
+  ) async {}
+
+  Future<void> _onPrivateInfoBatteryState(_InfoBatteryState event, Emitter emitter) async {
     emitter(state.copyWith(batteryState: event.batteryState));
   }
 
@@ -123,6 +130,7 @@ class _InfoBatteryState extends DeviceInfoEvent {
 class InfoBatteryIsSaveMode extends DeviceInfoEvent {}
 
 class InfoMemory extends DeviceInfoEvent {}
+
 class InfoRam extends DeviceInfoEvent {}
 
 class DeviceInfoState {
