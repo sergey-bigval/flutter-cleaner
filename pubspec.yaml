@@ -47,6 +47,12 @@ dependencies:
   flutter_bloc: ^8.1.1
   video_thumbnail: ^0.5.2
   video_player: ^2.4.7
+  table_calendar: ^3.0.7
+#  device_calendar: ^4.2.0 # не билдится
+  manage_calendar_events: ^2.0.1
+  intl: ^0.17.0 # форматирование даты и др.
+  flutter_local_notifications: ^9.9.1
+
 
 dev_dependencies:
   flutter_test:

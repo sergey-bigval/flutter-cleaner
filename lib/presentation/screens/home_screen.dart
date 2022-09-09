@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdBanner.dart';
+import 'calendar_events/calendar-events.dart';
 import 'device_info/device_info.dart';
 import 'videos/videos_screen.dart';
 import 'doubles/duplicates_screen.dart';
@@ -50,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   controller: controller,
                   onPageChanged: _onPageViewChange,
                   children: const <Widget>[
+                    CalendarEvents(),
                     DuplicatesScreen(),
                     MyVideosScreen(),
                     BatteryInfoPage(),
