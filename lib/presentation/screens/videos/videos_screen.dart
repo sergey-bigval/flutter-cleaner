@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/presentation/screens/doubles/widgets/duplicate_button.dart';
-import 'package:hello_flutter/presentation/screens/doubles/widgets/filtering_info.dart';
-import 'package:hello_flutter/presentation/screens/doubles/widgets/photo_list.dart';
 import 'package:hello_flutter/presentation/screens/videos/widgets/dupli_video_button.dart';
 import 'package:hello_flutter/presentation/screens/videos/widgets/video_found_info.dart';
 import 'package:hello_flutter/presentation/screens/videos/widgets/video_list.dart';

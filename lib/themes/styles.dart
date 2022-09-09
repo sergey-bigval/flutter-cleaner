@@ -8,4 +8,6 @@ class Styles{
     letterSpacing: 4,
     fontFamily: "MouseMemoirs",
   );
+
+  static const text15 = TextStyle(fontSize: 15, color: Colors.black45);
 }

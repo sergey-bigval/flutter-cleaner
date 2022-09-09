@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:hello_flutter/models/photo_filter_info.dart';
-import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_controller.dart';
-import 'package:hello_flutter/presentation/screens/videos/bloc/video_controller.dart';
 
-import '../../../../models/video_found_info.dart';
+import 'package:flutter/cupertino.dart';
+
+import '../models/video_found_info.dart';
+import '../bloc/video_controller.dart';
 
 class VideoFoundInfoWidget extends StatelessWidget {
   const VideoFoundInfoWidget({super.key});

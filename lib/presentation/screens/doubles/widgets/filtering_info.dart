@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/models/photo_filter_info.dart';
 import 'package:hello_flutter/presentation/screens/doubles/bloc/photos_controller.dart';
+
+import '../models/photo_filter_info.dart';
 
 class FilteringInfo extends StatelessWidget {
   const FilteringInfo({super.key});
