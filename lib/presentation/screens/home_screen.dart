@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdBanner.dart';
-import 'device_info/device_info.dart';
+import 'device_info/device_info_page.dart';
 import 'old_events/old_events.dart';
 import 'videos/videos_screen.dart';
 import 'doubles/duplicates_screen.dart';
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     OldCalendarEvents(),
                     DuplicatesScreen(),
                     MyVideosScreen(),
-                    BatteryInfoPage(),
+                    DeviceInfoPage(),
                   ],
                 ),
               ),

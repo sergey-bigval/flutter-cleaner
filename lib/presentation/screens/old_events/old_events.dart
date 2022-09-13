@@ -25,7 +25,7 @@ class _OldCalendarEventsState extends State<OldCalendarEvents> {
       children: [
         CupertinoButton(
           color: Colors.redAccent,
-          onPressed: () => printUsersCalendarToLog,
+          onPressed: () => printUsersCalendarToLog(),
           child: const Text('Show old events'),
         ),
         Visibility(

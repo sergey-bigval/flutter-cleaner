@@ -1,8 +1,8 @@
-
 import 'package:flutter/cupertino.dart';
+import 'package:hello_flutter/themes/styles.dart';
 
-import '../models/video_found_info.dart';
 import '../bloc/video_controller.dart';
+import '../models/video_found_info.dart';
 
 class VideoFoundInfoWidget extends StatelessWidget {
   const VideoFoundInfoWidget({super.key});
@@ -22,7 +22,14 @@ class VideoFoundInfoWidget extends StatelessWidget {
         });
   }
 
-  Widget getFoundVideosText(int count) => Text('Found videos : $count');
+  Widget getFoundVideosText(int count) => Text(
+        'Found videos : $count',
+        style: Styles.text15,
+      );
 
-  Widget getCurrentFolderText(String folder) => Center(child: Text('Scanning in folder : \n $folder'));
+  Widget getCurrentFolderText(String folder) => Center(
+          child: Text(
+        'Scanning in folder : \n $folder',
+        style: Styles.text15,
+      ));
 }
