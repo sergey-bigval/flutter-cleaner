@@ -25,7 +25,7 @@ class _OldCalendarEventsState extends State<OldCalendarEvents> {
       children: [
         CupertinoButton(
           color: Colors.redAccent,
-          onPressed: () => printUsersCalendarToLog,
+          onPressed: () => printUsersCalendarToLog(),
           child: const Text('Show old events'),
         ),
         Visibility(
@@ -67,12 +67,17 @@ class _OldCalendarEventsState extends State<OldCalendarEvents> {
   }
 
   printUsersCalendarToLog() {
-    // sendPush();
+    sendPush();
+    lol("я тут перм перед");
     _myPlugin.hasPermissions().then((value) async {
+      lol("я тут перм перед");
       if (!value!) {
         _myPlugin.requestPermissions();
+        lol("я тут перм після");
       } else {
         _allEventsList.clear();
+        lol("я тут");
+
         var allCalendars = await _myPlugin.getCalendars();
         lol("CALENDARS length = ${allCalendars?.length}");
 
