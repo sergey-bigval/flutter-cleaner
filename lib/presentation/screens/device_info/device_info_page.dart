@@ -1,22 +1,23 @@
+import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hello_flutter/presentation/screens/device_info/enum/battery_save_mode_enum.dart';
 import 'package:hello_flutter/presentation/screens/device_info/widgets/app_bar.dart';
 import 'package:hello_flutter/presentation/screens/device_info/widgets/battery_text.dart';
 import 'package:hello_flutter/presentation/screens/device_info/widgets/memory_card.dart';
-import 'package:hello_flutter/utils/logging.dart';
 
 import 'bloc/device_info_bloc.dart';
 import 'bloc/events.dart';
 import 'bloc/states.dart';
 
-class BatteryInfoPage extends StatefulWidget {
-  const BatteryInfoPage({Key? key}) : super(key: key);
+class DeviceInfoPage extends StatefulWidget {
+  const DeviceInfoPage({Key? key}) : super(key: key);
 
   @override
   DeviceInfoPageState createState() => DeviceInfoPageState();
 }
 
-class DeviceInfoPageState extends State<BatteryInfoPage> {
+class DeviceInfoPageState extends State<DeviceInfoPage> {
   final mainTextStyleSmall = const TextStyle(
     decoration: TextDecoration.none,
     color: Colors.black54,
@@ -30,18 +31,8 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
   void initState() {
     super.initState();
     _bloc = DeviceInfoBloc();
-
-    _bloc.listenBatteryStream();
-    _bloc.add(InfoStorageEvent());
-    _bloc.add(InfoRamEvent());
-  }
-
-  @override
-  void dispose() {
-    bat("BATTERY INFO CALLED DISPOSE");
-
-    _bloc.cancelBatteryListener();
-    super.dispose();
+    _bloc.add(DeviceInfoGetInfoStorageEvent());
+    _bloc.add(DeviceInfoGetInfoRamEvent());
   }
 
   @override
@@ -68,9 +59,8 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
                       Row(children: [
                         Icon(Icons.battery_charging_full_rounded,
                             color: Colors.green[700], size: 60),
-                        BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
+                        BlocBuilder<DeviceInfoBloc, DeviceInfoState>(
                           bloc: _bloc,
-                          listener: (context, state) {},
                           builder: (context, state) {
                             return Text(
                               "${state.batteryLevel}%",
@@ -81,19 +71,19 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
                             );
                           },
                         ),
-                        BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
+                        BlocBuilder<DeviceInfoBloc, DeviceInfoState>(
                           bloc: _bloc,
-                          listener: (context, state) {},
                           builder: (context, state) {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 BatteryText(
                                     title: "Battery State: ",
-                                    value: state.batteryState),
+                                    value: getBatteryState(state.batteryState)),
                                 BatteryText(
                                     title: "Save mode: ",
-                                    value: state.batteryIsSaveMode),
+                                    value: getSaveModeStatus(
+                                        state.batterySaveMode)),
                               ],
                             );
                           },
@@ -108,9 +98,11 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
         ),
         Row(
           children: [
-            BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
+            BlocBuilder<DeviceInfoBloc, DeviceInfoState>(
               bloc: _bloc,
-              listener: (context, state) {},
+              buildWhen: (previous, current) =>
+                  previous.totalMemory != current.totalMemory ||
+                  previous.freeMemory != current.freeMemory,
               builder: (context, state) {
                 return MemoryCard(
                   cardColor: Colors.deepPurpleAccent,
@@ -122,9 +114,11 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
                 );
               },
             ),
-            BlocConsumer<DeviceInfoBloc, DeviceInfoState>(
+            BlocBuilder<DeviceInfoBloc, DeviceInfoState>(
               bloc: _bloc,
-              listener: (context, state) {},
+              buildWhen: (previous, current) =>
+                  previous.totalRam != current.totalRam ||
+                  previous.freeRam != current.freeRam,
               builder: (context, state) {
                 return MemoryCard(
                   cardColor: Colors.orangeAccent.shade200,
@@ -140,5 +134,29 @@ class DeviceInfoPageState extends State<BatteryInfoPage> {
         )
       ],
     );
+  }
+
+  String getSaveModeStatus(BatterySaveMode status) {
+    switch (status) {
+      case BatterySaveMode.enabled:
+        return "enabled";
+      case BatterySaveMode.disabled:
+        return "disabled";
+      default:
+        return "not available";
+    }
+  }
+
+  String getBatteryState(BatteryState state) {
+    switch (state) {
+      case BatteryState.charging:
+        return "charging";
+      case BatteryState.discharging:
+        return "discharging";
+      case BatteryState.full:
+        return "full";
+      default:
+        return "No info";
+    }
   }
 }

@@ -52,7 +52,6 @@ dependencies:
   intl: ^0.17.0 # форматирование даты и др.
   flutter_local_notifications: ^9.9.1
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
