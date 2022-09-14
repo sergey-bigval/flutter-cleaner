@@ -2,7 +2,6 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'contact_list.dart';
-import 'model.dart';
 
 class AllContacts extends StatefulWidget {
   AllContacts({Key?key,title, required this.titles}) : super(key: key);
@@ -14,8 +13,8 @@ class AllContacts extends StatefulWidget {
 }
 
 class _AllContactsState extends State<AllContacts> {
-  List<AppContact> contacts = [];
-  List<AppContact> contactsFiltered = [];
+  List<Contact> contacts = [];
+  List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = Map();
   TextEditingController searchController = TextEditingController();
   bool contactsLoaded = false;
@@ -41,21 +40,7 @@ class _AllContactsState extends State<AllContacts> {
   }
 
   getAllContacts() async {
-    List colors = [
-      Colors.green,
-      Colors.indigo,
-      Colors.yellow,
-      Colors.orange
-    ];
-    int colorIndex = 0;
-    List<AppContact> _contacts = (await ContactsService.getContacts()).map((contact) {
-      Color baseColor = colors[colorIndex];
-      colorIndex++;
-      if (colorIndex == colors.length) {
-        colorIndex = 0;
-      }
-      return new AppContact(info: contact, color: baseColor);
-    }).toList();
+    List<Contact> _contacts = (await ContactsService.getContacts());
     setState(() {
       contacts = _contacts;
       contactsLoaded = true;
@@ -63,13 +48,13 @@ class _AllContactsState extends State<AllContacts> {
   }
 
   filterContacts() {
-    List<AppContact> _contacts = [];
+    List<Contact> _contacts = [];
     _contacts.addAll(contacts);
     if (searchController.text.isNotEmpty) {
       _contacts.retainWhere((contact) {
         String searchTerm = searchController.text.toLowerCase();
         String searchTermFlatten = flattenPhoneNumber(searchTerm);
-        String contactName = contact.info.displayName!.toLowerCase();
+        String contactName = contact.displayName!.toLowerCase();
         bool nameMatches = contactName.contains(searchTerm);
         if (nameMatches == true) {
           return true;
@@ -79,7 +64,7 @@ class _AllContactsState extends State<AllContacts> {
           return false;
         }
 
-        var phone = contact.info.phones!.firstWhere((phn) {
+        var phone = contact.phones!.firstWhere((phn) {
           String phnFlattened = flattenPhoneNumber(phn.value.toString());
           return phnFlattened.contains(searchTermFlatten);
         });

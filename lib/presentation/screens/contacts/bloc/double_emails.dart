@@ -1,8 +1,8 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../../utils/logging.dart';
 import 'contact_list.dart';
-import 'model.dart';
 
 class DoubleEmails extends StatefulWidget {
   DoubleEmails({Key?key,title, required this.titles}) : super(key: key);
@@ -14,9 +14,9 @@ class DoubleEmails extends StatefulWidget {
 }
 
 class _DoubleEmailsState extends State<DoubleEmails> {
-  List<AppContact> contacts = [];
-  List<AppContact> contactsFiltered = [];
-  Map<String, Color> contactsColorMap = Map();
+  List<Contact> emails = [];
+  List<Contact> emailsFiltered = [];
+  Map<String, Color> emailsColorMap = Map();
   TextEditingController searchController = TextEditingController();
   bool contactsLoaded = false;
 
@@ -28,67 +28,63 @@ class _DoubleEmailsState extends State<DoubleEmails> {
   getPermissions() async {
     if (await Permission.contacts.request().isGranted) {
       getAllContacts();
-      searchController.addListener(() {
-        // filterContacts();
-      });
     }
   }
 
-  String flattenPhoneNumber(String phoneStr) {
-    return phoneStr.replaceAllMapped(RegExp(r'^(\+)|\D'), (Match m) {
-      return m[0] == "+" ? "+" : "";
-    });
-  }
 
   getAllContacts() async {
-    List colors = [
-      Colors.green,
-      Colors.indigo,
-      Colors.yellow,
-      Colors.orange
-    ];
-    int colorIndex = 0;
-    List<AppContact> _contacts = (await ContactsService.getContacts()).map((contact) {
-      Color baseColor = colors[colorIndex];
-      colorIndex++;
-      if (colorIndex == colors.length) {
-        colorIndex = 0;
-      }
-      return new AppContact(info: contact, color: baseColor);
-    }).toList();
-    setState(() {
-      contacts = _contacts;
-      contactsLoaded = true;
-    });
-  }
 
-  filterContacts() {
-    List<AppContact> _contacts = [];
-    _contacts.addAll(contacts);
-    if (searchController.text.isNotEmpty) {
-      _contacts.retainWhere((contact) {
-        String searchTerm = searchController.text.toLowerCase();
-        String searchTermFlatten = flattenPhoneNumber(searchTerm);
-        String contactName = contact.info.displayName!.toLowerCase();
-        bool nameMatches = contactName.contains(searchTerm);
-        if (nameMatches == true) {
-          return true;
-        }
+    List<Contact> _contacts = (await ContactsService.getContacts());
 
-        if (searchTermFlatten.isEmpty) {
-          return false;
-        }
-
-        var phone = contact.info.phones!.firstWhere((phn) {
-          String phnFlattened = flattenPhoneNumber(phn.value.toString());
-          return phnFlattened.contains(searchTermFlatten);
+    // _contacts.sort((m1, m2) {
+    //   if(m1.emails == null) return -1;
+    //   if(m2.emails == null) return 1;
+    //
+    //   // return m1.emails.compareTo(m2.emails);
+    //   return 0;
+    // });
+    // for (var element in _contacts) { lol('${element.emails} ${element.hashCode}');}
+    // List<Contact> filterredContacts = [];
+    // var index = 0;
+    // while(index < _contacts.length -1) {
+    //   var currentElement = _contacts[index];
+    //   var nextElement = _contacts[index+1];
+    //   // lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
+    //   if(currentElement.emails ==  nextElement.emails) {
+    //     // lol('index ${index} ${_contacts[index].info.displayName} | ${_contacts[index+1].info.displayName}');
+    //     if(!filterredContacts.contains(_contacts[index])) {
+    //       filterredContacts.add(_contacts[index]);
+    //     }
+    //     filterredContacts.add(_contacts[index + 1]);
+    //   }
+    //
+    //   index++;
+    // }
+    List<Contact> dubEmails = [];
+    var i = 0;
+    while(i < _contacts.length) {
+      var contact = _contacts[i];
+      var emails = contact.emails;
+      emails?.forEach((email) {
+        lol('email is ${email.value} hash ${contact.hashCode}');
+        _contacts.forEach((cont) {
+          var contEmails = cont.emails?.map((e) => e.value).toList();
+          lol('${cont != contact} ${contEmails?.contains(email.value) == true}');
+          if(cont != contact && contEmails?.contains(email.value) == true) {
+            if(!dubEmails.contains(contact)) dubEmails.add(contact);
+            if(!dubEmails.contains(cont)) dubEmails.add(cont);
+          }
         });
-
-        return phone != null;
       });
+      i++;
     }
+
+
+
+
     setState(() {
-      contactsFiltered = _contacts;
+      emails = dubEmails;
+      contactsLoaded = true;
     });
   }
 
@@ -96,51 +92,34 @@ class _DoubleEmailsState extends State<DoubleEmails> {
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
     bool listItemsExist = (
-        (isSearching == true && contactsFiltered.length > 0) ||
-            (isSearching != true && contacts.length > 0)
+        (isSearching == true && emailsFiltered.length > 0) ||
+            (isSearching != true && emails.length > 0)
     );
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.titles),
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: <Widget>[
-            Container(
-              child: TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                    labelText: 'Search',
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor
-                        )
-                    ),
-                    prefixIcon: Icon(
-                        Icons.search,
-                        color: Theme.of(context).primaryColor
-                    )
-                ),
-              ),
-            ),
             contactsLoaded == true ?  // if the contacts have not been loaded yet
             listItemsExist == true ?  // if we have contacts to show
             ContactsList(
               reloadContacts: () {
                 getAllContacts();
               },
-              contacts: isSearching == true ? contactsFiltered : contacts,
+              contacts: isSearching == true ? emailsFiltered : emails,
             ) : Container(
-                padding: EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.only(top: 40),
                 child: Text(
-                  isSearching ?'No search results to show' : 'No contacts exist',
-                  style: TextStyle(color: Colors.grey, fontSize: 20),
+                  isSearching ?'No search results to show' : 'No emails exist',
+                  style: const TextStyle(color: Colors.grey, fontSize: 20),
                 )
             ) :
             Container(  // still loading contacts
-              padding: EdgeInsets.only(top: 40),
-              child: Center(
+              padding: const EdgeInsets.only(top: 40),
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             )

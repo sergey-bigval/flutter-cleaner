@@ -1,10 +1,11 @@
 
+import 'dart:collection';
+
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../../utils/logging.dart';
 import 'contact_list.dart';
-import 'model.dart';
 
 class DoubleContacts extends StatefulWidget {
   DoubleContacts({Key?key,title, required this.titles}) : super(key: key);
@@ -16,8 +17,8 @@ class DoubleContacts extends StatefulWidget {
 }
 
 class _DoubleContactsState extends State<DoubleContacts> {
-  List<AppContact> contacts = [];
-  List<AppContact> contactsFiltered = [];
+  List<Contact> contacts = [];
+  List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = Map();
   TextEditingController searchController = TextEditingController();
   bool contactsLoaded = false;
@@ -30,9 +31,9 @@ class _DoubleContactsState extends State<DoubleContacts> {
   getPermissions() async {
     if (await Permission.contacts.request().isGranted) {
       getAllContacts();
-      searchController.addListener(() {
-        filterContacts();
-      });
+      // searchController.addListener(() {
+        // filterContacts();
+      // });
     }
   }
 
@@ -43,38 +44,42 @@ class _DoubleContactsState extends State<DoubleContacts> {
   }
 
   getAllContacts() async {
-    List colors = [
-      Colors.green,
-      Colors.indigo,
-      Colors.yellow,
-      Colors.orange
-    ];
-    int colorIndex = 0;
-    List<AppContact> _contacts = (await ContactsService.getContacts()).map((contact) {
-      Color baseColor = colors[colorIndex];
-      colorIndex++;
-
-      if (colorIndex == colors.length) {
-        colorIndex = 0;
-      }
-      return new AppContact(info: contact, color: baseColor);
-    }).toList();
+    // List colors = [
+    //   Colors.green,
+    //   Colors.indigo,
+    //   Colors.yellow,
+    //   Colors.orange
+    // ];
+    // int colorIndex = 0;
+    List<Contact> _contacts = (await ContactsService.getContacts());
+    // List<AppContact> _contacts = (await ContactsService.getContacts()).map((contact) {
+    //   Color baseColor = colors[colorIndex];
+    //   colorIndex++;
+    //
+    //   if (colorIndex == colors.length) {
+    //     colorIndex = 0;
+    //   }
+    //   return new AppContact(info: contact, color: baseColor);
+    // }).toList();
 
     _contacts.sort((m1, m2) {
-      if(m1.info.displayName == null) return -1;
-      if(m2.info.displayName == null) return 1;
+      if(m1.displayName == null) return -1;
+      if(m2.displayName == null) return 1;
 
-      return m1.info.displayName!.toLowerCase().compareTo(m2.info.displayName!.toLowerCase());
+      return m1.displayName!.toLowerCase().compareTo(m2.displayName!.toLowerCase());
     });
-    _contacts.forEach((element) { lol('${element.info.displayName}');});
-    List<AppContact> filterredContacts = [];
+    for (var element in _contacts) { lol('${element.displayName} ${element.hashCode}');}
+    List<Contact> filterredContacts = [];
     var index = 0;
     while(index < _contacts.length -1) {
       var currentElement = _contacts[index];
       var nextElement = _contacts[index+1];
-      // lol('show display names ${currentElement.info.displayName} | ${nextElement.info.displayName}');
-      if(currentElement.info.displayName?.toLowerCase() ==  nextElement.info.displayName?.toLowerCase()) {
-        filterredContacts.add(_contacts[index]);
+      lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
+      if(currentElement.displayName?.toLowerCase() ==  nextElement.displayName?.toLowerCase()) {
+        // lol('index ${index} ${_contacts[index].info.displayName} | ${_contacts[index+1].info.displayName}');
+        if(!filterredContacts.contains(_contacts[index])) {
+          filterredContacts.add(_contacts[index]);
+        }
         filterredContacts.add(_contacts[index + 1]);
       }
 
@@ -82,39 +87,8 @@ class _DoubleContactsState extends State<DoubleContacts> {
     }
 
     setState(() {
-      // contacts = _contacts;
       contacts = filterredContacts;
       contactsLoaded = true;
-    });
-  }
-
-  filterContacts() {
-    List<AppContact> _contacts = [];
-    _contacts.addAll(contacts);
-    if (searchController.text.isNotEmpty) {
-      _contacts.retainWhere((contact) {
-        String searchTerm = searchController.text.toLowerCase();
-        String searchTermFlatten = flattenPhoneNumber(searchTerm);
-        String contactName = contact.info.displayName!.toLowerCase();
-        bool nameMatches = contactName.contains(searchTerm);
-        if (nameMatches == true) {
-          return true;
-        }
-
-        if (searchTermFlatten.isEmpty) {
-          return false;
-        }
-
-        var phone = contact.info.phones!.firstWhere((phn) {
-          String phnFlattened = flattenPhoneNumber(phn.value.toString());
-          return phnFlattened.contains(searchTermFlatten);
-        });
-
-        return phone != null;
-      });
-    }
-    setState(() {
-      contactsFiltered = _contacts;
     });
   }
 
@@ -130,26 +104,9 @@ class _DoubleContactsState extends State<DoubleContacts> {
         title: Text(widget.titles),
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: <Widget>[
-            // Container(
-            //   child: TextField(
-            //     // controller: searchController,
-            //     // decoration: InputDecoration(
-            //     //     // labelText: 'Search',
-            //     //     border: OutlineInputBorder(
-            //     //         borderSide: BorderSide(
-            //     //             color: Theme.of(context).primaryColor
-            //     //         )
-            //     //     ),
-            //     //     // prefixIcon: Icon(
-            //     //     //     Icons.search,
-            //     //     //     color: Theme.of(context).primaryColor
-            //     //     // )
-            //     // ),
-            //   ),
-            // ),
             contactsLoaded == true ?  // if the contacts have not been loaded yet
             listItemsExist == true ?  // if we have contacts to show
             ContactsList(
@@ -158,15 +115,15 @@ class _DoubleContactsState extends State<DoubleContacts> {
               },
               contacts: isSearching == true ? contactsFiltered : contacts,
             ) : Container(
-                padding: EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.only(top: 40),
                 child: Text(
                   isSearching ?'No search results to show' : 'No contacts exist',
-                  style: TextStyle(color: Colors.grey, fontSize: 20),
+                  style: const TextStyle(color: Colors.grey, fontSize: 20),
                 )
             ) :
             Container(  // still loading contacts
-              padding: EdgeInsets.only(top: 40),
-              child: Center(
+              padding: const EdgeInsets.only(top: 40),
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             )
