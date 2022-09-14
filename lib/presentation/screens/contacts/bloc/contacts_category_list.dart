@@ -1,10 +1,15 @@
 
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/all_contacts.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/double_contacts.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/double_emails.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/double_phone.dart';
+import 'package:hello_flutter/presentation/screens/contacts/bloc/no_phone.dart';
+import 'package:hello_flutter/presentation/screens/contacts/bloc/no_name.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/similar_name.dart';
+
+import '../../../../utils/logging.dart';
 class ContactsInfo extends StatefulWidget {
   const ContactsInfo({super.key});
 
@@ -77,7 +82,7 @@ Widget _myListView(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: const [
-            Text('4')
+            Text('5')
           ],
         ),
         onTap: () {
@@ -102,7 +107,7 @@ Widget _myListView(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: const [
-            Text('6')
+            Text('5')
           ],
         ),
         onTap: () {
@@ -127,7 +132,7 @@ Widget _myListView(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: const [
-            Text('5')
+            Text('7')
           ],
         ),
         onTap: () {
@@ -160,7 +165,57 @@ Widget _myListView(BuildContext context) {
             context,
             MaterialPageRoute(
               builder: (context) {
-                return SimilarName(titles: 'Similar names');
+                return SimilarContacts(titles: 'Similar names');
+              },
+            ),
+          );
+        },
+      ),
+      ListTile(
+        title: const Text('No names'),
+        subtitle: const Text('See more'),
+        leading: const Icon(
+          Icons.no_accounts,
+          color: Colors.blueAccent,
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: const [
+            Text('8')
+          ],
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return EmptyContacts(titles: 'No names');
+              },
+            ),
+          );
+        },
+      ),
+      ListTile(
+        title: const Text('No phones'),
+        subtitle: const Text('See more'),
+        leading: const Icon(
+          Icons.no_cell,
+          color: Colors.blueAccent,
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: const [
+            Text('8')
+          ],
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return EmptyPhone(titles: 'No phones');
               },
             ),
           );

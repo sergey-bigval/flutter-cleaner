@@ -7,7 +7,7 @@ class ContactDetails extends StatefulWidget {
   ContactDetails(this.contact,
       {required this.onContactUpdate, required this.onContactDelete});
 
-  late final Contact contact;
+  Contact contact;
   final Function(Contact) onContactUpdate;
   final Function(Contact) onContactDelete;
 

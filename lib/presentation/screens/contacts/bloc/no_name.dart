@@ -4,16 +4,16 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../../utils/logging.dart';
 import 'contact_list.dart';
 
-class SimilarContacts extends StatefulWidget {
-  SimilarContacts({Key? key, title, required this.titles}) : super(key: key);
+class EmptyContacts extends StatefulWidget {
+  EmptyContacts({Key? key, title, required this.titles}) : super(key: key);
 
   final String titles;
 
   @override
-  State<SimilarContacts> createState() => _SimilarContactsState();
+  State<EmptyContacts> createState() => _EmptyContactsState();
 }
 
-class _SimilarContactsState extends State<SimilarContacts> {
+class _EmptyContactsState extends State<EmptyContacts> {
   List<Contact> contacts = [];
   List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = Map();
@@ -34,14 +34,6 @@ class _SimilarContactsState extends State<SimilarContacts> {
 
   getAllContacts() async {
     List<Contact> _contacts = (await ContactsService.getContacts());
-    _contacts.sort((m1, m2) {
-      if (m1.displayName == null) return -1;
-      if (m2.displayName == null) return 1;
-
-      return m1.displayName!
-          .toLowerCase()
-          .compareTo(m2.displayName!.toLowerCase());
-    });
     for (var element in _contacts) {
       lol('${element.displayName} ${element.hashCode}');
     }
@@ -50,20 +42,17 @@ class _SimilarContactsState extends State<SimilarContacts> {
     while (index < _contacts.length - 1) {
       var currentElement = _contacts[index];
       var nextElement = _contacts[index + 1];
-      lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if (currentElement.displayName ==
-          nextElement.displayName) {
-        if (!filterredContacts.contains(_contacts[index])) {
+      // lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
+      if (currentElement.displayName == null) {
           filterredContacts.add(_contacts[index]);
-        }
         filterredContacts.add(_contacts[index + 1]);
       }
-
       index++;
     }
 
     setState(() {
       contacts = filterredContacts;
+      lol(filterredContacts.toString());
       contactsLoaded = true;
     });
   }

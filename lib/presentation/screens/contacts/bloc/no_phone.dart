@@ -4,16 +4,16 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../../utils/logging.dart';
 import 'contact_list.dart';
 
-class SimilarContacts extends StatefulWidget {
-  SimilarContacts({Key? key, title, required this.titles}) : super(key: key);
+class EmptyPhone extends StatefulWidget {
+  EmptyPhone({Key? key, title, required this.titles}) : super(key: key);
 
   final String titles;
 
   @override
-  State<SimilarContacts> createState() => _SimilarContactsState();
+  State<EmptyPhone> createState() => _EmptyPhoneState();
 }
 
-class _SimilarContactsState extends State<SimilarContacts> {
+class _EmptyPhoneState extends State<EmptyPhone> {
   List<Contact> contacts = [];
   List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = Map();
@@ -34,14 +34,7 @@ class _SimilarContactsState extends State<SimilarContacts> {
 
   getAllContacts() async {
     List<Contact> _contacts = (await ContactsService.getContacts());
-    _contacts.sort((m1, m2) {
-      if (m1.displayName == null) return -1;
-      if (m2.displayName == null) return 1;
 
-      return m1.displayName!
-          .toLowerCase()
-          .compareTo(m2.displayName!.toLowerCase());
-    });
     for (var element in _contacts) {
       lol('${element.displayName} ${element.hashCode}');
     }
@@ -51,14 +44,10 @@ class _SimilarContactsState extends State<SimilarContacts> {
       var currentElement = _contacts[index];
       var nextElement = _contacts[index + 1];
       lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if (currentElement.displayName ==
-          nextElement.displayName) {
-        if (!filterredContacts.contains(_contacts[index])) {
-          filterredContacts.add(_contacts[index]);
-        }
+      if ( currentElement.phones?.isEmpty == true || currentElement.phones == null) {
+        filterredContacts.add(_contacts[index]);
         filterredContacts.add(_contacts[index + 1]);
       }
-
       index++;
     }
 

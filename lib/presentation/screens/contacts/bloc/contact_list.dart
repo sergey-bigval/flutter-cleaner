@@ -1,5 +1,6 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import '../../../../utils/logging.dart';
 import 'contact_details.dart';
 
 class ContactsList extends StatelessWidget {
@@ -144,5 +145,11 @@ String phoneShow(Contact contact) {
       .toString()
       .replaceAll('[', '')
       .replaceAll(']', '');
+  return a.toString();
+}
+
+String phoneCount(Contact contact) {
+  String? a = contact.phones?.length.toString();
+  lol(a.toString());
   return a.toString();
 }
