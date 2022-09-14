@@ -69,10 +69,8 @@ class _ContactsInfoState extends State<ContactsInfo> {
     var dubContacts = getDublicateContacts(_contacts);
 
     setState(() {
-
-      // contacts = dubContacts;
-      // contactsLoaded = true;
-    });
+      dubContactsSize = dubContacts.length;
+     });
   }
   
   @override
@@ -89,18 +87,24 @@ class _ContactsInfoState extends State<ContactsInfo> {
           title: const Text('Contacts'),
           centerTitle: true,
         ),
-        body: BodyListView(),
+        body: BodyListView(dubContactsSize),
       ),
     );
   }
 }
 
 class BodyListView extends StatelessWidget {
+  var dubContactsSize;
+
+  BodyListView(int dubContactsSize) {
+    this.dubContactsSize = dubContactsSize;
+  }
+
   Widget build(BuildContext context) {
-    return _myListView(context);
+    return _myListView(context, dubContactsSize);
   }
 }
-Widget _myListView(BuildContext context) {
+Widget _myListView(BuildContext context, dubContactsSize) {
   return ListView(
     children: <Widget>[
       ListTile(
@@ -138,7 +142,7 @@ Widget _myListView(BuildContext context) {
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
-          children: const [
+          children: [
             Text(dubContactsSize)
           ],
         ),
