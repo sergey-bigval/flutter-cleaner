@@ -4,23 +4,21 @@ import 'package:flutter/material.dart';
 import 'contact-avatar.dart';
 
 class ContactDetails extends StatefulWidget {
-  ContactDetails(this.contact, {required this.onContactUpdate, required this.onContactDelete});
+  ContactDetails(this.contact,
+      {required this.onContactUpdate, required this.onContactDelete});
 
   late final Contact contact;
   final Function(Contact) onContactUpdate;
   final Function(Contact) onContactDelete;
+
   @override
   _ContactDetailsState createState() => _ContactDetailsState();
 }
 
 class _ContactDetailsState extends State<ContactDetails> {
-
   @override
   Widget build(BuildContext context) {
-    List<String> actions = <String>[
-      'Edit',
-      'Delete'
-    ];
+    List<String> actions = <String>['Edit', 'Delete'];
 
     showDeleteConfirmation() {
       Widget cancelButton = TextButton(
@@ -37,35 +35,31 @@ class _ContactDetailsState extends State<ContactDetails> {
           Navigator.of(context, rootNavigator: true).pop('dialog');
         },
       );
-      AlertDialog alert= AlertDialog(
+      AlertDialog alert = AlertDialog(
         title: Text('Delete contact?'),
         content: Text('Are you sure you want to delete this contact?'),
-        actions: <Widget>[
-          cancelButton,
-          deleteButton
-        ],
+        actions: <Widget>[cancelButton, deleteButton],
       );
 
       showDialog(
           context: context,
           builder: (BuildContext context) {
             return alert;
-          }
-      );
-
+          });
     }
 
     onAction(String action) async {
-      switch(action) {
+      switch (action) {
         case 'Edit':
           try {
-            Contact updatedContact = await ContactsService.openExistingContact(widget.contact);
+            Contact updatedContact =
+                await ContactsService.openExistingContact(widget.contact);
             setState(() {
               widget.contact = updatedContact;
             });
             widget.onContactUpdate(widget.contact);
           } on FormOperationException catch (e) {
-            switch(e.errorCode) {
+            switch (e.errorCode) {
               case FormOperationErrorCode.FORM_OPERATION_CANCELED:
               case FormOperationErrorCode.FORM_COULD_NOT_BE_OPEN:
               case FormOperationErrorCode.FORM_OPERATION_UNKNOWN_ERROR:
@@ -140,14 +134,14 @@ class _ContactDetailsState extends State<ContactDetails> {
                       children: widget.contact.phones!
                           .map(
                             (i) => Padding(
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: ListTile(
-                            title: Text(i.label ?? ""),
-                            trailing: Text(i.value ?? ""),
-                          ),
-                        ),
-                      )
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: ListTile(
+                                title: Text(i.label ?? ""),
+                                trailing: Text(i.value ?? ""),
+                              ),
+                            ),
+                          )
                           .toList(),
                     )
                   ],

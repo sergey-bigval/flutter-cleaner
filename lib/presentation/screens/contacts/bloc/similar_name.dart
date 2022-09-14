@@ -4,7 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'contact_list.dart';
 
 class SimilarName extends StatefulWidget {
-  SimilarName({Key?key,title, required this.titles}) : super(key: key);
+  SimilarName({Key? key, title, required this.titles}) : super(key: key);
 
   final String titles;
 
@@ -24,6 +24,7 @@ class _SimilarNameState extends State<SimilarName> {
     super.initState();
     getPermissions();
   }
+
   getPermissions() async {
     if (await Permission.contacts.request().isGranted) {
       getAllContacts();
@@ -40,7 +41,6 @@ class _SimilarNameState extends State<SimilarName> {
   }
 
   getAllContacts() async {
-
     List<Contact> _contacts = (await ContactsService.getContacts());
     setState(() {
       contacts = _contacts;
@@ -81,10 +81,9 @@ class _SimilarNameState extends State<SimilarName> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
-    bool listItemsExist = (
-        (isSearching == true && contactsFiltered.length > 0) ||
-            (isSearching != true && contacts.length > 0)
-    );
+    bool listItemsExist =
+        ((isSearching == true && contactsFiltered.length > 0) ||
+            (isSearching != true && contacts.length > 0));
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.titles),
@@ -99,37 +98,38 @@ class _SimilarNameState extends State<SimilarName> {
                 decoration: InputDecoration(
                     labelText: 'Search',
                     border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor
-                        )
-                    ),
-                    prefixIcon: Icon(
-                        Icons.search,
-                        color: Theme.of(context).primaryColor
-                    )
-                ),
+                        borderSide:
+                            BorderSide(color: Theme.of(context).primaryColor)),
+                    prefixIcon: Icon(Icons.search,
+                        color: Theme.of(context).primaryColor)),
               ),
             ),
-            contactsLoaded == true ?  // if the contacts have not been loaded yet
-            listItemsExist == true ?  // if we have contacts to show
-            ContactsList(
-              reloadContacts: () {
-                getAllContacts();
-              },
-              contacts: isSearching == true ? contactsFiltered : contacts,
-            ) : Container(
-                padding: EdgeInsets.only(top: 40),
-                child: Text(
-                  isSearching ?'No search results to show' : 'No contacts exist',
-                  style: TextStyle(color: Colors.grey, fontSize: 20),
-                )
-            ) :
-            Container(  // still loading contacts
-              padding: EdgeInsets.only(top: 40),
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
+            contactsLoaded == true
+                ? // if the contacts have not been loaded yet
+                listItemsExist == true
+                    ? // if we have contacts to show
+                    ContactsList(
+                        reloadContacts: () {
+                          getAllContacts();
+                        },
+                        contacts:
+                            isSearching == true ? contactsFiltered : contacts,
+                      )
+                    : Container(
+                        padding: EdgeInsets.only(top: 40),
+                        child: Text(
+                          isSearching
+                              ? 'No search results to show'
+                              : 'No contacts exist',
+                          style: TextStyle(color: Colors.grey, fontSize: 20),
+                        ))
+                : Container(
+                    // still loading contacts
+                    padding: EdgeInsets.only(top: 40),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
           ],
         ),
       ),
