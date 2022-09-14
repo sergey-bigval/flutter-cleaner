@@ -13,11 +13,11 @@ class ContactAvatar extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-            shape: BoxShape.circle, gradient: getColorGradient(Colors.yellow)),
-        // child: (contact.info.avatar != null && contact.info.avatar!.length > 0)
-            // ? CircleAvatar(
-            //     backgroundImage: MemoryImage(contact.info.avatar),
-            //   )
+            shape: BoxShape.circle, gradient: getColorGradient(Colors.cyan)),
+        // child: (contact.avatar != null && contact.avatar!.length > 0)
+        //     ? CircleAvatar(
+        //         backgroundImage: MemoryImage(contact.avatar),
+        //       )
             // : CircleAvatar(
             //     child: Text(contact.info.initials(),
             //         style: TextStyle(color: Colors.white)),

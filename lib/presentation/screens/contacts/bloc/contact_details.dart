@@ -26,7 +26,7 @@ class _ContactDetailsState extends State<ContactDetails> {
       Widget cancelButton = TextButton(
         child: Text('Cancel'),
         onPressed: () {
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop('dialog');
         },
       );
       Widget deleteButton = TextButton(
@@ -34,7 +34,7 @@ class _ContactDetailsState extends State<ContactDetails> {
         onPressed: () async {
           await ContactsService.deleteContact(widget.contact);
           widget.onContactDelete(widget.contact);
-          Navigator.of(context).pop();
+          Navigator.of(context, rootNavigator: true).pop('dialog');
         },
       );
       AlertDialog alert= AlertDialog(
@@ -61,7 +61,7 @@ class _ContactDetailsState extends State<ContactDetails> {
           try {
             Contact updatedContact = await ContactsService.openExistingContact(widget.contact);
             setState(() {
-              widget.contact= updatedContact;
+              widget.contact = updatedContact;
             });
             widget.onContactUpdate(widget.contact);
           } on FormOperationException catch (e) {
@@ -92,16 +92,16 @@ class _ContactDetailsState extends State<ContactDetails> {
                 children: <Widget>[
                   Center(child: ContactAvatar(widget.contact, 100)),
                   Align(
+                    alignment: Alignment.topLeft,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: IconButton(
-                        icon: Icon(Icons.arrow_back),
+                        icon: const Icon(Icons.arrow_back),
                         onPressed: () {
-                          Navigator.of(context).pop();
+                          Navigator.pop(context);
                         },
                       ),
                     ),
-                    alignment: Alignment.topLeft,
                   ),
                   Align(
                     alignment: Alignment.topRight,

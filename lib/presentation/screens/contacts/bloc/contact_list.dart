@@ -1,7 +1,6 @@
 
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-
 import 'contact_details.dart';
 
 class ContactsList extends StatelessWidget {
@@ -34,20 +33,13 @@ class ContactsList extends StatelessWidget {
               },
 
               title: Text(contact.displayName??'default value'),
-              // subtitle: Text(
-              //     contact.info.phones.length > 0 ? contact.info.phones.elementAt(0).value : ''
-              // ),
-              // leading: ContactAvatar(contact, 36)
           );
         },
       ),
     );
   }
-  //  emailShow(String) {
-  //   String a = contact.emails.map(e => e.value).toList().toString().replaceAll('[', '').replaceAll(']', '');
-  //   return String;
-  // }
 }
+
 class EmailList extends StatelessWidget {
   final List<Contact> contacts;
   Function() reloadContacts;
@@ -63,35 +55,32 @@ class EmailList extends StatelessWidget {
           Contact contact = contacts[index];
           return ListTile(
               onTap: () {
-                // Navigator.of(context).push(MaterialPageRoute(
-                //     builder: (BuildContext context) => ContactDetails(
-                //       contact,
-                //       onContactDelete: (Contact _contact) {
-                //         reloadContacts();
-                //         Navigator.of(context).pop();
-                //       },
-                //       onContactUpdate: (Contact _contact) {
-                //         reloadContacts();
-                //       },
-                //     )
-                // ));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) => ContactDetails(
+                      contact,
+                      onContactDelete: (Contact _contact) {
+                        reloadContacts();
+                        Navigator.of(context).pop();
+                      },
+                      onContactUpdate: (Contact _contact) {
+                        reloadContacts();
+                      },
+                    )
+                ));
               },
 
               title: Text(contact.displayName??'default value'),
-            subtitle: Text(contact.emails!.map((e) => e.value).toList().toString()),
-              // subtitle: Text(
-              //     contact.info.phones.length > 0 ? contact.info.phones.elementAt(0).value : ''
-              // ),
-              // leading: ContactAvatar(contact, 36)
+            // subtitle: Text(contact.emails!.map((e) => e.value).toList().toString()),
+            subtitle: Text(emailShow(contact)),
           );
         },
       ),
     );
   }
-  //  emailShow(String) {
-  //   String a = contact.emails.map(e => e.value).toList().toString().replaceAll('[', '').replaceAll(']', '');
-  //   return String;
-  // }
+  String emailShow(Contact contact) {
+    String? a = contact.emails?.map((e) => e.value).toList().toString().replaceAll('[', '').replaceAll(']', '');
+    return a.toString();
+  }
 }
 class PhoneList extends StatelessWidget {
   final List<Contact> contacts;
@@ -108,33 +97,29 @@ class PhoneList extends StatelessWidget {
           Contact contact = contacts[index];
           return ListTile(
               onTap: () {
-                // Navigator.of(context).push(MaterialPageRoute(
-                //     builder: (BuildContext context) => ContactDetails(
-                //       contact,
-                //       onContactDelete: (Contact _contact) {
-                //         reloadContacts();
-                //         Navigator.of(context).pop();
-                //       },
-                //       onContactUpdate: (Contact _contact) {
-                //         reloadContacts();
-                //       },
-                //     )
-                // ));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) => ContactDetails(
+                      contact,
+                      onContactDelete: (Contact _contact) {
+                        reloadContacts();
+                        Navigator.of(context).pop();
+                      },
+                      onContactUpdate: (Contact _contact) {
+                        reloadContacts();
+                      },
+                    )
+                ));
               },
 
               title: Text(contact.displayName??'default value'),
-            subtitle: Text(contact.phones!.map((e) => e.value).toList().toString()),
-              // subtitle: Text(
-              //     contact.info.phones.length > 0 ? contact.info.phones.elementAt(0).value : ''
-              // ),
-              // leading: ContactAvatar(contact, 36)
+            subtitle: Text(phoneShow(contact)),
           );
         },
       ),
     );
   }
-  //  emailShow(String) {
-  //   String a = contact.emails.map(e => e.value).toList().toString().replaceAll('[', '').replaceAll(']', '');
-  //   return String;
-  // }
+}
+String phoneShow(Contact contact) {
+  String? a = contact.phones?.map((e) => e.value).toList().toString().replaceAll('[', '').replaceAll(']', '');
+  return a.toString();
 }
