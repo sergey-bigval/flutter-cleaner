@@ -105,7 +105,7 @@ class _DoubleEmailsState extends State<DoubleEmails> {
           children: <Widget>[
             contactsLoaded == true ?  // if the contacts have not been loaded yet
             listItemsExist == true ?  // if we have contacts to show
-            ContactsList(
+            EmailList(
               reloadContacts: () {
                 getAllContacts();
               },

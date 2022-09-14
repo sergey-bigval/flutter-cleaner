@@ -14,7 +14,7 @@ class DoublePhones extends StatefulWidget {
 }
 
 class _DoublePhonesState extends State<DoublePhones> {
-  List<Contact> contacts = [];
+  List<Contact> phone = [];
   List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = Map();
   TextEditingController searchController = TextEditingController();
@@ -44,32 +44,52 @@ class _DoublePhonesState extends State<DoublePhones> {
 
     List<Contact> _contacts = (await ContactsService.getContacts());
 
-    _contacts.sort((m1, m2) {
-      if(m1.displayName == null) return -1;
-      if(m2.displayName == null) return 1;
-
-      return m1.displayName!.toLowerCase().compareTo(m2.displayName!.toLowerCase());
-    });
-    for (var element in _contacts) { lol('${element.displayName} ${element.hashCode}');}
-    List<Contact> filterredContacts = [];
-    var index = 0;
-    while(index < _contacts.length -1) {
-      var currentElement = _contacts[index];
-      var nextElement = _contacts[index+1];
-      lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if(currentElement.displayName?.toLowerCase() ==  nextElement.displayName?.toLowerCase()) {
-        // lol('index ${index} ${_contacts[index].info.displayName} | ${_contacts[index+1].info.displayName}');
-        if(!filterredContacts.contains(_contacts[index])) {
-          filterredContacts.add(_contacts[index]);
-        }
-        filterredContacts.add(_contacts[index + 1]);
-      }
-
-      index++;
+    // _contacts.sort((m1, m2) {
+    //   if(m1.emails == null) return -1;
+    //   if(m2.emails == null) return 1;
+    //
+    //   // return m1.emails.compareTo(m2.emails);
+    //   return 0;
+    // });
+    // for (var element in _contacts) { lol('${element.emails} ${element.hashCode}');}
+    // List<Contact> filterredContacts = [];
+    // var index = 0;
+    // while(index < _contacts.length -1) {
+    //   var currentElement = _contacts[index];
+    //   var nextElement = _contacts[index+1];
+    //   // lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
+    //   if(currentElement.emails ==  nextElement.emails) {
+    //     // lol('index ${index} ${_contacts[index].info.displayName} | ${_contacts[index+1].info.displayName}');
+    //     if(!filterredContacts.contains(_contacts[index])) {
+    //       filterredContacts.add(_contacts[index]);
+    //     }
+    //     filterredContacts.add(_contacts[index + 1]);
+    //   }
+    //
+    //   index++;
+    // }
+    List<Contact> dubPhones = [];
+    var i = 0;
+    while(i < _contacts.length) {
+      var contact = _contacts[i];
+      var phones = contact.phones;
+      phones?.forEach((phone) {
+        lol('email is ${phone.value} hash ${contact.hashCode}');
+        _contacts.forEach((cont) {
+          var contPhones = cont.phones?.map((e) => e.value).toList();
+          lol('${cont != contact} ${contPhones?.contains(phone.value) == true}');
+          if(cont != contact && contPhones?.contains(phone.value) == true) {
+            if(!dubPhones.contains(contact)) dubPhones.add(contact);
+            if(!dubPhones.contains(cont)) dubPhones.add(cont);
+          }
+        });
+      });
+      i++;
     }
 
+
     setState(() {
-      contacts = filterredContacts;
+      phone = dubPhones;
       contactsLoaded = true;
     });
   }
@@ -79,7 +99,7 @@ class _DoublePhonesState extends State<DoublePhones> {
     bool isSearching = searchController.text.isNotEmpty;
     bool listItemsExist = (
         (isSearching == true && contactsFiltered.length > 0) ||
-            (isSearching != true && contacts.length > 0)
+            (isSearching != true && phone.length > 0)
     );
     return Scaffold(
       appBar: AppBar(
@@ -91,11 +111,11 @@ class _DoublePhonesState extends State<DoublePhones> {
           children: <Widget>[
             contactsLoaded == true ?  // if the contacts have not been loaded yet
             listItemsExist == true ?  // if we have contacts to show
-            ContactsList(
+            PhoneList(
               reloadContacts: () {
                 getAllContacts();
               },
-              contacts: isSearching == true ? contactsFiltered : contacts,
+              contacts: isSearching == true ? contactsFiltered : phone,
             ) : Container(
                 padding: const EdgeInsets.only(top: 40),
                 child: Text(
