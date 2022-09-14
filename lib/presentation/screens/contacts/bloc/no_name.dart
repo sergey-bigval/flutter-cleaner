@@ -43,7 +43,7 @@ class _EmptyContactsState extends State<EmptyContacts> {
       var currentElement = _contacts[index];
       var nextElement = _contacts[index + 1];
       // lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if (currentElement.displayName == null) {
+      if (currentElement.displayName?.isEmpty == true || currentElement.displayName == null) {
           filterredContacts.add(_contacts[index]);
         filterredContacts.add(_contacts[index + 1]);
       }

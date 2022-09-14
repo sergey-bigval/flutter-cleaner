@@ -29,9 +29,6 @@ class _DoubleContactsState extends State<DoubleContacts> {
   getPermissions() async {
     if (await Permission.contacts.request().isGranted) {
       getAllContacts();
-      // searchController.addListener(() {
-      // filterContacts();
-      // });
     }
   }
 

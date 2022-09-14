@@ -43,31 +43,6 @@ class _DoublePhonesState extends State<DoublePhones> {
   getAllContacts() async {
 
     List<Contact> _contacts = (await ContactsService.getContacts());
-
-    // _contacts.sort((m1, m2) {
-    //   if(m1.emails == null) return -1;
-    //   if(m2.emails == null) return 1;
-    //
-    //   // return m1.emails.compareTo(m2.emails);
-    //   return 0;
-    // });
-    // for (var element in _contacts) { lol('${element.emails} ${element.hashCode}');}
-    // List<Contact> filterredContacts = [];
-    // var index = 0;
-    // while(index < _contacts.length -1) {
-    //   var currentElement = _contacts[index];
-    //   var nextElement = _contacts[index+1];
-    //   // lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-    //   if(currentElement.emails ==  nextElement.emails) {
-    //     // lol('index ${index} ${_contacts[index].info.displayName} | ${_contacts[index+1].info.displayName}');
-    //     if(!filterredContacts.contains(_contacts[index])) {
-    //       filterredContacts.add(_contacts[index]);
-    //     }
-    //     filterredContacts.add(_contacts[index + 1]);
-    //   }
-    //
-    //   index++;
-    // }
     List<Contact> dubPhones = [];
     var i = 0;
     while(i < _contacts.length) {
@@ -86,7 +61,6 @@ class _DoublePhonesState extends State<DoublePhones> {
       });
       i++;
     }
-
 
     setState(() {
       phone = dubPhones;

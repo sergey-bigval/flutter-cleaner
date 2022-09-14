@@ -8,6 +8,7 @@ import 'package:hello_flutter/presentation/screens/contacts/bloc/double_phone.da
 import 'package:hello_flutter/presentation/screens/contacts/bloc/no_phone.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/no_name.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/similar_name.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../utils/logging.dart';
 class ContactsInfo extends StatefulWidget {
@@ -18,6 +19,62 @@ class ContactsInfo extends StatefulWidget {
 }
 
 class _ContactsInfoState extends State<ContactsInfo> {
+  int dubContactsSize = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    getPermissions();
+  }
+
+  getPermissions() async {
+    if (await Permission.contacts.request().isGranted) {
+      getAllContacts();
+    }
+  }
+
+  List<Contact> getDublicateContacts(_contacts) {
+    _contacts.sort((m1, m2) {
+      if (m1.displayName == null) return -1;
+      if (m2.displayName == null) return 1;
+
+      return m1.displayName!
+          .toLowerCase()
+          .compareTo(m2.displayName!.toLowerCase());
+    });
+    for (var element in _contacts) {
+      lol('${element.displayName} ${element.hashCode}');
+    }
+    List<Contact> filterredContacts = [];
+    var index = 0;
+    while (index < _contacts.length - 1) {
+      var currentElement = _contacts[index];
+      var nextElement = _contacts[index + 1];
+      if (currentElement.displayName?.toLowerCase() ==
+          nextElement.displayName?.toLowerCase()) {
+        if (!filterredContacts.contains(_contacts[index])) {
+          filterredContacts.add(_contacts[index]);
+        }
+        filterredContacts.add(_contacts[index + 1]);
+      }
+
+      index++;
+    }
+
+    return filterredContacts;
+  }
+
+  getAllContacts() async {
+    List<Contact> _contacts = (await ContactsService.getContacts());
+    var dubContacts = getDublicateContacts(_contacts);
+
+    setState(() {
+
+      // contacts = dubContacts;
+      // contactsLoaded = true;
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -82,7 +139,7 @@ Widget _myListView(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: const [
-            Text('5')
+            Text(dubContactsSize)
           ],
         ),
         onTap: () {
