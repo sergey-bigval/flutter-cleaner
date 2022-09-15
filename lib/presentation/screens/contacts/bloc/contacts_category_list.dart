@@ -10,6 +10,7 @@ import 'package:hello_flutter/presentation/screens/contacts/bloc/similar_name.da
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../utils/logging.dart';
+import 'contact_list.dart';
 
 class ContactsInfo extends StatefulWidget {
   const ContactsInfo({super.key});
@@ -19,7 +20,7 @@ class ContactsInfo extends StatefulWidget {
 }
 
 class _ContactsInfoState extends State<ContactsInfo> {
-
+  bool contactsLoaded = false;
 
   int dubNamesSize = 0;
   List<Contact> _dubNames = [];
@@ -83,9 +84,9 @@ class _ContactsInfoState extends State<ContactsInfo> {
 
       index++;
     }
-
     return filterredContacts;
   }
+
   List<Contact> getDubPhones(List<Contact> contacts) {
     List<Contact> dubPhones = [];
     var i = 0;
@@ -107,6 +108,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
     }
     return dubPhones;
   }
+
   List<Contact> getDubEmails(List<Contact> contacts) {
     List<Contact> dubEmails = [];
     var i = 0;
@@ -128,6 +130,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
     }
     return dubEmails;
   }
+
   List<Contact> getSimilarContacts(List<Contact> contacts) {
     contacts.sort((m1, m2) {
       if (m1.displayName == null) return -1;
@@ -146,8 +149,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
       var currentElement = contacts[index];
       var nextElement = contacts[index + 1];
       lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if (currentElement.displayName ==
-          nextElement.displayName) {
+      if (currentElement.displayName == nextElement.displayName) {
         if (!filterredContacts.contains(contacts[index])) {
           filterredContacts.add(contacts[index]);
         }
@@ -158,6 +160,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
     }
     return filterredContacts;
   }
+
   List<Contact> getNoNameContacts(List<Contact> contacts) {
     List<Contact> filterredContacts = [];
     var index = 0;
@@ -165,7 +168,8 @@ class _ContactsInfoState extends State<ContactsInfo> {
       var currentElement = contacts[index];
       var nextElement = contacts[index + 1];
       // lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if (currentElement.displayName?.isEmpty == true || currentElement.displayName == null) {
+      if (currentElement.displayName?.isEmpty == true ||
+          currentElement.displayName == null) {
         filterredContacts.add(contacts[index]);
         filterredContacts.add(contacts[index + 1]);
       }
@@ -173,15 +177,16 @@ class _ContactsInfoState extends State<ContactsInfo> {
     }
     return filterredContacts;
   }
-  List<Contact> getNoPhoneContacts(List<Contact> contacts) {
 
+  List<Contact> getNoPhoneContacts(List<Contact> contacts) {
     List<Contact> filterredContacts = [];
     var index = 0;
     while (index < contacts.length - 1) {
       var currentElement = contacts[index];
       var nextElement = contacts[index + 1];
       lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if ( currentElement.phones?.isEmpty == true || currentElement.phones == null) {
+      if (currentElement.phones?.isEmpty == true ||
+          currentElement.phones == null) {
         filterredContacts.add(contacts[index]);
         filterredContacts.add(contacts[index + 1]);
       }
@@ -201,6 +206,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
     var noPhone = getNoPhoneContacts(_contacts);
 
     setState(() {
+      contactsLoaded = true;
       allContSize = _contacts.length;
 
       dubNamesSize = dubNames.length;
@@ -256,14 +262,32 @@ class _ContactsInfoState extends State<ContactsInfo> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children:  [Text(allContSize.toString())],
+            children: <Widget>[
+              contactsLoaded == true
+                  ? // if we have contacts to show
+                  Text(allContSize.toString())
+                  : Container(
+                      // still loading contacts
+                      child: const SizedBox(
+                        height: 20.0,
+                        width: 20.0,
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+            ],
           ),
+          // trailing: Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   crossAxisAlignment: CrossAxisAlignment.end,
+          //   children:  [Text(allContSize.toString())],
+          // ),
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return AllContacts(titles: 'All contacts', allContacts: _allContacts);
+                  return AllContacts(
+                      titles: 'All contacts', allContacts: _allContacts);
                 },
               ),
             );
@@ -279,8 +303,25 @@ class _ContactsInfoState extends State<ContactsInfo> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [Text(dubNamesSize.toString())],
+            children: <Widget>[
+              contactsLoaded == true
+                  ? // if we have contacts to show
+              Text(dubNamesSize.toString())
+                  : Container(
+                // still loading contacts
+                child: const SizedBox(
+                  height: 20.0,
+                  width: 20.0,
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            ],
           ),
+          // trailing: Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   crossAxisAlignment: CrossAxisAlignment.end,
+          //   children: [Text(dubNamesSize.toString())],
+          // ),
           onTap: () {
             Navigator.push(
               context,
@@ -303,8 +344,24 @@ class _ContactsInfoState extends State<ContactsInfo> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [Text(dubPhonesSize.toString())],
-          ),
+            children: <Widget>[
+              contactsLoaded == true
+                  ? // if we have contacts to show
+              Text(dubPhonesSize.toString())
+                  : Container(
+                // still loading contacts
+                child: const SizedBox(
+                  height: 20.0,
+                  width: 20.0,
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            ],
+          ),          // trailing: Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   crossAxisAlignment: CrossAxisAlignment.end,
+          //   children: [Text(dubPhonesSize.toString())],
+          // ),
           onTap: () {
             Navigator.push(
               context,
@@ -329,8 +386,24 @@ class _ContactsInfoState extends State<ContactsInfo> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [Text(dubEmailsSize.toString())],
-          ),
+            children: <Widget>[
+              contactsLoaded == true
+                  ? // if we have contacts to show
+              Text(dubEmailsSize.toString())
+                  : Container(
+                // still loading contacts
+                child: const SizedBox(
+                  height: 20.0,
+                  width: 20.0,
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            ],
+          ),          // trailing: Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   crossAxisAlignment: CrossAxisAlignment.end,
+          //   children: [Text(dubEmailsSize.toString())],
+          // ),
           onTap: () {
             Navigator.push(
               context,
@@ -353,8 +426,24 @@ class _ContactsInfoState extends State<ContactsInfo> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [Text(similarContactsSize.toString())],
-          ),
+            children: <Widget>[
+              contactsLoaded == true
+                  ? // if we have contacts to show
+              Text(similarContactsSize.toString())
+                  : Container(
+                // still loading contacts
+                child: const SizedBox(
+                  height: 20.0,
+                  width: 20.0,
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            ],
+          ),          // trailing: Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   crossAxisAlignment: CrossAxisAlignment.end,
+          //   children: [Text(similarContactsSize.toString())],
+          // ),
           onTap: () {
             Navigator.push(
               context,
@@ -378,8 +467,24 @@ class _ContactsInfoState extends State<ContactsInfo> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children:  [Text(noNameContactsSize.toString())],
-          ),
+            children: <Widget>[
+              contactsLoaded == true
+                  ? // if we have contacts to show
+              Text(noNameContactsSize.toString())
+                  : Container(
+                // still loading contacts
+                child: const SizedBox(
+                  height: 20.0,
+                  width: 20.0,
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            ],
+          ),          // trailing: Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   crossAxisAlignment: CrossAxisAlignment.end,
+          //   children:  [Text(noNameContactsSize.toString())],
+          // ),
           onTap: () {
             Navigator.push(
               context,
@@ -401,8 +506,24 @@ class _ContactsInfoState extends State<ContactsInfo> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children:  [Text(noPhoneContactsSize.toString())],
-          ),
+            children: <Widget>[
+              contactsLoaded == true
+                  ? // if we have contacts to show
+              Text(noPhoneContactsSize.toString())
+                  : Container(
+                // still loading contacts
+                child: const SizedBox(
+                  height: 20.0,
+                  width: 20.0,
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            ],
+          ),          // trailing: Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   crossAxisAlignment: CrossAxisAlignment.end,
+          //   children:  [Text(noPhoneContactsSize.toString())],
+          // ),
           onTap: () {
             Navigator.push(
               context,
