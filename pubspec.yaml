@@ -53,6 +53,7 @@ dependencies:
   manage_calendar_events: ^2.0.1
   intl: ^0.17.0 # форматирование даты и др.
   flutter_local_notifications: ^9.9.1
+  dart_levenshtein: ^1.0.1
 
 
 dev_dependencies:

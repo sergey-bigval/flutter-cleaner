@@ -8,6 +8,7 @@ import 'package:hello_flutter/presentation/screens/contacts/bloc/no_phone.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/no_name.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/similar_name.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:dart_levenshtein/dart_levenshtein.dart';
 
 import '../../../../utils/logging.dart';
 import 'contact_list.dart';
@@ -53,6 +54,19 @@ class _ContactsInfoState extends State<ContactsInfo> {
     if (await Permission.contacts.request().isGranted) {
       getAllContacts();
     }
+  }
+
+  Future<double> similarity(String s1, String s2) async {   //0.0- 1.0
+    String longer = s1, shorter = s2;
+    if (s1.length < s2.length) {
+      longer = s2;
+      shorter = s1;
+    }
+    int longerLength = longer.length;
+    if (longerLength == 0)  return 1.0;
+    // If you have StringUtils, you can use it to calculate the edit distance:
+    return (longerLength - (await longer.levenshteinDistance(shorter))) /
+        longerLength.toDouble();
   }
 
   List<Contact> getDubNames(List<Contact> contacts) {
@@ -132,30 +146,17 @@ class _ContactsInfoState extends State<ContactsInfo> {
   }
 
   List<Contact> getSimilarContacts(List<Contact> contacts) {
-    contacts.sort((m1, m2) {
-      if (m1.displayName == null) return -1;
-      if (m2.displayName == null) return 1;
-
-      return m1.displayName!
-          .toLowerCase()
-          .compareTo(m2.displayName!.toLowerCase());
-    });
-    for (var element in contacts) {
-      lol('${element.displayName} ${element.hashCode}');
-    }
     List<Contact> filterredContacts = [];
     var index = 0;
     while (index < contacts.length - 1) {
       var currentElement = contacts[index];
-      var nextElement = contacts[index + 1];
-      lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if (currentElement.displayName == nextElement.displayName) {
-        if (!filterredContacts.contains(contacts[index])) {
-          filterredContacts.add(contacts[index]);
+      contacts.forEach((element)  async {
+        if(currentElement.displayName != null &&
+            (await similarity(currentElement.displayName!, element.displayName!)) >= 0.75) {
+          if(!filterredContacts.contains(currentElement)) filterredContacts.add(currentElement);
+          if(!filterredContacts.contains(element)) filterredContacts.add(element);
         }
-        filterredContacts.add(contacts[index + 1]);
-      }
-
+      });
       index++;
     }
     return filterredContacts;
