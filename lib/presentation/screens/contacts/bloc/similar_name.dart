@@ -5,9 +5,11 @@ import '../../../../utils/logging.dart';
 import 'contact_list.dart';
 
 class SimilarContacts extends StatefulWidget {
-  SimilarContacts({Key? key, title, required this.titles}) : super(key: key);
+  SimilarContacts({Key? key, title, required this.titles, required this.similarContacts}) : super(key: key);
 
   final String titles;
+  List<Contact> similarContacts;
+
 
   @override
   State<SimilarContacts> createState() => _SimilarContactsState();

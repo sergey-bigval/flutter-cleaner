@@ -5,9 +5,10 @@ import '../../../../utils/logging.dart';
 import 'contact_list.dart';
 
 class EmptyContacts extends StatefulWidget {
-  EmptyContacts({Key? key, title, required this.titles}) : super(key: key);
+  EmptyContacts({Key? key, title, required this.titles, required this.noName}) : super(key: key);
 
   final String titles;
+  List<Contact> noName;
 
   @override
   State<EmptyContacts> createState() => _EmptyContactsState();

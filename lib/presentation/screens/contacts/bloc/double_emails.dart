@@ -5,9 +5,10 @@ import '../../../../utils/logging.dart';
 import 'contact_list.dart';
 
 class DoubleEmails extends StatefulWidget {
-  DoubleEmails({Key? key, title, required this.titles}) : super(key: key);
+  DoubleEmails({Key? key, title, required this.titles, required this.dubEmail}) : super(key: key);
 
   final String titles;
+  List<Contact> dubEmail;
 
   @override
   State<DoubleEmails> createState() => _DoubleEmailsState();

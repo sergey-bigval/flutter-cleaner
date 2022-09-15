@@ -4,9 +4,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'contact_list.dart';
 
 class AllContacts extends StatefulWidget {
-  AllContacts({Key? key, title, required this.titles}) : super(key: key);
+  AllContacts({Key? key, title, required this.titles, required this.allContacts}) : super(key: key);
 
   final String titles;
+  List<Contact> allContacts;
 
   @override
   State<AllContacts> createState() => _AllContactsState();
