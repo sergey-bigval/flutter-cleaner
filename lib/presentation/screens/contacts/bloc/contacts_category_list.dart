@@ -19,7 +19,8 @@ class ContactsInfo extends StatefulWidget {
 }
 
 class _ContactsInfoState extends State<ContactsInfo> {
-  int dubContactsSize = 0;
+  int dubNamesSize = 0;
+  List<Contact> _dubNames = [];
 
   @override
   void initState() {
@@ -33,8 +34,8 @@ class _ContactsInfoState extends State<ContactsInfo> {
     }
   }
 
-  List<Contact> getDublicateContacts(_contacts) {
-    _contacts.sort((m1, m2) {
+  List<Contact> getDubNames(List<Contact> contacts) {
+    contacts.sort((m1, m2) {
       if (m1.displayName == null) return -1;
       if (m2.displayName == null) return 1;
 
@@ -42,20 +43,22 @@ class _ContactsInfoState extends State<ContactsInfo> {
           .toLowerCase()
           .compareTo(m2.displayName!.toLowerCase());
     });
-    for (var element in _contacts) {
+    for (var element in contacts) {
       lol('${element.displayName} ${element.hashCode}');
     }
     List<Contact> filterredContacts = [];
     var index = 0;
-    while (index < _contacts.length - 1) {
-      var currentElement = _contacts[index];
-      var nextElement = _contacts[index + 1];
+    while (index < contacts.length - 1) {
+      var currentElement = contacts[index];
+      var nextElement = contacts[index + 1];
       if (currentElement.displayName?.toLowerCase() ==
           nextElement.displayName?.toLowerCase()) {
-        if (!filterredContacts.contains(_contacts[index])) {
-          filterredContacts.add(_contacts[index]);
+        if (!filterredContacts.contains(contacts[index])) {
+          filterredContacts.add(contacts[index]);
         }
-        filterredContacts.add(_contacts[index + 1]);
+        if (!filterredContacts.contains(contacts[index+1])) {
+          filterredContacts.add(contacts[index + 1]);
+        }
       }
 
       index++;
@@ -66,15 +69,17 @@ class _ContactsInfoState extends State<ContactsInfo> {
 
   getAllContacts() async {
     List<Contact> _contacts = (await ContactsService.getContacts());
-    var dubContacts = getDublicateContacts(_contacts);
+    var dubNames = getDubNames(_contacts);
 
     setState(() {
-      dubContactsSize = dubContacts.length;
-     });
+      dubNamesSize = dubNames.length;
+      _dubNames = dubNames;
+    });
   }
   
   @override
   Widget build(BuildContext context) {
+    lol('build');
     return MaterialApp(
       title: 'ListView',
       theme: ThemeData(
@@ -87,201 +92,201 @@ class _ContactsInfoState extends State<ContactsInfo> {
           title: const Text('Contacts'),
           centerTitle: true,
         ),
-        body: BodyListView(dubContactsSize),
+        body: _myListView(),
       ),
+    );
+  }
+  Widget _myListView() {
+    return ListView(
+      children: <Widget>[
+        ListTile(
+          title: const Text('All Contacts'),
+          subtitle: const Text('See more'),
+          leading: const Icon(
+            Icons.people,
+            color: Colors.blueAccent,
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: const [
+              Text('4')
+            ],
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return AllContacts(titles: 'All contacts');
+                },
+              ),
+            );
+          },
+        ),
+        ListTile(
+          title: const Text('Duplicate Contacts'),
+          subtitle: const Text('See more'),
+          leading: const Icon(
+            Icons.contact_phone,
+            color: Colors.blueAccent,
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(dubNamesSize.toString())
+            ],
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return DoubleContacts(titles: 'Duplicate contacts', dubContacts: _dubNames);
+                },
+              ),
+            );
+          },
+        ),
+        ListTile(
+          title: const Text('Duplicate Phones'),
+          subtitle: const Text('See more'),
+          leading: const Icon(
+            Icons.phone_sharp,
+            color: Colors.blueAccent,
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: const [
+              Text('5')
+            ],
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return DoublePhones(titles: 'Duplicate phones');
+                },
+              ),
+            );
+          },
+        ),
+        ListTile(
+          title: const Text('Duplicate Emails'),
+          subtitle: const Text('See more'),
+          leading: const Icon(
+            Icons.email,
+            color: Colors.blueAccent,
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: const [
+              Text('7')
+            ],
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return DoubleEmails(titles: 'Duplicate Emails');
+                },
+              ),
+            );
+          },
+        ),
+        ListTile(
+          title: const Text('Similar names'),
+          subtitle: const Text('See more'),
+          leading: const Icon(
+            Icons.sort_by_alpha,
+            color: Colors.blueAccent,
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: const [
+              Text('8')
+            ],
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return SimilarContacts(titles: 'Similar names');
+                },
+              ),
+            );
+          },
+        ),
+        ListTile(
+          title: const Text('No names'),
+          subtitle: const Text('See more'),
+          leading: const Icon(
+            Icons.no_accounts,
+            color: Colors.blueAccent,
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: const [
+              Text('8')
+            ],
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return EmptyContacts(titles: 'No names');
+                },
+              ),
+            );
+          },
+        ),
+        ListTile(
+          title: const Text('No phones'),
+          subtitle: const Text('See more'),
+          leading: const Icon(
+            Icons.no_cell,
+            color: Colors.blueAccent,
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: const [
+              Text('8')
+            ],
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return EmptyPhone(titles: 'No phones');
+                },
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
 
-class BodyListView extends StatelessWidget {
-  var dubContactsSize;
-
-  BodyListView(int dubContactsSize) {
-    this.dubContactsSize = dubContactsSize;
-  }
-
-  Widget build(BuildContext context) {
-    return _myListView(context, dubContactsSize);
-  }
-}
-Widget _myListView(BuildContext context, dubContactsSize) {
-  return ListView(
-    children: <Widget>[
-      ListTile(
-        title: const Text('All Contacts'),
-        subtitle: const Text('See more'),
-        leading: const Icon(
-          Icons.people,
-          color: Colors.blueAccent,
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: const [
-            Text('4')
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return AllContacts(titles: 'All contacts');
-              },
-            ),
-          );
-        },
-      ),
-      ListTile(
-        title: const Text('Duplicate Contacts'),
-        subtitle: const Text('See more'),
-        leading: const Icon(
-          Icons.contact_phone,
-          color: Colors.blueAccent,
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(dubContactsSize)
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return DoubleContacts(titles: 'Duplicate contacts');
-              },
-            ),
-          );
-        },
-      ),
-      ListTile(
-        title: const Text('Duplicate Phones'),
-        subtitle: const Text('See more'),
-        leading: const Icon(
-          Icons.phone_sharp,
-          color: Colors.blueAccent,
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: const [
-            Text('5')
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return DoublePhones(titles: 'Duplicate phones');
-              },
-            ),
-          );
-        },
-      ),
-      ListTile(
-        title: const Text('Duplicate Emails'),
-        subtitle: const Text('See more'),
-        leading: const Icon(
-          Icons.email,
-          color: Colors.blueAccent,
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: const [
-            Text('7')
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return DoubleEmails(titles: 'Duplicate Emails');
-              },
-            ),
-          );
-        },
-      ),
-      ListTile(
-        title: const Text('Similar names'),
-        subtitle: const Text('See more'),
-        leading: const Icon(
-          Icons.sort_by_alpha,
-          color: Colors.blueAccent,
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: const [
-            Text('8')
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return SimilarContacts(titles: 'Similar names');
-              },
-            ),
-          );
-        },
-      ),
-      ListTile(
-        title: const Text('No names'),
-        subtitle: const Text('See more'),
-        leading: const Icon(
-          Icons.no_accounts,
-          color: Colors.blueAccent,
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: const [
-            Text('8')
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return EmptyContacts(titles: 'No names');
-              },
-            ),
-          );
-        },
-      ),
-      ListTile(
-        title: const Text('No phones'),
-        subtitle: const Text('See more'),
-        leading: const Icon(
-          Icons.no_cell,
-          color: Colors.blueAccent,
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: const [
-            Text('8')
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return EmptyPhone(titles: 'No phones');
-              },
-            ),
-          );
-        },
-      ),
-    ],
-  );
-}
+// class BodyListView extends StatelessWidget {
+//   var dubContactsSize;
+//
+//   BodyListView(int dubContactsSize) {
+//     this.dubContactsSize = dubContactsSize;
+//   }
+//
+//   Widget build(BuildContext context) {
+//     return _myListView(context, dubContactsSize);
+//   }
+// }

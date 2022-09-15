@@ -5,9 +5,10 @@ import '../../../../utils/logging.dart';
 import 'contact_list.dart';
 
 class DoubleContacts extends StatefulWidget {
-  DoubleContacts({Key? key, title, required this.titles}) : super(key: key);
+  DoubleContacts({Key? key, title, required this.titles, required this.dubContacts}) : super(key: key);
 
   final String titles;
+  List<Contact> dubContacts;
 
   @override
   State<DoubleContacts> createState() => _DoubleContactsState();
@@ -19,6 +20,7 @@ class _DoubleContactsState extends State<DoubleContacts> {
   Map<String, Color> contactsColorMap = Map();
   TextEditingController searchController = TextEditingController();
   bool contactsLoaded = false;
+
 
   @override
   void initState() {
