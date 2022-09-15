@@ -87,6 +87,7 @@ class _DoubleContactsState extends State<DoubleContacts> {
         title: Text(widget.titles),
       ),
       body: Container(
+        color: Colors.white,
         padding: const EdgeInsets.all(20),
         child: Column(
           children: <Widget>[

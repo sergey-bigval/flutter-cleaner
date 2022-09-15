@@ -90,6 +90,7 @@ class _AllContactsState extends State<AllContacts> {
         title: Text(widget.titles),
       ),
       body: Container(
+        color: Colors.white,
         padding: EdgeInsets.all(20),
         child: Column(
           children: <Widget>[
