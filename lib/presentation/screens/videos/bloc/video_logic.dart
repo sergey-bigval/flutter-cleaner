@@ -1,16 +1,23 @@
 import 'dart:io';
 
 import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
+import 'package:hello_flutter/presentation/screens/videos/bloc/big_videos_state.dart';
 import 'package:hello_flutter/presentation/screens/videos/bloc/video_controller.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../../../../utils/logging.dart';
+import 'big_videos_bloc.dart';
+import 'big_videos_events.dart';
 
-class VideoLogic {
-  int videosCount = 0;
+class VideoRepo {
+  late final BigVideosBloc bloc;
+
+  VideoRepo({required this.bloc});
+
   List<List<PhotoModel>> totalGroupedDoubles = [];
-  int totalGroupedDoublesCount = 0;
+  int videosCount = 0;
+  int videosTotalSizeInMB = 0;
 
   static List<List<PhotoModel>> totalGroupedDoublesStatic = [];
 
@@ -35,10 +42,8 @@ class VideoLogic {
 
   Future<void> loadVideos() async {
     PermissionState permState = await PhotoManager.requestPermissionExtend();
-
     if (permState.isAuth) {
       List<VideoModel> allVideos = [];
-      // если есть доступ (т.е. дан пермишен), то можем запрашивать медиа-контент
       List<AssetPathEntity> allFolders = await PhotoManager.getAssetPathList(type: RequestType.video);
 
       for (AssetPathEntity folder in allFolders) {
@@ -58,18 +63,34 @@ class VideoLogic {
           int timeInSeconds = media.createDateTime.millisecondsSinceEpoch ~/ 1000;
 
           videosCount++;
+          videosTotalSizeInMB += size~/1048576;
+          lol("VIDEO SIZE = ${size}");
+          lol("VIDEOs TOTAL SIZE = $videosTotalSizeInMB MB");
           VideoController.videosCount.value = VideoController.videosCount.value.copyWith(videoCount: videosCount);
           // VideoController.videos.value = allVideos.length;
           final uint8list = await VideoThumbnail.thumbnailData(
             video: path,
             imageFormat: ImageFormat.JPEG,
-            maxWidth: 256,
+            maxWidth: 128,
             // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
             quality: 25,
           );
           allVideos.add(VideoModel(
-              absolutePath: path, size: size, timeInSeconds: timeInSeconds, entity: media, thumb: uint8list));
+            absolutePath: path,
+            size: size,
+            timeInSeconds: timeInSeconds,
+            entity: media,
+            thumb: uint8list,
+          ));
+          final bvs = BigVideosState(
+            isScanning: true,
+            videosFound: allVideos.length,
+            videosTotalSize: videosTotalSizeInMB,
+            currentFolder: folder.name,
+          );
+          bloc.add(BigVideosFoundNewEvent(bigVideosState: bvs));
           lol("ADDED === " + path);
+
           List<VideoModel> currentVideos = [];
           currentVideos.addAll(allVideos);
           VideoController.videos.value = currentVideos;

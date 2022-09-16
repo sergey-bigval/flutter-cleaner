@@ -12,6 +12,8 @@ import 'package:hello_flutter/utils/constants.dart';
 import 'package:hello_flutter/utils/logging.dart';
 import 'package:lottie/lottie.dart';
 
+import '../../../themes/app_colors.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -83,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
 
     return Container(
-      color: Colors.pink[200],
+      color: AppColors.mainBgColor,
       alignment: Alignment.center,
       padding: const EdgeInsets.only(top: 100),
       child: Column(

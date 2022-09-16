@@ -1,16 +1,20 @@
+import 'package:battery_plus/battery_plus.dart';
+
+import '../enum/battery_save_mode_enum.dart';
+
 abstract class DeviceInfoEvent {}
 
-class BatteryInfoEvent extends DeviceInfoEvent {
-  final String batteryState;
+class DeviceInfoGetBatteryInfoEvent extends DeviceInfoEvent {
   final int batteryLevel;
-  final String batteryIsSaveMode;
+  final BatteryState batteryState;
+  final BatterySaveMode batterySaveMode;
 
-  BatteryInfoEvent(
+  DeviceInfoGetBatteryInfoEvent(
       {required this.batteryState,
       required this.batteryLevel,
-      required this.batteryIsSaveMode});
+      required this.batterySaveMode});
 }
 
-class InfoStorageEvent extends DeviceInfoEvent {}
+class DeviceInfoGetInfoStorageEvent extends DeviceInfoEvent {}
 
-class InfoRamEvent extends DeviceInfoEvent {}
+class DeviceInfoGetInfoRamEvent extends DeviceInfoEvent {}

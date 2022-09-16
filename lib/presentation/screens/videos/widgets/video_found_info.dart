@@ -1,28 +1,41 @@
-
 import 'package:flutter/cupertino.dart';
-
-import '../models/video_found_info.dart';
-import '../bloc/video_controller.dart';
+import 'package:hello_flutter/themes/styles.dart';
 
 class VideoFoundInfoWidget extends StatelessWidget {
-  const VideoFoundInfoWidget({super.key});
+  final int videos;
+  final int size;
+  final String folder;
+
+  const VideoFoundInfoWidget({
+    Key? key,
+    required this.videos,
+    required this.size,
+    required this.folder,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<VideoFoundInfo>(
-        valueListenable: VideoController.videosCount,
-        builder: (context, info, _) {
-          return Column(
-            children: [
-              getFoundVideosText(info.videoCount),
-              const SizedBox(height: 5),
-              getCurrentFolderText(info.folder),
-            ],
-          );
-        });
+    return Column(
+      children: [
+        const Text('Searching in folder:', style: Styles.text15),
+        getCurrentFolderText(),
+        const SizedBox(height: 20),
+        getFoundVideosText(),
+        const SizedBox(height: 5),
+        getVideosTotalSizeText(),
+      ],
+    );
   }
 
-  Widget getFoundVideosText(int count) => Text('Found videos : $count');
+  Widget getFoundVideosText() => Text(
+        'Videos found: $videos',
+        style: Styles.text15,
+      );
 
-  Widget getCurrentFolderText(String folder) => Center(child: Text('Scanning in folder : \n $folder'));
+  Widget getVideosTotalSizeText() => Text(
+        'Total size of videos: ${size}MB',
+        style: Styles.text15,
+      );
+
+  Widget getCurrentFolderText() => Center(child: Text(folder, style: Styles.text15));
 }

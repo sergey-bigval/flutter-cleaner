@@ -4,95 +4,83 @@ import 'package:battery_plus/battery_plus.dart';
 import 'package:disk_space/disk_space.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hello_flutter/presentation/screens/device_info/bloc/states.dart';
+import 'package:hello_flutter/presentation/screens/device_info/enum/battery_save_mode_enum.dart';
 import 'package:system_info/system_info.dart';
 
 import 'events.dart';
 
 class DeviceInfoBloc extends Bloc<DeviceInfoEvent, DeviceInfoState> {
-  final batteryStateStream = Battery().onBatteryStateChanged;
-  late StreamSubscription<BatteryState> batteryListener;
+  late final Battery _battery;
+  late final Stream<BatteryState> _batteryStateStream;
+  late final StreamSubscription<BatteryState> _batteryListener;
 
   DeviceInfoBloc() : super(DeviceInfoState.initial()) {
-    on<BatteryInfoEvent>(_onBatteryInfo);
-    on<InfoStorageEvent>(_onStorageData);
-    on<InfoRamEvent>(_onRamData);
+    _battery = Battery();
+    _batteryStateStream = _battery.onBatteryStateChanged;
+    listenBatteryStream();
+
+    on<DeviceInfoGetBatteryInfoEvent>(_onBatteryInfo);
+    on<DeviceInfoGetInfoStorageEvent>(_onStorageData);
+    on<DeviceInfoGetInfoRamEvent>(_onRamData);
+  }
+
+  @override
+  Future<void> close() async {
+    _batteryListener.cancel();
+    super.close();
   }
 
   void listenBatteryStream() {
-    batteryListener = batteryStateStream.listen((batState) async {
-      var batteryState = "";
-      switch (batState) {
-        case BatteryState.charging:
-          {
-            batteryState = "charging";
-            break;
-          }
-        case BatteryState.discharging:
-          {
-            batteryState = "discharging";
-            break;
-          }
-        case BatteryState.full:
-          {
-            batteryState = "full";
-            break;
-          }
-        case BatteryState.unknown:
-          {
-            batteryState = "No info";
-            break;
-          }
-      }
+    _batteryListener = _batteryStateStream.listen((batteryState) async {
 
-      var saveMode = "Not available";
-      getSaveModeStatus().then((value) => saveMode = value);
+      var saveMode = await getSaveModeStatus();
 
-      add(BatteryInfoEvent(
+      add(
+        DeviceInfoGetBatteryInfoEvent(
           batteryState: batteryState,
           batteryLevel: await Battery().batteryLevel,
-          batteryIsSaveMode: saveMode));
+          batterySaveMode: saveMode,
+        ),
+      );
     });
   }
 
-  Future<String> getSaveModeStatus() async {
-    return await Battery().isInBatterySaveMode.then((value) async {
-      if (value) {
-        return "enabled";
-      } else {
-        return "disabled";
-      }
-    });
-  }
-
-  void cancelBatteryListener() {
-    batteryListener.cancel();
+  Future<BatterySaveMode> getSaveModeStatus() async {
+    try {
+      var result = await _battery.isInBatterySaveMode.timeout(
+        const Duration(seconds: 1),
+      );
+      return result ? BatterySaveMode.enabled : BatterySaveMode.disabled;
+    } catch (e) {
+      return BatterySaveMode.notAvailable;
+    }
   }
 
   Future<void> _onBatteryInfo(
-    BatteryInfoEvent event,
+    DeviceInfoGetBatteryInfoEvent event,
     Emitter emitter,
   ) async {
-    emitter(state.copyWith(
+    emitter(
+      state.copyWith(
         batteryLevel: event.batteryLevel,
         batteryState: event.batteryState,
-        batteryIsSaveMode: event.batteryIsSaveMode));
+        batterySaveMode: event.batterySaveMode,
+      ),
+    );
   }
 
-  Future<void> _onStorageData(
-    InfoStorageEvent event,
-    Emitter emitter,
-  ) async {
-    var totalMemory =
-        await DiskSpace.getTotalDiskSpace.then((value) => value! / 1024);
-    var freeMemory =
-        await DiskSpace.getFreeDiskSpace.then((value) => value! / 1024);
-    emitter(state.copyWith(totalMemory: totalMemory, freeMemory: freeMemory));
+  Future<void> _onStorageData(DeviceInfoGetInfoStorageEvent event, Emitter emitter) async {
+    var totalMemory = await DiskSpace.getTotalDiskSpace ?? 0;
+    var freeMemory = await DiskSpace.getFreeDiskSpace ?? 0;
+    emitter(
+      state.copyWith(
+        totalMemory: totalMemory / 1024,
+        freeMemory: freeMemory / 1024,
+      ),
+    );
   }
 
-  Future<void> _onRamData(
-    InfoRamEvent event,
-    Emitter emitter,
-  ) async {
+  Future<void> _onRamData(DeviceInfoGetInfoRamEvent event, Emitter emitter) async {
     emitter(state.copyWith(
         totalRam:
             (SysInfo.getTotalPhysicalMemory() ~/ (1024 * 1024)).toDouble(),

@@ -1,7 +1,10 @@
+import 'package:battery_plus/battery_plus.dart';
+import 'package:hello_flutter/presentation/screens/device_info/enum/battery_save_mode_enum.dart';
+
 class DeviceInfoState {
   final int batteryLevel;
-  final String batteryState;
-  final String batteryIsSaveMode;
+  final BatteryState batteryState;
+  final BatterySaveMode batterySaveMode;
 
   final double totalMemory;
   final double freeMemory;
@@ -11,27 +14,27 @@ class DeviceInfoState {
 
   DeviceInfoState(
       {required this.batteryLevel,
-        required this.batteryState,
-        required this.batteryIsSaveMode,
-        required this.totalMemory,
-        required this.freeMemory,
-        required this.totalRam,
-        required this.freeRam});
+      required this.batteryState,
+      required this.batterySaveMode,
+      required this.totalMemory,
+      required this.freeMemory,
+      required this.totalRam,
+      required this.freeRam});
 
   factory DeviceInfoState.initial() => DeviceInfoState(
-    batteryLevel: 0,
-    batteryState: "Not available",
-    batteryIsSaveMode: "disabled",
-    totalMemory: 0,
-    freeMemory: 0,
-    totalRam: 0,
-    freeRam: 0,
-  );
+        batteryLevel: 0,
+        batteryState: BatteryState.unknown,
+        batterySaveMode: BatterySaveMode.notAvailable,
+        totalMemory: 0,
+        freeMemory: 0,
+        totalRam: 0,
+        freeRam: 0,
+      );
 
   DeviceInfoState copyWith({
     int? batteryLevel,
-    String? batteryState,
-    String? batteryIsSaveMode,
+    BatteryState? batteryState,
+    BatterySaveMode? batterySaveMode,
     double? totalMemory,
     double? freeMemory,
     double? totalRam,
@@ -40,7 +43,7 @@ class DeviceInfoState {
     return DeviceInfoState(
       batteryLevel: batteryLevel ?? this.batteryLevel,
       batteryState: batteryState ?? this.batteryState,
-      batteryIsSaveMode: batteryIsSaveMode ?? this.batteryIsSaveMode,
+      batterySaveMode: batterySaveMode ?? this.batterySaveMode,
       totalMemory: totalMemory ?? this.totalMemory,
       freeMemory: freeMemory ?? this.freeMemory,
       totalRam: totalRam ?? this.totalRam,
