@@ -45,12 +45,14 @@ class _BigVideosButtonState extends State<BigVideosButton> {
 
   Future<void> checkDoubles() async {
     if (isActive) {
+      setState(() => isActive = false);
       PermissionState permState = await PhotoManager.requestPermissionExtend();
       if (permState.isAuth) {
-        // setState(() => isActive = false);
-        Navigator.pushReplacementNamed(context, bigVideosScreen);
-        // await VideoLogic().loadVideos();
-        // setState(() => isActive = true);
+        Navigator.pushNamed(context, bigVideosScreen);
+        setState(() => isActive = true);
+      } else {
+        setState(() => isActive = true);
+        // todo: тут надо чтото придумать, т.к. у нас есть только 2 шанса вызвать СИСТЕМНОЕ окно пермишенов
       }
     }
   }

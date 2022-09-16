@@ -9,7 +9,7 @@ class VideoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return getVideoGrid(context);
+    return Scaffold(body: getVideoGrid(context));
   }
 
   Widget getVideoGrid(BuildContext context) {
@@ -20,7 +20,7 @@ class VideoList extends StatelessWidget {
           itemCount: videoList.length,
           scrollDirection: Axis.vertical,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
+            crossAxisCount: 5,
             crossAxisSpacing: 4,
             mainAxisSpacing: 4,
           ),
@@ -43,7 +43,7 @@ class VideoList extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                image: Image.memory(videoModel.thumb!, cacheWidth: 256).image,
+                image: Image.memory(videoModel.thumb!, cacheWidth: 128).image,
                 fit: BoxFit.cover,
               ),
             ),
@@ -74,9 +74,7 @@ class VideoList extends StatelessWidget {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text("Showing video"),
-            content: AspectRatio(
-                aspectRatio: controller.value.aspectRatio,
-                child: VideoPlayer(controller)),
+            content: AspectRatio(aspectRatio: controller.value.aspectRatio, child: VideoPlayer(controller)),
             actions: [
               ElevatedButton(onPressed: () => Navigator.of(context).pop(), child: const Text("Dismiss")),
             ],
