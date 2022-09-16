@@ -30,7 +30,7 @@ class _AllContactsState extends State<AllContacts> {
     if (await Permission.contacts.request().isGranted) {
       getAllContacts();
       searchController.addListener(() {
-        // filterContacts();
+        filterContacts();
       });
     }
   }
@@ -50,10 +50,10 @@ class _AllContactsState extends State<AllContacts> {
   }
 
   filterContacts() {
-    List<Contact> _contacts = [];
-    _contacts.addAll(contacts);
+    List<Contact> contacts = [];
+    contacts.addAll(contacts);
     if (searchController.text.isNotEmpty) {
-      _contacts.retainWhere((contact) {
+      contacts.retainWhere((contact) {
         String searchTerm = searchController.text.toLowerCase();
         String searchTermFlatten = flattenPhoneNumber(searchTerm);
         String contactName = contact.displayName!.toLowerCase();
@@ -75,7 +75,7 @@ class _AllContactsState extends State<AllContacts> {
       });
     }
     setState(() {
-      contactsFiltered = _contacts;
+      contactsFiltered = contacts;
     });
   }
 
@@ -119,12 +119,13 @@ class _AllContactsState extends State<AllContacts> {
                       )
                     : Container(
                         padding: EdgeInsets.only(top: 40),
-                        child: Text(
-                          isSearching
-                              ? 'No search results to show'
-                              : 'No contacts exist',
-                          style: TextStyle(color: Colors.grey, fontSize: 20),
-                        ))
+                        // child: Text(
+                        //   isSearching
+                        //       ? 'No search results to show'
+                        //       : 'No contacts exist',
+                        //   style: TextStyle(color: Colors.grey, fontSize: 20),
+                        // )
+                )
                 : Container(
                     // still loading contacts
                     padding: EdgeInsets.only(top: 40),

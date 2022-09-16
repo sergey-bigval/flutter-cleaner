@@ -202,7 +202,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
     var dubNames = getDubNames(_contacts);
     var dubPhones = getDubPhones(_contacts);
     var dubEmails = getDubEmails(_contacts);
-    var similarContacts = getSimilarContacts(_contacts);
+    // var similarContacts = getSimilarContacts(_contacts);
     var noName = getNoNameContacts(_contacts);
     var noPhone = getNoPhoneContacts(_contacts);
 
@@ -219,8 +219,8 @@ class _ContactsInfoState extends State<ContactsInfo> {
       dubEmailsSize = dubEmails.length;
       _dubEmails = dubEmails;
 
-      similarContactsSize = similarContacts.length;
-      _similarContacts = similarContacts;
+      // similarContactsSize = similarContacts.length;
+      // _similarContacts = similarContacts;
 
       noNameContactsSize = noName.length;
       _noName = noName;
