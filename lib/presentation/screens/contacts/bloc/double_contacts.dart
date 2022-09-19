@@ -1,7 +1,5 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
-import '../../../../utils/logging.dart';
 import 'contact_list.dart';
 
 class DoubleContacts extends StatefulWidget {
@@ -11,7 +9,7 @@ class DoubleContacts extends StatefulWidget {
   List<Contact> dubContacts;
 
   @override
-  State<DoubleContacts> createState() => _DoubleContactsState();
+  State<DoubleContacts> createState() => _DoubleContactsState(dubContacts);
 }
 
 class _DoubleContactsState extends State<DoubleContacts> {
@@ -19,61 +17,10 @@ class _DoubleContactsState extends State<DoubleContacts> {
   List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = Map();
   TextEditingController searchController = TextEditingController();
-  bool contactsLoaded = false;
+  bool contactsLoaded = true;
 
-
-  @override
-  void initState() {
-    super.initState();
-    getPermissions();
-  }
-
-  getPermissions() async {
-    if (await Permission.contacts.request().isGranted) {
-      getAllContacts();
-    }
-  }
-
-  String flattenPhoneNumber(String phoneStr) {
-    return phoneStr.replaceAllMapped(RegExp(r'^(\+)|\D'), (Match m) {
-      return m[0] == "+" ? "+" : "";
-    });
-  }
-
-  getAllContacts() async {
-    List<Contact> _contacts = (await ContactsService.getContacts());
-    _contacts.sort((m1, m2) {
-      if (m1.displayName == null) return -1;
-      if (m2.displayName == null) return 1;
-
-      return m1.displayName!
-          .toLowerCase()
-          .compareTo(m2.displayName!.toLowerCase());
-    });
-    for (var element in _contacts) {
-      lol('${element.displayName} ${element.hashCode}');
-    }
-    List<Contact> filterredContacts = [];
-    var index = 0;
-    while (index < _contacts.length - 1) {
-      var currentElement = _contacts[index];
-      var nextElement = _contacts[index + 1];
-      lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if (currentElement.displayName?.toLowerCase() ==
-          nextElement.displayName?.toLowerCase()) {
-        if (!filterredContacts.contains(_contacts[index])) {
-          filterredContacts.add(_contacts[index]);
-        }
-        filterredContacts.add(_contacts[index + 1]);
-      }
-
-      index++;
-    }
-
-    setState(() {
-      contacts = filterredContacts;
-      contactsLoaded = true;
-    });
+  _DoubleContactsState(List<Contact> dubContacts) {
+    contacts = dubContacts;
   }
 
   @override
@@ -96,9 +43,7 @@ class _DoubleContactsState extends State<DoubleContacts> {
                 listItemsExist == true
                     ? // if we have contacts to show
                     ContactsList(
-                        reloadContacts: () {
-                          getAllContacts();
-                        },
+                        reloadContacts: () {},
                         contacts:
                             isSearching == true ? contactsFiltered : contacts,
                       )

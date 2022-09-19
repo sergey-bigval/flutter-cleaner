@@ -1,6 +1,5 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'contact_list.dart';
 
 class AllContacts extends StatefulWidget {
@@ -10,7 +9,7 @@ class AllContacts extends StatefulWidget {
   List<Contact> allContacts;
 
   @override
-  State<AllContacts> createState() => _AllContactsState();
+  State<AllContacts> createState() => _AllContactsState(allContacts);
 }
 
 class _AllContactsState extends State<AllContacts> {
@@ -18,65 +17,10 @@ class _AllContactsState extends State<AllContacts> {
   List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = Map();
   TextEditingController searchController = TextEditingController();
-  bool contactsLoaded = false;
+  bool contactsLoaded = true;
 
-  @override
-  void initState() {
-    super.initState();
-    getPermissions();
-  }
-
-  getPermissions() async {
-    if (await Permission.contacts.request().isGranted) {
-      getAllContacts();
-      searchController.addListener(() {
-        filterContacts();
-      });
-    }
-  }
-
-  String flattenPhoneNumber(String phoneStr) {
-    return phoneStr.replaceAllMapped(RegExp(r'^(\+)|\D'), (Match m) {
-      return m[0] == "+" ? "+" : "";
-    });
-  }
-
-  getAllContacts() async {
-    List<Contact> _contacts = (await ContactsService.getContacts());
-    setState(() {
-      contacts = _contacts;
-      contactsLoaded = true;
-    });
-  }
-
-  filterContacts() {
-    List<Contact> contacts = [];
-    contacts.addAll(contacts);
-    if (searchController.text.isNotEmpty) {
-      contacts.retainWhere((contact) {
-        String searchTerm = searchController.text.toLowerCase();
-        String searchTermFlatten = flattenPhoneNumber(searchTerm);
-        String contactName = contact.displayName!.toLowerCase();
-        bool nameMatches = contactName.contains(searchTerm);
-        if (nameMatches == true) {
-          return true;
-        }
-
-        if (searchTermFlatten.isEmpty) {
-          return false;
-        }
-
-        var phone = contact.phones!.firstWhere((phn) {
-          String phnFlattened = flattenPhoneNumber(phn.value.toString());
-          return phnFlattened.contains(searchTermFlatten);
-        });
-
-        return phone != null;
-      });
-    }
-    setState(() {
-      contactsFiltered = contacts;
-    });
+  _AllContactsState(List<Contact> allContacts) {
+    contacts = allContacts;
   }
 
   @override
@@ -111,20 +55,12 @@ class _AllContactsState extends State<AllContacts> {
                 listItemsExist == true
                     ? // if we have contacts to show
                     ContactsList(
-                        reloadContacts: () {
-                          getAllContacts();
-                        },
+                        reloadContacts: () {},
                         contacts:
                             isSearching == true ? contactsFiltered : contacts,
                       )
                     : Container(
                         padding: EdgeInsets.only(top: 40),
-                        // child: Text(
-                        //   isSearching
-                        //       ? 'No search results to show'
-                        //       : 'No contacts exist',
-                        //   style: TextStyle(color: Colors.grey, fontSize: 20),
-                        // )
                 )
                 : Container(
                     // still loading contacts

@@ -1,17 +1,15 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
-import '../../../../utils/logging.dart';
 import 'contact_list.dart';
 
 class EmptyContacts extends StatefulWidget {
-  EmptyContacts({Key? key, title, required this.titles, required this.noName}) : super(key: key);
+  EmptyContacts({Key? key, title, required this.titles, required this.noNames}) : super(key: key);
 
   final String titles;
-  List<Contact> noName;
+  List<Contact> noNames;
 
   @override
-  State<EmptyContacts> createState() => _EmptyContactsState();
+  State<EmptyContacts> createState() => _EmptyContactsState(noNames);
 }
 
 class _EmptyContactsState extends State<EmptyContacts> {
@@ -19,43 +17,10 @@ class _EmptyContactsState extends State<EmptyContacts> {
   List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = Map();
   TextEditingController searchController = TextEditingController();
-  bool contactsLoaded = false;
+  bool contactsLoaded = true;
 
-  @override
-  void initState() {
-    super.initState();
-    getPermissions();
-  }
-
-  getPermissions() async {
-    if (await Permission.contacts.request().isGranted) {
-      getAllContacts();
-    }
-  }
-
-  getAllContacts() async {
-    List<Contact> _contacts = (await ContactsService.getContacts());
-    for (var element in _contacts) {
-      lol('${element.displayName} ${element.hashCode}');
-    }
-    List<Contact> filterredContacts = [];
-    var index = 0;
-    while (index < _contacts.length - 1) {
-      var currentElement = _contacts[index];
-      var nextElement = _contacts[index + 1];
-      // lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if (currentElement.displayName?.isEmpty == true || currentElement.displayName == null) {
-          filterredContacts.add(_contacts[index]);
-        filterredContacts.add(_contacts[index + 1]);
-      }
-      index++;
-    }
-
-    setState(() {
-      contacts = filterredContacts;
-      lol(filterredContacts.toString());
-      contactsLoaded = true;
-    });
+  _EmptyContactsState(List<Contact> noNames) {
+    contacts = noNames;
   }
 
   @override
@@ -78,9 +43,7 @@ class _EmptyContactsState extends State<EmptyContacts> {
             listItemsExist == true
                 ? // if we have contacts to show
             ContactsList(
-              reloadContacts: () {
-                getAllContacts();
-              },
+              reloadContacts: () {},
               contacts:
               isSearching == true ? contactsFiltered : contacts,
             )

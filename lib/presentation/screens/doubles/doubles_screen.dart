@@ -121,7 +121,7 @@ class PermissionHandlerWidget extends StatefulWidget {
 class PermissionHandlerWidgetState extends State<PermissionHandlerWidget> {
   @override
   Widget build(BuildContext context) {
-    lol('here 2 build');
+    // lol('here 2 build');
     return Scaffold(
       body: Center(
         child: ListView(

@@ -1,17 +1,15 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
-import '../../../../utils/logging.dart';
 import 'contact_list.dart';
 
 class DoubleEmails extends StatefulWidget {
-  DoubleEmails({Key? key, title, required this.titles, required this.dubEmail}) : super(key: key);
+  DoubleEmails({Key? key, title, required this.titles, required this.dubEmails}) : super(key: key);
 
   final String titles;
-  List<Contact> dubEmail;
+  List<Contact> dubEmails;
 
   @override
-  State<DoubleEmails> createState() => _DoubleEmailsState();
+  State<DoubleEmails> createState() => _DoubleEmailsState(dubEmails);
 }
 
 class _DoubleEmailsState extends State<DoubleEmails> {
@@ -19,45 +17,10 @@ class _DoubleEmailsState extends State<DoubleEmails> {
   List<Contact> emailsFiltered = [];
   Map<String, Color> emailsColorMap = Map();
   TextEditingController searchController = TextEditingController();
-  bool contactsLoaded = false;
+  bool contactsLoaded = true;
 
-  @override
-  void initState() {
-    super.initState();
-    getPermissions();
-  }
-
-  getPermissions() async {
-    if (await Permission.contacts.request().isGranted) {
-      getAllContacts();
-    }
-  }
-
-  getAllContacts() async {
-    List<Contact> _contacts = (await ContactsService.getContacts());
-    List<Contact> dubEmails = [];
-    var i = 0;
-    while (i < _contacts.length) {
-      var contact = _contacts[i];
-      var emails = contact.emails;
-      emails?.forEach((email) {
-        lol('email is ${email.value} hash ${contact.hashCode}');
-        _contacts.forEach((cont) {
-          var contEmails = cont.emails?.map((e) => e.value).toList();
-          lol('${cont != contact} ${contEmails?.contains(email.value) == true}');
-          if (cont != contact && contEmails?.contains(email.value) == true) {
-            if (!dubEmails.contains(contact)) dubEmails.add(contact);
-            if (!dubEmails.contains(cont)) dubEmails.add(cont);
-          }
-        });
-      });
-      i++;
-    }
-
-    setState(() {
-      emails = dubEmails;
-      contactsLoaded = true;
-    });
+  _DoubleEmailsState(List<Contact> dubEmails) {
+    emails = dubEmails;
   }
 
   @override
@@ -79,9 +42,7 @@ class _DoubleEmailsState extends State<DoubleEmails> {
                 listItemsExist == true
                     ? // if we have contacts to show
                     EmailList(
-                        reloadContacts: () {
-                          getAllContacts();
-                        },
+                        reloadContacts: () {},
                         contacts: isSearching == true ? emailsFiltered : emails,
                       )
                     : Container(

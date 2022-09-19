@@ -8,10 +8,7 @@ import 'package:hello_flutter/presentation/screens/contacts/bloc/no_phone.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/no_name.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/similar_name.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:dart_levenshtein/dart_levenshtein.dart';
-
-import '../../../../utils/logging.dart';
-import 'contact_list.dart';
+import '../../../../utils/contacts_utils.dart';
 
 class ContactsInfo extends StatefulWidget {
   const ContactsInfo({super.key});
@@ -39,10 +36,10 @@ class _ContactsInfoState extends State<ContactsInfo> {
   List<Contact> _similarContacts = [];
 
   int noNameContactsSize = 0;
-  List<Contact> _noName = [];
+  List<Contact> _noNames = [];
 
   int noPhoneContactsSize = 0;
-  List<Contact> _noPhone = [];
+  List<Contact> _noPhones = [];
 
   @override
   void initState() {
@@ -56,159 +53,19 @@ class _ContactsInfoState extends State<ContactsInfo> {
     }
   }
 
-  Future<double> similarity(String s1, String s2) async {   //0.0- 1.0
-    String longer = s1, shorter = s2;
-    if (s1.length < s2.length) {
-      longer = s2;
-      shorter = s1;
-    }
-    int longerLength = longer.length;
-    if (longerLength == 0)  return 1.0;
-    // If you have StringUtils, you can use it to calculate the edit distance:
-    return (longerLength - (await longer.levenshteinDistance(shorter))) /
-        longerLength.toDouble();
-  }
-
-  List<Contact> getDubNames(List<Contact> contacts) {
-    contacts.sort((m1, m2) {
-      if (m1.displayName == null) return -1;
-      if (m2.displayName == null) return 1;
-
-      return m1.displayName!
-          .toLowerCase()
-          .compareTo(m2.displayName!.toLowerCase());
-    });
-    for (var element in contacts) {
-      lol('${element.displayName} ${element.hashCode}');
-    }
-    List<Contact> filterredContacts = [];
-    var index = 0;
-    while (index < contacts.length - 1) {
-      var currentElement = contacts[index];
-      var nextElement = contacts[index + 1];
-      if (currentElement.displayName?.toLowerCase() ==
-          nextElement.displayName?.toLowerCase()) {
-        if (!filterredContacts.contains(contacts[index])) {
-          filterredContacts.add(contacts[index]);
-        }
-        if (!filterredContacts.contains(contacts[index + 1])) {
-          filterredContacts.add(contacts[index + 1]);
-        }
-      }
-
-      index++;
-    }
-    return filterredContacts;
-  }
-
-  List<Contact> getDubPhones(List<Contact> contacts) {
-    List<Contact> dubPhones = [];
-    var i = 0;
-    while (i < contacts.length) {
-      var contact = contacts[i];
-      var phones = contact.phones;
-      phones?.forEach((phone) {
-        lol('email is ${phone.value} hash ${contact.hashCode}');
-        contacts.forEach((cont) {
-          var contPhones = cont.phones?.map((e) => e.value).toList();
-          lol('${cont != contact} ${contPhones?.contains(phone.value) == true}');
-          if (cont != contact && contPhones?.contains(phone.value) == true) {
-            if (!dubPhones.contains(contact)) dubPhones.add(contact);
-            if (!dubPhones.contains(cont)) dubPhones.add(cont);
-          }
-        });
-      });
-      i++;
-    }
-    return dubPhones;
-  }
-
-  List<Contact> getDubEmails(List<Contact> contacts) {
-    List<Contact> dubEmails = [];
-    var i = 0;
-    while (i < contacts.length) {
-      var contact = contacts[i];
-      var emails = contact.emails;
-      emails?.forEach((email) {
-        lol('email is ${email.value} hash ${contact.hashCode}');
-        contacts.forEach((cont) {
-          var contEmails = cont.emails?.map((e) => e.value).toList();
-          lol('${cont != contact} ${contEmails?.contains(email.value) == true}');
-          if (cont != contact && contEmails?.contains(email.value) == true) {
-            if (!dubEmails.contains(contact)) dubEmails.add(contact);
-            if (!dubEmails.contains(cont)) dubEmails.add(cont);
-          }
-        });
-      });
-      i++;
-    }
-    return dubEmails;
-  }
-
-  List<Contact> getSimilarContacts(List<Contact> contacts) {
-    List<Contact> filterredContacts = [];
-    var index = 0;
-    while (index < contacts.length - 1) {
-      var currentElement = contacts[index];
-      contacts.forEach((element)  async {
-        if(currentElement.displayName != null &&
-            (await similarity(currentElement.displayName!, element.displayName!)) >= 0.75) {
-          if(!filterredContacts.contains(currentElement)) filterredContacts.add(currentElement);
-          if(!filterredContacts.contains(element)) filterredContacts.add(element);
-        }
-      });
-      index++;
-    }
-    return filterredContacts;
-  }
-
-  List<Contact> getNoNameContacts(List<Contact> contacts) {
-    List<Contact> filterredContacts = [];
-    var index = 0;
-    while (index < contacts.length - 1) {
-      var currentElement = contacts[index];
-      var nextElement = contacts[index + 1];
-      // lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if (currentElement.displayName?.isEmpty == true ||
-          currentElement.displayName == null) {
-        filterredContacts.add(contacts[index]);
-        filterredContacts.add(contacts[index + 1]);
-      }
-      index++;
-    }
-    return filterredContacts;
-  }
-
-  List<Contact> getNoPhoneContacts(List<Contact> contacts) {
-    List<Contact> filterredContacts = [];
-    var index = 0;
-    while (index < contacts.length - 1) {
-      var currentElement = contacts[index];
-      var nextElement = contacts[index + 1];
-      lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if (currentElement.phones?.isEmpty == true ||
-          currentElement.phones == null) {
-        filterredContacts.add(contacts[index]);
-        filterredContacts.add(contacts[index + 1]);
-      }
-      index++;
-    }
-
-    return filterredContacts;
-  }
-
   getAllContacts() async {
-    List<Contact> _contacts = (await ContactsService.getContacts());
+    List<Contact> _contacts = await ContactsService.getContacts();
     var dubNames = getDubNames(_contacts);
     var dubPhones = getDubPhones(_contacts);
     var dubEmails = getDubEmails(_contacts);
-    // var similarContacts = getSimilarContacts(_contacts);
-    var noName = getNoNameContacts(_contacts);
-    var noPhone = getNoPhoneContacts(_contacts);
+    var similarContacts = getSimilarContacts(_contacts);
+    var noNames = getNoNameContacts(_contacts);
+    var noPhones = getNoPhoneContacts(_contacts);
 
     setState(() {
       contactsLoaded = true;
       allContSize = _contacts.length;
+      _allContacts = _contacts;
 
       dubNamesSize = dubNames.length;
       _dubNames = dubNames;
@@ -219,20 +76,19 @@ class _ContactsInfoState extends State<ContactsInfo> {
       dubEmailsSize = dubEmails.length;
       _dubEmails = dubEmails;
 
-      // similarContactsSize = similarContacts.length;
-      // _similarContacts = similarContacts;
+      similarContactsSize = similarContacts.length;
+      _similarContacts = similarContacts;
 
-      noNameContactsSize = noName.length;
-      _noName = noName;
+      noNameContactsSize = noNames.length;
+      _noNames = noNames;
 
-      noPhoneContactsSize = noPhone.length;
-      _noPhone = noPhone;
+      noPhoneContactsSize = noPhones.length;
+      _noPhones = noPhones;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    lol('build');
     return MaterialApp(
       title: 'ListView',
       theme: ThemeData(
@@ -277,11 +133,6 @@ class _ContactsInfoState extends State<ContactsInfo> {
                     )
             ],
           ),
-          // trailing: Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   crossAxisAlignment: CrossAxisAlignment.end,
-          //   children:  [Text(allContSize.toString())],
-          // ),
           onTap: () {
             Navigator.push(
               context,
@@ -318,11 +169,6 @@ class _ContactsInfoState extends State<ContactsInfo> {
               )
             ],
           ),
-          // trailing: Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   crossAxisAlignment: CrossAxisAlignment.end,
-          //   children: [Text(dubNamesSize.toString())],
-          // ),
           onTap: () {
             Navigator.push(
               context,
@@ -358,11 +204,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
                 ),
               )
             ],
-          ),          // trailing: Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   crossAxisAlignment: CrossAxisAlignment.end,
-          //   children: [Text(dubPhonesSize.toString())],
-          // ),
+          ),
           onTap: () {
             Navigator.push(
               context,
@@ -370,7 +212,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
                 builder: (context) {
                   return DoublePhones(
                     titles: 'Duplicate phones',
-                    dubPhone: _dubPhones,
+                    dubPhones: _dubPhones,
                   );
                 },
               ),
@@ -400,18 +242,14 @@ class _ContactsInfoState extends State<ContactsInfo> {
                 ),
               )
             ],
-          ),          // trailing: Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   crossAxisAlignment: CrossAxisAlignment.end,
-          //   children: [Text(dubEmailsSize.toString())],
-          // ),
+          ),
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
                   return DoubleEmails(
-                      titles: 'Duplicate Emails', dubEmail: _dubEmails);
+                      titles: 'Duplicate Emails', dubEmails: _dubEmails);
                 },
               ),
             );
@@ -440,12 +278,8 @@ class _ContactsInfoState extends State<ContactsInfo> {
                 ),
               )
             ],
-          ),          // trailing: Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   crossAxisAlignment: CrossAxisAlignment.end,
-          //   children: [Text(similarContactsSize.toString())],
-          // ),
-          onTap: () {
+          ),
+           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -481,17 +315,13 @@ class _ContactsInfoState extends State<ContactsInfo> {
                 ),
               )
             ],
-          ),          // trailing: Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   crossAxisAlignment: CrossAxisAlignment.end,
-          //   children:  [Text(noNameContactsSize.toString())],
-          // ),
+          ),
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return EmptyContacts(titles: 'No names', noName: _noName);
+                  return EmptyContacts(titles: 'No names', noNames: _noNames);
                 },
               ),
             );
@@ -520,17 +350,13 @@ class _ContactsInfoState extends State<ContactsInfo> {
                 ),
               )
             ],
-          ),          // trailing: Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   crossAxisAlignment: CrossAxisAlignment.end,
-          //   children:  [Text(noPhoneContactsSize.toString())],
-          // ),
+          ),
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) {
-                  return EmptyPhone(titles: 'No phones', noPhone: _noPhone);
+                  return EmptyPhone(titles: 'No phones', noPhones: _noPhones);
                 },
               ),
             );

@@ -1,17 +1,15 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
-import '../../../../utils/logging.dart';
 import 'contact_list.dart';
 
 class EmptyPhone extends StatefulWidget {
-  EmptyPhone({Key? key, title, required this.titles, required this.noPhone}) : super(key: key);
+  EmptyPhone({Key? key, title, required this.titles, required this.noPhones}) : super(key: key);
 
   final String titles;
-  List<Contact> noPhone;
+  List<Contact> noPhones;
 
   @override
-  State<EmptyPhone> createState() => _EmptyPhoneState();
+  State<EmptyPhone> createState() => _EmptyPhoneState(noPhones);
 }
 
 class _EmptyPhoneState extends State<EmptyPhone> {
@@ -19,43 +17,10 @@ class _EmptyPhoneState extends State<EmptyPhone> {
   List<Contact> contactsFiltered = [];
   Map<String, Color> contactsColorMap = Map();
   TextEditingController searchController = TextEditingController();
-  bool contactsLoaded = false;
+  bool contactsLoaded = true;
 
-  @override
-  void initState() {
-    super.initState();
-    getPermissions();
-  }
-
-  getPermissions() async {
-    if (await Permission.contacts.request().isGranted) {
-      getAllContacts();
-    }
-  }
-
-  getAllContacts() async {
-    List<Contact> _contacts = (await ContactsService.getContacts());
-
-    for (var element in _contacts) {
-      lol('${element.displayName} ${element.hashCode}');
-    }
-    List<Contact> filterredContacts = [];
-    var index = 0;
-    while (index < _contacts.length - 1) {
-      var currentElement = _contacts[index];
-      var nextElement = _contacts[index + 1];
-      lol(' index $index show display names ${currentElement.hashCode} | ${nextElement.hashCode}');
-      if ( currentElement.phones?.isEmpty == true || currentElement.phones == null) {
-        filterredContacts.add(_contacts[index]);
-        filterredContacts.add(_contacts[index + 1]);
-      }
-      index++;
-    }
-
-    setState(() {
-      contacts = filterredContacts;
-      contactsLoaded = true;
-    });
+  _EmptyPhoneState(List<Contact> noPhones) {
+    contacts = noPhones;
   }
 
   @override
@@ -78,9 +43,7 @@ class _EmptyPhoneState extends State<EmptyPhone> {
             listItemsExist == true
                 ? // if we have contacts to show
             ContactsList(
-              reloadContacts: () {
-                getAllContacts();
-              },
+              reloadContacts: () {},
               contacts:
               isSearching == true ? contactsFiltered : contacts,
             )
