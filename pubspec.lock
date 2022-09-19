@@ -127,13 +127,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
-  dart_levenshtein:
-    dependency: "direct main"
-    description:
-      name: dart_levenshtein
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   dbus:
     dependency: transitive
     description:
