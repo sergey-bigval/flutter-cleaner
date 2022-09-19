@@ -10,8 +10,22 @@ class BigVideosFoundNewEvent extends BigVideosEvent {
 
 class BigVideosScanFinishEvent extends BigVideosEvent {}
 
-class BigVideosUserSelectEvent extends BigVideosEvent {}
+class BigVideosThumbDoneEvent extends BigVideosEvent {}
 
-class BigVideosUserBackPressEvent extends BigVideosEvent {}
+class BigVideosItemSelectedEvent extends BigVideosEvent {
+  final String id;
 
-class BigVideosUserCancelEvent extends BigVideosEvent {}
+  BigVideosItemSelectedEvent({required this.id});
+}
+
+class BigVideosItemUnSelectedEvent extends BigVideosEvent {
+  final String id;
+
+  BigVideosItemUnSelectedEvent({required this.id});
+}
+
+class BigVideosDeleteEvent extends BigVideosEvent {}
+
+class BigVideosBackPressEvent extends BigVideosEvent {}
+
+class BigVideosCancelJobEvent extends BigVideosEvent {}
