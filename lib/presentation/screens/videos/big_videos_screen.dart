@@ -93,14 +93,17 @@ class _BigVideosScreenState extends State<BigVideosScreen> {
                                 size: state.videosTotalSize,
                                 progress: _bloc.videoRepo.getThumbsMakerProgress(),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 3),
-                                child: CupertinoButton(
-                                  onPressed: () {
-                                    _bloc.add(BigVideosDeleteEvent());
-                                  },
-                                  color: AppColors.mainBtnColor,
-                                  child: const Text('Delete'),
+                              Visibility(
+                                visible: _bloc.state.isReadyToDelete,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 3),
+                                  child: CupertinoButton(
+                                    onPressed: () {
+                                      _bloc.add(BigVideosDeleteEvent());
+                                    },
+                                    color: AppColors.mainBtnColor,
+                                    child: const Text('Delete'),
+                                  ),
                                 ),
                               ),
                             ],
