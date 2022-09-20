@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hello_flutter/presentation/screens/contacts/bloc/contact.dart';
+import 'package:hello_flutter/presentation/screens/contacts/bloc/contacts_category_list.dart';
 import 'package:hello_flutter/presentation/screens/doubles/doubles_screen.dart';
 import 'package:hello_flutter/presentation/screens/home_screen.dart';
 import 'package:hello_flutter/presentation/screens/splash/splash_screen.dart';
@@ -24,6 +26,8 @@ class FlutterCleanerApp extends StatelessWidget {
         homeScreen: (context) => const HomeScreen(),
         permScreen: (context) => const PermissionHandlerWidget(),
         bigVideosScreen: (context) => const BigVideosScreen(),
+        contactScreen: (context) => const Contact(),
+        contactsInfo: (context) => const ContactsInfo(),
       },
       navigatorObservers: [_observer],
     );
