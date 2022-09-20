@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdBanner.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/contacts_category_list.dart';
 import 'device_info/device_info_page.dart';
+import 'double_photos/double_photos_pre_screen.dart';
 import 'old_events/old_events.dart';
 import 'videos/videos_screen.dart';
-import 'doubles/duplicates_screen.dart';
+import 'double_photos/double_photos_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -53,7 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPageChanged: _onPageViewChange,
                   children: const <Widget>[
                     OldCalendarEvents(),
-                    DuplicatesScreen(),
+                    DoublePhotosPreScreen(),
+                    // DuplicatesScreen(),
                     MyVideosScreen(),
                     DeviceInfoPage(),
                     ContactsInfo(),
