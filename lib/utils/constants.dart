@@ -4,6 +4,7 @@ const String permScreen = "PermScreen";
 const String bigVideosScreen = "BigVideosScreen";
 const String contactScreen = "ContactScreen";
 const String contactsInfo = "ContactsInfo";
+const String doublePhotosScreen = "DoublePhotosScreen";
 
 const String urlPolicy = 'https://www.google.com/search?q=policy';
 const String urlTerms = 'https://www.google.com/search?q=terms';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hello_flutter/themes/app_colors.dart';
 
 class Styles {
   static const TextStyle titleStyle = TextStyle(
@@ -19,5 +20,12 @@ class Styles {
     fontSize: 15,
     color: Colors.black45,
     decoration: TextDecoration.none,
+  );
+
+  static const text16White = TextStyle(
+    fontSize: 16,
+    color: Colors.white,
+    decoration: TextDecoration.none,
+    fontWeight: FontWeight.bold
   );
 }
