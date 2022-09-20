@@ -26,6 +26,4 @@ class BigVideosItemUnSelectedEvent extends BigVideosEvent {
 
 class BigVideosDeleteEvent extends BigVideosEvent {}
 
-class BigVideosBackPressEvent extends BigVideosEvent {}
-
 class BigVideosCancelJobEvent extends BigVideosEvent {}

@@ -6,6 +6,7 @@ import 'package:hello_flutter/presentation/screens/videos/widgets/video_found_in
 import 'package:hello_flutter/presentation/screens/videos/widgets/video_found_result.dart';
 import 'package:hello_flutter/presentation/screens/videos/widgets/video_list.dart';
 import 'package:hello_flutter/themes/app_colors.dart';
+import 'package:hello_flutter/utils/logging.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../themes/styles.dart';
@@ -20,7 +21,6 @@ class BigVideosScreen extends StatefulWidget {
 }
 
 class _BigVideosScreenState extends State<BigVideosScreen> {
-  var _backPressCount = 0;
   late BigVideosBloc _bloc;
 
   @override
@@ -33,14 +33,8 @@ class _BigVideosScreenState extends State<BigVideosScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        _backPressCount++;
-        if (_backPressCount < 3) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text("Are you sure you want to stop searching?")));
-          return false;
-        } else {
-          return true;
-        }
+        _showCancellationDialog(context);
+        return false;
       },
       child: SafeArea(
         child: Container(
@@ -52,13 +46,17 @@ class _BigVideosScreenState extends State<BigVideosScreen> {
               if (state.isScanning) {
                 return Column(
                   children: [
-                    Expanded(flex: 2, child: Lottie.asset("assets/lottie/108977-video-scanning.json")),
-                    const Expanded(flex: 1, child: Center(child: Text("Video searching...", style: Styles.titleStyle))),
+                    Expanded(
+                        flex: 2, child: Lottie.asset("assets/lottie/108977-video-scanning.json")),
+                    const Expanded(
+                        flex: 1,
+                        child: Center(child: Text("Video searching...", style: Styles.titleStyle))),
                     Expanded(
                       flex: 2,
                       child: BlocBuilder<BigVideosBloc, BigVideosState>(
                         bloc: _bloc,
-                        buildWhen: (previous, current) => previous.videosFound != current.videosFound,
+                        buildWhen: (previous, current) =>
+                            previous.videosFound != current.videosFound,
                         builder: (BuildContext context, state) {
                           return VideoFoundInfoWidget(
                             videos: state.videosFound,
@@ -78,7 +76,9 @@ class _BigVideosScreenState extends State<BigVideosScreen> {
                       child: Row(children: [
                         Lottie.asset("assets/lottie/done_676.json"),
                         const Expanded(
-                            flex: 7, child: Center(child: Text("Searching completed!", style: Styles.titleStyle))),
+                            flex: 7,
+                            child: Center(
+                                child: Text("Searching completed!", style: Styles.titleStyle))),
                       ]),
                     ),
                     Expanded(
@@ -117,12 +117,48 @@ class _BigVideosScreenState extends State<BigVideosScreen> {
                             })),
                   ],
                 );
-                ;
               }
             },
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _showCancellationDialog(BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                child: Center(child: Text("Cancel searching videos?"))),
+            contentPadding: const EdgeInsets.all(1),
+            insetPadding: const EdgeInsets.all(10),
+            content: const Padding(
+              padding: EdgeInsets.only(left: 20, bottom: 15, right: 20),
+              child: Text(
+                'Are you sure you want to cancel? Canceling this operation will result in the loss of current results!',
+                textAlign: TextAlign.center,
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Continue")),
+              ElevatedButton(
+                  onPressed: () {
+                    _bloc.add(BigVideosCancelJobEvent());
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Cancel")),
+            ],
+          );
+        }).then((value) {
+      lol('lol ${value.toString()}'); ////////////////////////////
+    });
   }
 }

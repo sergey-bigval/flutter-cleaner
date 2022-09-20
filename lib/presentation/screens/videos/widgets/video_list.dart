@@ -4,7 +4,7 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hello_flutter/presentation/screens/videos/bloc/big_videos_events.dart';
-import 'package:hello_flutter/presentation/screens/videos/bloc/video_model.dart';
+import 'package:hello_flutter/presentation/screens/videos/models/video_model.dart';
 import 'package:hello_flutter/utils/logging.dart';
 import 'package:video_player/video_player.dart';
 
@@ -45,9 +45,7 @@ class VideoList extends StatelessWidget {
         width: 25,
         child: Padding(
           padding: EdgeInsets.all(25),
-          child: CircularProgressIndicator(
-            color: Colors.black54,
-          ),
+          child: Icon(Icons.video_file),
         ),
       );
     } else {
@@ -59,7 +57,7 @@ class VideoList extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
-                  image: Image.memory(videoModel.thumb!, cacheWidth: 256).image,
+                  image: Image.memory(videoModel.thumb!, cacheWidth: 128).image,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -69,7 +67,7 @@ class VideoList extends StatelessWidget {
           Row(children: [
             const Spacer(),
             Visibility(
-              visible: bloc.videoRepo.isAllThumbsAvailable(),
+              visible: bloc.state.isReadyToDelete,
               child: BlocBuilder<BigVideosBloc, BigVideosState>(
                 bloc: bloc,
                 builder: (BuildContext context, state) {

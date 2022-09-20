@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:hello_flutter/presentation/screens/videos/bloc/big_videos_state.dart';
-import 'package:hello_flutter/presentation/screens/videos/bloc/video_model.dart';
+import 'package:hello_flutter/presentation/screens/videos/models/video_model.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:video_compress/video_compress.dart';
 
 import '../../../../utils/logging.dart';
 import 'big_videos_bloc.dart';
@@ -23,18 +25,24 @@ class VideoRepo {
     PermissionState permState = await PhotoManager.requestPermissionExtend();
     if (permState.isAuth) {
       allVideos.clear();
-      _idsToDelete.clear();
       thumbsAvailable = 0;
-      List<AssetPathEntity> allFolders = await PhotoManager.getAssetPathList(type: RequestType.video);
+      _idsToDelete.clear();
+      List<AssetPathEntity> allFolders =
+          await PhotoManager.getAssetPathList(type: RequestType.video);
 
       for (AssetPathEntity folder in allFolders) {
         ///////// цикл по папкам
         if (Platform.isAndroid && folder.name == "Recent") continue;
 
         int countOfAssets = await folder.assetCountAsync;
-        List<AssetEntity> mediasInFolder = await folder.getAssetListRange(start: 0, end: countOfAssets);
+        List<AssetEntity> mediasInFolder =
+            await folder.getAssetListRange(start: 0, end: countOfAssets);
 
         for (AssetEntity media in mediasInFolder) {
+          if (bloc.state.isJobCancelled) {
+            lol('SEARCHING CANCELLED');
+            return;
+          }
           ///////// цикл по файлам в папке
           File? file = await media.originFile;
           String path = file?.path ?? 'NON';
@@ -43,7 +51,7 @@ class VideoRepo {
 
           videosCount++;
           videosTotalSizeInMB += size ~/ 1048576;
-          lol("VIDEO SIZE = ${size}");
+          lol("VIDEO SIZE = $size");
           lol("VIDEOs TOTAL SIZE = $videosTotalSizeInMB MB");
           allVideos.add(VideoModel(
             absolutePath: path,
@@ -57,13 +65,15 @@ class VideoRepo {
             videosFound: allVideos.length,
             videosTotalSize: videosTotalSizeInMB,
             currentFolder: folder.name,
+            isReadyToDelete: false,
+            isJobCancelled: false,
           );
           bloc.add(BigVideosFoundNewEvent(bigVideosState: bvs));
-          lol("ADDED === " + path);
+          lol("ADDED === $path");
           List<VideoModel> currentVideos = [];
           currentVideos.addAll(allVideos);
 
-          if (videosCount > 49) {
+          if (videosCount > 60) {
             // чтобы побыстрее тестить //////////////////////// not RELEASE
             allVideos.sort((v1, v2) {
               if (v1.size > v2.size) return -1;
@@ -85,8 +95,31 @@ class VideoRepo {
     }
   }
 
-  bool isAllThumbsAvailable() {
-    return allVideos.length == thumbsAvailable;
+  Future<void> setThumbs() async {
+    var i = 0;
+    for (VideoModel m in allVideos) {
+      if (bloc.state.isJobCancelled) {
+        lol('THUMBNAILING CANCELLED');
+        return;
+      }
+      m.thumb = await _getThumb(m.absolutePath);
+      thumbsAvailable++;
+      bloc.add(BigVideosThumbDoneEvent());
+      lol("======= Video #${++i} thumb ADDED ${m.thumb?.length}");
+    }
+    lol("======= All thumbs  DONE");
+  }
+
+  Future<Uint8List?> _getThumb(String path) async {
+    try {
+      final uInt8list = await VideoCompress.getByteThumbnail(path, quality: 25, position: -1)
+          .timeout(const Duration(seconds: 5), onTimeout: () {
+        return null;
+      });
+      return uInt8list;
+    } catch (e) {
+      return null;
+    }
   }
 
   double getThumbsMakerProgress() {
@@ -95,21 +128,20 @@ class VideoRepo {
 
   Future<void> deleteSelected() async {
     /////////////////////////////////////////
-    final List<String> result = await PhotoManager.editor.deleteWithIds(_idsToDelete.toList());
-    lol('DELETED ${result.length} videos');
-    result.forEach((ID) {
-      allVideos.removeWhere((element) => element.entity.id == ID);
-      lol('DELETED VIDEO # $ID');
-      --thumbsAvailable;
-      _idsToDelete.remove(ID);
-    });
+    final List<String> deletedIds = await PhotoManager.editor.deleteWithIds(_idsToDelete.toList());
+    lol('DELETED ${deletedIds.length} videos');
+    for (var id in deletedIds) {
+      allVideos.removeWhere((element) => element.entity.id == id);
+      lol('DELETED VIDEO # $id');
+      _idsToDelete.remove(id);
+    }
   }
 
-  void add(String id) {
+  void addToRemoveList(String id) {
     _idsToDelete.add(id);
   }
 
-  void remove(String id) {
+  void takeFromRemoveList(String id) {
     _idsToDelete.remove(id);
   }
 
