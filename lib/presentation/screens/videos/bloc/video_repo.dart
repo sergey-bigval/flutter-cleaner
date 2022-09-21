@@ -21,6 +21,8 @@ class VideoRepo {
   int thumbsAvailable = 0;
   final Set<String> _idsToDelete = {};
 
+
+
   Future<void> loadVideos() async {
     PermissionState permState = await PhotoManager.requestPermissionExtend();
     if (permState.isAuth) {

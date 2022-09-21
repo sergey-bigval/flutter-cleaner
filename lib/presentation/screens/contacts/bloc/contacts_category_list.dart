@@ -1,6 +1,8 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/all_contacts.dart';
+import 'package:hello_flutter/presentation/screens/contacts/bloc/contacts_state.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/double_contacts.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/double_emails.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/double_phone.dart';
@@ -9,16 +11,25 @@ import 'package:hello_flutter/presentation/screens/contacts/bloc/no_name.dart';
 import 'package:hello_flutter/presentation/screens/contacts/bloc/similar_name.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../../utils/contacts_utils.dart';
+import 'contacts_bloc.dart';
 
 class ContactsInfo extends StatefulWidget {
   const ContactsInfo({super.key});
 
   @override
   State<ContactsInfo> createState() => _ContactsInfoState();
+
 }
 
 class _ContactsInfoState extends State<ContactsInfo> {
-  bool contactsLoaded = false;
+  late ContactsBloc _bloc;
+  // late ContactsBloc _bloc;
+  // late ContactsBloc _bloc;
+  // late ContactsBloc _bloc;
+  // late ContactsBloc _bloc;
+  // late ContactsBloc _bloc;
+
+  bool contactsLoaded = false;//TODO: should be deleted
 
   int dubNamesSize = 0;
   List<Contact> _dubNames = [];
@@ -44,48 +55,47 @@ class _ContactsInfoState extends State<ContactsInfo> {
   @override
   void initState() {
     super.initState();
-    getPermissions();
+    _bloc = ContactsBloc();
+    // _bloc = ContactsBloc();
+    // _bloc = ContactsBloc();
+    // _bloc = ContactsBloc();
+    // _bloc = ContactsBloc();
+    // _bloc = ContactsBloc();
   }
 
-  getPermissions() async {
-    if (await Permission.contacts.request().isGranted) {
-      getAllContacts();
-    }
-  }
-
-  getAllContacts() async {
-    List<Contact> _contacts = await ContactsService.getContacts();
-    var dubNames = getDubNames(_contacts);
-    var dubPhones = getDubPhones(_contacts);
-    var dubEmails = getDubEmails(_contacts);
-    var similarContacts = getSimilarContacts(_contacts);
-    var noNames = getNoNameContacts(_contacts);
-    var noPhones = getNoPhoneContacts(_contacts);
-
-    setState(() {
-      contactsLoaded = true;
-      allContSize = _contacts.length;
-      _allContacts = _contacts;
-
-      dubNamesSize = dubNames.length;
-      _dubNames = dubNames;
-
-      dubPhonesSize = dubPhones.length;
-      _dubPhones = dubPhones;
-
-      dubEmailsSize = dubEmails.length;
-      _dubEmails = dubEmails;
-
-      similarContactsSize = similarContacts.length;
-      _similarContacts = similarContacts;
-
-      noNameContactsSize = noNames.length;
-      _noNames = noNames;
-
-      noPhoneContactsSize = noPhones.length;
-      _noPhones = noPhones;
-    });
-  }
+  // getAllContacts() async {
+  //   List<Contact> _contacts = await ContactsService.getContacts();
+  //   var dubNames = getDubNames(_contacts);
+  //   var dubPhones = getDubPhones(_contacts);
+  //   var dubEmails = getDubEmails(_contacts);
+  //   var similarContacts = getSimilarContacts(_contacts);
+  //   var noNames = getNoNameContacts(_contacts);
+  //   var noPhones = getNoPhoneContacts(_contacts);
+  //
+  //   setState(() {
+  //     contactsLoaded = true;
+  //     allContSize = _contacts.length;
+  //     _allContacts = _contacts;
+  //
+  //     dubNamesSize = dubNames.length;
+  //     _dubNames = dubNames;
+  //
+  //     dubPhonesSize = dubPhones.length;
+  //     _dubPhones = dubPhones;
+  //
+  //     dubEmailsSize = dubEmails.length;
+  //     _dubEmails = dubEmails;
+  //
+  //     similarContactsSize = similarContacts.length;
+  //     _similarContacts = similarContacts;
+  //
+  //     noNameContactsSize = noNames.length;
+  //     _noNames = noNames;
+  //
+  //     noPhoneContactsSize = noPhones.length;
+  //     _noPhones = noPhones;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -116,22 +126,42 @@ class _ContactsInfoState extends State<ContactsInfo> {
             Icons.people,
             color: Colors.blueAccent,
           ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              contactsLoaded == true
-                  ? // if we have contacts to show
-                  Text(allContSize.toString())
-                  : Container(
-                      // still loading contacts
-                      child: const SizedBox(
-                        height: 20.0,
-                        width: 20.0,
-                        child: CircularProgressIndicator(),
-                      ),
-                    )
-            ],
+          trailing: BlocBuilder<ContactsBloc, ContactsState>(
+          bloc: _bloc,
+          buildWhen: (previous, current) => previous.isScanning != current.isScanning,
+          builder: (BuildContext context, state) {
+            if (state.isScanning) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: const <Widget>[
+                       Expanded(
+                         child: SizedBox(
+                           height: 20.0,
+                           width: 20.0,
+                           child: CircularProgressIndicator(),
+                         ),
+                       )
+                ],
+              );
+            } else {
+              return BlocBuilder<ContactsBloc, ContactsState>(
+                bloc: _bloc,
+                buildWhen: (previous, current) =>
+                previous.isScanning != current.isScanning,
+                builder: (BuildContext context, state) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Text(state.contactSize.toString())
+                    ],
+                  );
+                }
+              );
+            }
+
+          }
           ),
           onTap: () {
             Navigator.push(
