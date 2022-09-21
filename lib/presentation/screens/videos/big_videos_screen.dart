@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hello_flutter/presentation/screens/videos/bloc/big_videos_state.dart';
+import 'package:hello_flutter/presentation/screens/videos/widgets/cancel_dialog.dart';
 import 'package:hello_flutter/presentation/screens/videos/widgets/video_found_info.dart';
 import 'package:hello_flutter/presentation/screens/videos/widgets/video_found_result.dart';
 import 'package:hello_flutter/presentation/screens/videos/widgets/video_list.dart';
 import 'package:hello_flutter/themes/app_colors.dart';
-import 'package:hello_flutter/utils/logging.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../themes/styles.dart';
@@ -132,36 +132,7 @@ class _BigVideosScreenState extends State<BigVideosScreen> {
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Padding(
-                padding: EdgeInsets.only(bottom: 20),
-                child: Center(child: Text("Cancel searching videos?"))),
-            contentPadding: const EdgeInsets.all(1),
-            insetPadding: const EdgeInsets.all(10),
-            content: const Padding(
-              padding: EdgeInsets.only(left: 20, bottom: 15, right: 20),
-              child: Text(
-                'Are you sure you want to cancel? Canceling this operation will result in the loss of current results!',
-                textAlign: TextAlign.center,
-              ),
-            ),
-            actions: [
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text("Continue")),
-              ElevatedButton(
-                  onPressed: () {
-                    _bloc.add(BigVideosCancelJobEvent());
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text("Cancel")),
-            ],
-          );
-        }).then((value) {
-      lol('lol ${value.toString()}'); ////////////////////////////
-    });
+          return CancelDialog(onCancel: () => _bloc.add(BigVideosCancelJobEvent()));
+        });
   }
 }
