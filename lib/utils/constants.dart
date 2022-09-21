@@ -2,6 +2,7 @@ const String splashScreen = "SplashScreen";
 const String homeScreen = "HomeScreen";
 const String permScreen = "PermScreen";
 const String bigVideosScreen = "BigVideosScreen";
+const String oldEventsScreen = "OldEventsScreen";
 const String contactScreen = "ContactScreen";
 const String contactsInfo = "ContactsInfo";
 const String doublePhotosScreen = "DoublePhotosScreen";

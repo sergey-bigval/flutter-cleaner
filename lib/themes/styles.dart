@@ -28,4 +28,11 @@ class Styles {
     decoration: TextDecoration.none,
     fontWeight: FontWeight.bold
   );
+
+  static const text20WhiteB = TextStyle(
+      fontSize: 20,
+      color: Colors.white,
+      decoration: TextDecoration.none,
+      fontWeight: FontWeight.bold
+  );
 }

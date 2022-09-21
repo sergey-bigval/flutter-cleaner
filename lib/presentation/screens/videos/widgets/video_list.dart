@@ -24,6 +24,7 @@ class VideoList extends StatelessWidget {
 
   Widget _getVideoGrid(BuildContext context) {
     return GridView.builder(
+      physics: const BouncingScrollPhysics(),
       itemCount: bloc.videoRepo.allVideos.length,
       scrollDirection: Axis.vertical,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

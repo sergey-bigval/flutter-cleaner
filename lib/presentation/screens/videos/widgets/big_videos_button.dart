@@ -19,7 +19,7 @@ class _BigVideosButtonState extends State<BigVideosButton> {
   @override
   Widget build(BuildContext context) {
     return CupertinoButton(
-      color: AppColors.optimizeBtnColor,
+      color: AppColors.mainBtnColor,
       onPressed: checkDoubles,
       child: isActive ? getText() : getLoader(),
     );
@@ -27,9 +27,9 @@ class _BigVideosButtonState extends State<BigVideosButton> {
 
   Widget getText() {
     return const Text(
-      'Press for video searching or long press',
+      'Go to \'Big Videos\'',
       textAlign: TextAlign.center,
-      style: Styles.text20,
+      style: Styles.text20WhiteB,
     );
   }
 

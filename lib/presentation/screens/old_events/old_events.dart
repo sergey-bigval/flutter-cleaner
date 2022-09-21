@@ -2,6 +2,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:hello_flutter/themes/app_colors.dart';
+import 'package:hello_flutter/utils/constants.dart';
 import 'package:hello_flutter/utils/logging.dart';
 import 'package:intl/intl.dart';
 import 'package:manage_calendar_events/manage_calendar_events.dart';
@@ -23,20 +25,16 @@ class _OldCalendarEventsState extends State<OldCalendarEvents> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CupertinoButton(
-          color: Colors.redAccent,
-          onPressed: () => printUsersCalendarToLog(),
-          child: const Text('Show old events'),
-        ),
-        Visibility(
-          visible: _allEventsList.isNotEmpty,
-          child: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 5),
-              child: Text(
-                'Аккуратно! Удаление по настоящему!',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.red, fontSize: 18),
-              )),
+        Center(
+          child: CupertinoButton(
+            color: AppColors.mainBtnColor,
+            onPressed: () => goOldEventsScreen(),
+            child: const Text(
+              'Go to \'Old Events\'',
+              textAlign: TextAlign.center,
+              style: Styles.text20WhiteB,
+            ),
+          ),
         ),
         Expanded(
           child: ListView.builder(
@@ -68,37 +66,34 @@ class _OldCalendarEventsState extends State<OldCalendarEvents> {
 
   printUsersCalendarToLog() {
     sendPush();
-    lol("я тут перм перед");
+
     _myPlugin.hasPermissions().then((value) async {
-      lol("я тут перм перед");
       if (!value!) {
         _myPlugin.requestPermissions();
-        lol("я тут перм після");
       } else {
-        _allEventsList.clear();
-        lol("я тут");
-
-        var allCalendars = await _myPlugin.getCalendars();
-        lol("CALENDARS length = ${allCalendars?.length}");
-
-        allCalendars?.forEach((calendar) async {
-          final isUserAccount = calendar.accountName?.contains('@') ?? false;
-          if (!isUserAccount) return;
-
-          lol("calendar.accountName = ${calendar.accountName}");
-          lol("calendar.id = ${calendar.id}");
-          var events = await _myPlugin.getEvents(calendarId: calendar.id!);
-          lol("======================== ${calendar.accountName} ========================");
-          // List<CalendarEvent> eventList = [];
-          events?.forEach((event) async {
-            if (event.startDate?.isBefore(DateTime.now().add(const Duration(days: -10))) ?? true) {
-              _allEventsList.add(event);
-              lol("MY EVENT title = ${event.title} - StartDate: ${getFormattedDate(event.startDate)} - ID = ${event.eventId}");
-            }
-          });
-          setState(() {});
-          // allEventsList.add(eventList);
-        });
+        // _allEventsList.clear();
+        //
+        // var allCalendars = await _myPlugin.getCalendars();
+        // lol("CALENDARS length = ${allCalendars?.length}");
+        //
+        // allCalendars?.forEach((calendar) async {
+        //   final isUserAccount = calendar.accountName?.contains('@') ?? false;
+        //   if (!isUserAccount) return;
+        //
+        //   lol("calendar.accountName = ${calendar.accountName}");
+        //   lol("calendar.id = ${calendar.id}");
+        //   var events = await _myPlugin.getEvents(calendarId: calendar.id!);
+        //   lol("======================== ${calendar.accountName} ========================");
+        //   // List<CalendarEvent> eventList = [];
+        //   events?.forEach((event) async {
+        //     if (event.startDate?.isBefore(DateTime.now().add(const Duration(days: -10))) ?? true) {
+        //       _allEventsList.add(event);
+        //       lol("MY EVENT title = ${event.title} - StartDate: ${getFormattedDate(event.startDate)} - ID = ${event.eventId}");
+        //     }
+        //   });
+        //   setState(() {});
+        //   // allEventsList.add(eventList);
+        // });
       }
     });
   }
@@ -108,7 +103,8 @@ class _OldCalendarEventsState extends State<OldCalendarEvents> {
   }
 
   void sendPush() async {
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings("@mipmap/ic_launcher");
@@ -116,8 +112,11 @@ class _OldCalendarEventsState extends State<OldCalendarEvents> {
         IOSInitializationSettings(onDidReceiveLocalNotification: null);
     const MacOSInitializationSettings initializationSettingsMacOS = MacOSInitializationSettings();
     const InitializationSettings initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS, macOS: initializationSettingsMacOS);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: null);
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsIOS,
+        macOS: initializationSettingsMacOS);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: null);
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
         'your channel id', 'your channel name',
@@ -129,21 +128,37 @@ class _OldCalendarEventsState extends State<OldCalendarEvents> {
         onlyAlertOnce: true,
         playSound: true,
         ticker: 'ticker');
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-    flutterLocalNotificationsPlugin.show(0, 'Push title', 'Hello androbene first PUSH !', platformChannelSpecifics,
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    flutterLocalNotificationsPlugin.show(
+        0, 'Push title', 'Hello androbene first PUSH !', platformChannelSpecifics,
         payload: 'item x');
   }
 
   removeItemByIndex(int index) {
     final deletedId = _allEventsList[index].eventId;
-    _myPlugin.deleteEvent(calendarId: "3", eventId: _allEventsList[index].eventId ?? '').then((value) {
+    _myPlugin
+        .deleteEvent(calendarId: "3", eventId: _allEventsList[index].eventId ?? '')
+        .then((value) {
       if (value!) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Event $deletedId deleted")));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Event $deletedId deleted")));
         _allEventsList.removeAt(index);
       }
     });
     setState(() {
       printUsersCalendarToLog();
+    });
+  }
+
+  goOldEventsScreen() {
+    _myPlugin.hasPermissions().then((value) async {
+      if (!value!) {
+        _myPlugin.requestPermissions();
+        // todo: тут надо чтото придумать, т.к. у нас есть только 2 шанса вызвать СИСТЕМНОЕ окно пермишенов
+      } else {
+        Navigator.pushNamed(context, oldEventsScreen);
+      }
     });
   }
 }
