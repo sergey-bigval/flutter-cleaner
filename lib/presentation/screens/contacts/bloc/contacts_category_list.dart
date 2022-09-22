@@ -22,7 +22,8 @@ class ContactsInfo extends StatefulWidget {
 }
 
 class _ContactsInfoState extends State<ContactsInfo> {
-  late ContactsBloc _bloc;
+  late ContactsBloc _blocContacts;
+  late EmailsBloc _blocEmails;
   // late ContactsBloc _bloc;
   // late ContactsBloc _bloc;
   // late ContactsBloc _bloc;
@@ -55,8 +56,8 @@ class _ContactsInfoState extends State<ContactsInfo> {
   @override
   void initState() {
     super.initState();
-    _bloc = ContactsBloc();
-    // _bloc = ContactsBloc();
+    _blocContacts = ContactsBloc();
+    _blocEmails = EmailsBloc();
     // _bloc = ContactsBloc();
     // _bloc = ContactsBloc();
     // _bloc = ContactsBloc();
@@ -127,7 +128,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
             color: Colors.blueAccent,
           ),
           trailing: BlocBuilder<ContactsBloc, ContactsState>(
-          bloc: _bloc,
+          bloc: _blocContacts,
           buildWhen: (previous, current) => previous.isScanning != current.isScanning,
           builder: (BuildContext context, state) {
             if (state.isScanning) {
@@ -146,7 +147,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
               );
             } else {
               return BlocBuilder<ContactsBloc, ContactsState>(
-                bloc: _bloc,
+                bloc: _blocContacts,
                 buildWhen: (previous, current) =>
                 previous.isScanning != current.isScanning,
                 builder: (BuildContext context, state) {
@@ -189,14 +190,11 @@ class _ContactsInfoState extends State<ContactsInfo> {
               contactsLoaded == true
                   ? // if we have contacts to show
               Text(dubNamesSize.toString())
-                  : Container(
-                // still loading contacts
-                child: const SizedBox(
-                  height: 20.0,
-                  width: 20.0,
-                  child: CircularProgressIndicator(),
-                ),
-              )
+                  : const SizedBox(
+                    height: 20.0,
+                    width: 20.0,
+                    child: CircularProgressIndicator(),
+                  )
             ],
           ),
           onTap: () {
@@ -256,22 +254,42 @@ class _ContactsInfoState extends State<ContactsInfo> {
             Icons.email,
             color: Colors.blueAccent,
           ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              contactsLoaded == true
-                  ? // if we have contacts to show
-              Text(dubEmailsSize.toString())
-                  : Container(
-                // still loading contacts
-                child: const SizedBox(
-                  height: 20.0,
-                  width: 20.0,
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            ],
+          trailing: BlocBuilder<EmailsBloc, EmailsState>(
+              bloc: _blocEmails,
+              buildWhen: (previous, current) => previous.isScanning != current.isScanning,
+              builder: (BuildContext context, state) {
+                if (state.isScanning) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: const <Widget>[
+                      Expanded(
+                        child: SizedBox(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    ],
+                  );
+                } else {
+                  return BlocBuilder<EmailsBloc, EmailsState>(
+                      bloc: _blocEmails,
+                      buildWhen: (previous, current) =>
+                      previous.isScanning != current.isScanning,
+                      builder: (BuildContext context, state) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Text(state.emailsSize.toString())
+                          ],
+                        );
+                      }
+                  );
+                }
+
+              }
           ),
           onTap: () {
             Navigator.push(
