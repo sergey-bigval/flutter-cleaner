@@ -50,24 +50,32 @@ class ContactsRepo {
         if (!filterredContacts.contains(contacts[index])) {
           filterredContacts.add(contacts[index]);
           //todo: send event
-          bloc.add(NewEmailsFoundEvent(
-              contactsEmailsSize: filterredContacts.length));
+          bloc.add(NewDubNamesFoundEvent(
+              contactsNameSize: filterredContacts.length));
         }
         if (!filterredContacts.contains(contacts[index + 1])) {
           filterredContacts.add(contacts[index + 1]);
           //todo: send event
-          bloc.add(NewEmailsFoundEvent(
-              contactsEmailsSize: filterredContacts.length));
+          bloc.add(NewDubNamesFoundEvent(
+              contactsNameSize: filterredContacts.length));
         }
       }
 
       index++;
     }
-    bloc.add(AllEmailsFoundEvent(contactsEmailsSize: filterredContacts.length));
+    bloc.add(
+        AllDubsNamesFoundEvent(contactsNamesSize: filterredContacts.length));
     return filterredContacts;
   }
 
-  List<Contact> getDubPhones(List<Contact> contacts) {
+  getDubPhones() async {
+    List<Contact> contacts = [];
+    if (await Permission.contacts.request().isGranted) {
+      // bloc.add(StartScanningContactsEvent());
+      contacts = await ContactsService.getContacts();
+      // bloc.add(FinishScanningContactsEvent(
+      // contactsSize: contacts.length));
+    }
     List<Contact> dubPhones = [];
     var i = 0;
     while (i < contacts.length) {
@@ -77,13 +85,22 @@ class ContactsRepo {
         for (var cont in contacts) {
           var contPhones = cont.phones?.map((e) => e.value).toList();
           if (cont != contact && contPhones?.contains(phone.value) == true) {
-            if (!dubPhones.contains(contact)) dubPhones.add(contact);
-            if (!dubPhones.contains(cont)) dubPhones.add(cont);
+            if (!dubPhones.contains(contact)) {
+              dubPhones.add(contact);
+              bloc.add(
+                  NewDubPhonesFoundEvent(contactsPhonesSize: dubPhones.length));
+            }
+            if (!dubPhones.contains(cont)) {
+              dubPhones.add(cont);
+              bloc.add(
+                  NewDubPhonesFoundEvent(contactsPhonesSize: dubPhones.length));
+            }
           }
         }
       });
       i++;
     }
+    bloc.add(AllDubsPhonesFoundEvent(contactsPhonesSize: dubPhones.length));
     return dubPhones;
   }
 
@@ -122,7 +139,13 @@ class ContactsRepo {
     return dubEmails;
   }
 
-  List<Contact> getNoNameContacts(List<Contact> contacts) {
+  getNoNameContacts() async {
+    List<Contact> contacts = [];
+    if (await Permission.contacts.request().isGranted) {
+      // bloc.add(StartScanningContactsEvent()); //TODO: start search
+      contacts = await ContactsService.getContacts();
+      // bloc.add(FinishScanningContactsEvent(contactsSize: contacts.length));
+    }
     List<Contact> filterredContacts = [];
     var index = 0;
     while (index < contacts.length - 1) {
@@ -131,14 +154,26 @@ class ContactsRepo {
       if (currentElement.displayName?.isEmpty == true ||
           currentElement.displayName == null) {
         filterredContacts.add(contacts[index]);
+        bloc.add(
+            NewNoNamesFoundEvent(contactsNoNameSize: filterredContacts.length));
         filterredContacts.add(contacts[index + 1]);
+        bloc.add(
+            AllNoNamesFoundEvent(contactsNoNameSize: filterredContacts.length));
       }
       index++;
     }
+    bloc.add(
+        AllNoNamesFoundEvent(contactsNoNameSize: filterredContacts.length));
     return filterredContacts;
   }
 
-  List<Contact> getNoPhoneContacts(List<Contact> contacts) {
+  getNoPhoneContacts() async {
+    List<Contact> contacts = [];
+    if (await Permission.contacts.request().isGranted) {
+      // bloc.add(StartScanningContactsEvent()); //TODO: start search
+      contacts = await ContactsService.getContacts();
+      // bloc.add(FinishScanningContactsEvent(contactsSize: contacts.length));
+    }
     List<Contact> filterredContacts = [];
     var index = 0;
     while (index < contacts.length - 1) {
@@ -147,11 +182,18 @@ class ContactsRepo {
       if (currentElement.phones?.isEmpty == true ||
           currentElement.phones == null) {
         filterredContacts.add(contacts[index]);
+        bloc.add(NewNoPhonesFoundEvent(
+            contactsNoPhonesSize: filterredContacts.length));
+
         filterredContacts.add(contacts[index + 1]);
+
+        bloc.add(NewNoPhonesFoundEvent(
+            contactsNoPhonesSize: filterredContacts.length));
       }
       index++;
     }
-
+    bloc.add(
+        AllNoPhonesFoundEvent(contactsNoPhonesSize: filterredContacts.length));
     return filterredContacts;
   }
 
@@ -202,8 +244,14 @@ class ContactsRepo {
         longerLength.toDouble();
   }
 
-  Future<List<Contact>> getSimilarContacts(List<Contact> contacts) async {
-    List<Contact> filterredContacts = [];
+  getSimilarContacts() async {
+    List<Contact> contacts = [];
+    if (await Permission.contacts.request().isGranted) {
+      // bloc.add(StartScanningContactsEvent()); //TODO: start search
+      contacts = await ContactsService.getContacts();
+      // bloc.add(FinishScanningContactsEvent(contactsSize: contacts.length));
+    }
+    List<Contact> filteredContacts = [];
     var j = 1;
     for (Contact currentElement in contacts) {
       if (currentElement.displayName != null) {
@@ -213,10 +261,16 @@ class ContactsRepo {
             var res =
                 similarity(currentElement.displayName!, element.displayName!);
             if (res >= 0.75 && res < 1.0) {
-              if (!filterredContacts.contains(currentElement))
-                filterredContacts.add(currentElement);
-              if (!filterredContacts.contains(element))
-                filterredContacts.add(element);
+              if (!filteredContacts.contains(currentElement)) {
+                filteredContacts.add(currentElement);
+                bloc.add(NewSimilarFoundEvent(
+                    contactsSimilarSize: filteredContacts.length));
+              }
+              if (!filteredContacts.contains(element)) {
+                filteredContacts.add(element);
+                bloc.add(NewSimilarFoundEvent(
+                    contactsSimilarSize: filteredContacts.length));
+              }
             }
           }
         }
@@ -224,6 +278,6 @@ class ContactsRepo {
       j++;
     }
 
-    return filterredContacts;
+    return filteredContacts;
   }
 }

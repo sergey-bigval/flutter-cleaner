@@ -24,6 +24,12 @@ class ContactsInfo extends StatefulWidget {
 class _ContactsInfoState extends State<ContactsInfo> {
   late ContactsBloc _blocContacts;
   late EmailsBloc _blocEmails;
+  late NamesBloc _blocNames;
+  late PhonesBloc _blocPhones;
+  late NoNameBloc _noNameBloc;
+  late NoPhonesBloc _noPhonesBloc;
+  late SimilarBloc _similarBloc;
+  // late PhonesBloc _phonesBloc;
   // late ContactsBloc _bloc;
   // late ContactsBloc _bloc;
   // late ContactsBloc _bloc;
@@ -58,45 +64,12 @@ class _ContactsInfoState extends State<ContactsInfo> {
     super.initState();
     _blocContacts = ContactsBloc();
     _blocEmails = EmailsBloc();
-    // _bloc = ContactsBloc();
-    // _bloc = ContactsBloc();
-    // _bloc = ContactsBloc();
-    // _bloc = ContactsBloc();
+    _blocNames = NamesBloc();
+    _blocPhones = PhonesBloc();
+    _noPhonesBloc = NoPhonesBloc();
+    _noNameBloc = NoNameBloc();
+    _similarBloc = SimilarBloc();
   }
-
-  // getAllContacts() async {
-  //   List<Contact> _contacts = await ContactsService.getContacts();
-  //   var dubNames = getDubNames(_contacts);
-  //   var dubPhones = getDubPhones(_contacts);
-  //   var dubEmails = getDubEmails(_contacts);
-  //   var similarContacts = getSimilarContacts(_contacts);
-  //   var noNames = getNoNameContacts(_contacts);
-  //   var noPhones = getNoPhoneContacts(_contacts);
-  //
-  //   setState(() {
-  //     contactsLoaded = true;
-  //     allContSize = _contacts.length;
-  //     _allContacts = _contacts;
-  //
-  //     dubNamesSize = dubNames.length;
-  //     _dubNames = dubNames;
-  //
-  //     dubPhonesSize = dubPhones.length;
-  //     _dubPhones = dubPhones;
-  //
-  //     dubEmailsSize = dubEmails.length;
-  //     _dubEmails = dubEmails;
-  //
-  //     similarContactsSize = similarContacts.length;
-  //     _similarContacts = similarContacts;
-  //
-  //     noNameContactsSize = noNames.length;
-  //     _noNames = noNames;
-  //
-  //     noPhoneContactsSize = noPhones.length;
-  //     _noPhones = noPhones;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +109,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: const <Widget>[
-                       Expanded(
+                       SizedBox(
                          child: SizedBox(
                            height: 20.0,
                            width: 20.0,
@@ -183,19 +156,42 @@ class _ContactsInfoState extends State<ContactsInfo> {
             Icons.contact_phone,
             color: Colors.blueAccent,
           ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              contactsLoaded == true
-                  ? // if we have contacts to show
-              Text(dubNamesSize.toString())
-                  : const SizedBox(
-                    height: 20.0,
-                    width: 20.0,
-                    child: CircularProgressIndicator(),
-                  )
-            ],
+          trailing: BlocBuilder<NamesBloc, NamesState>(
+              bloc: _blocNames,
+              buildWhen: (previous, current) => previous.isScanning != current.isScanning,
+              builder: (BuildContext context, state) {
+                if (state.isScanning) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: const <Widget>[
+                      SizedBox(
+                        child: SizedBox(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    ],
+                  );
+                } else {
+                  return BlocBuilder<NamesBloc, NamesState>(
+                      bloc: _blocNames,
+                      buildWhen: (previous, current) =>
+                      previous.isScanning != current.isScanning,
+                      builder: (BuildContext context, state) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Text(state.namesSize.toString())
+                          ],
+                        );
+                      }
+                  );
+                }
+
+              }
           ),
           onTap: () {
             Navigator.push(
@@ -216,22 +212,42 @@ class _ContactsInfoState extends State<ContactsInfo> {
             Icons.phone_sharp,
             color: Colors.blueAccent,
           ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              contactsLoaded == true
-                  ? // if we have contacts to show
-              Text(dubPhonesSize.toString())
-                  : Container(
-                // still loading contacts
-                child: const SizedBox(
-                  height: 20.0,
-                  width: 20.0,
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            ],
+          trailing: BlocBuilder<PhonesBloc, PhonesState>(
+              bloc: _blocPhones,
+              buildWhen: (previous, current) => previous.isScanning != current.isScanning,
+              builder: (BuildContext context, state) {
+                if (state.isScanning) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: const <Widget>[
+                      SizedBox(
+                        child: SizedBox(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    ],
+                  );
+                } else {
+                  return BlocBuilder<PhonesBloc, PhonesState>(
+                      bloc: _blocPhones,
+                      buildWhen: (previous, current) =>
+                      previous.isScanning != current.isScanning,
+                      builder: (BuildContext context, state) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Text(state.phoneSize.toString())
+                          ],
+                        );
+                      }
+                  );
+                }
+
+              }
           ),
           onTap: () {
             Navigator.push(
@@ -263,7 +279,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: const <Widget>[
-                      Expanded(
+                      SizedBox(
                         child: SizedBox(
                           height: 20.0,
                           width: 20.0,
@@ -310,22 +326,42 @@ class _ContactsInfoState extends State<ContactsInfo> {
             Icons.sort_by_alpha,
             color: Colors.blueAccent,
           ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              contactsLoaded == true
-                  ? // if we have contacts to show
-              Text(similarContactsSize.toString())
-                  : Container(
-                // still loading contacts
-                child: const SizedBox(
-                  height: 20.0,
-                  width: 20.0,
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            ],
+          trailing: BlocBuilder<SimilarBloc, SimilarState>(
+              bloc: _similarBloc,
+              buildWhen: (previous, current) => previous.isScanning != current.isScanning,
+              builder: (BuildContext context, state) {
+                if (state.isScanning) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: const <Widget>[
+                      SizedBox(
+                        child: SizedBox(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    ],
+                  );
+                } else {
+                  return BlocBuilder<SimilarBloc, SimilarState>(
+                      bloc: _similarBloc,
+                      buildWhen: (previous, current) =>
+                      previous.isScanning != current.isScanning,
+                      builder: (BuildContext context, state) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Text(state.similarSize.toString())
+                          ],
+                        );
+                      }
+                  );
+                }
+
+              }
           ),
            onTap: () {
             Navigator.push(
@@ -347,22 +383,42 @@ class _ContactsInfoState extends State<ContactsInfo> {
             Icons.no_accounts,
             color: Colors.blueAccent,
           ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              contactsLoaded == true
-                  ? // if we have contacts to show
-              Text(noNameContactsSize.toString())
-                  : Container(
-                // still loading contacts
-                child: const SizedBox(
-                  height: 20.0,
-                  width: 20.0,
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            ],
+          trailing: BlocBuilder<NoNameBloc, NoNameState>(
+              bloc: _noNameBloc,
+              buildWhen: (previous, current) => previous.isScanning != current.isScanning,
+              builder: (BuildContext context, state) {
+                if (state.isScanning) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: const <Widget>[
+                      SizedBox(
+                        child: SizedBox(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    ],
+                  );
+                } else {
+                  return BlocBuilder<NoNameBloc, NoNameState>(
+                      bloc: _noNameBloc,
+                      buildWhen: (previous, current) =>
+                      previous.isScanning != current.isScanning,
+                      builder: (BuildContext context, state) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Text(state.noNameSize.toString())
+                          ],
+                        );
+                      }
+                  );
+                }
+
+              }
           ),
           onTap: () {
             Navigator.push(
@@ -382,22 +438,42 @@ class _ContactsInfoState extends State<ContactsInfo> {
             Icons.no_cell,
             color: Colors.blueAccent,
           ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              contactsLoaded == true
-                  ? // if we have contacts to show
-              Text(noPhoneContactsSize.toString())
-                  : Container(
-                // still loading contacts
-                child: const SizedBox(
-                  height: 20.0,
-                  width: 20.0,
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            ],
+          trailing: BlocBuilder<NoPhonesBloc, NoPhonesState>(
+              bloc: _noPhonesBloc,
+              buildWhen: (previous, current) => previous.isScanning != current.isScanning,
+              builder: (BuildContext context, state) {
+                if (state.isScanning) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: const <Widget>[
+                      SizedBox(
+                        child: SizedBox(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    ],
+                  );
+                } else {
+                  return BlocBuilder<NoPhonesBloc, NoPhonesState>(
+                      bloc: _noPhonesBloc,
+                      buildWhen: (previous, current) =>
+                      previous.isScanning != current.isScanning,
+                      builder: (BuildContext context, state) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Text(state.noPhonesSize.toString())
+                          ],
+                        );
+                      }
+                  );
+                }
+
+              }
           ),
           onTap: () {
             Navigator.push(
