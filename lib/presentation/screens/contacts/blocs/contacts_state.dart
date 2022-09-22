@@ -1,4 +1,3 @@
-import 'package:hello_flutter/presentation/screens/contacts/bloc/contact_list.dart';
 
 class ContactsState {
   final bool isScanning;

@@ -1,17 +1,22 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hello_flutter/presentation/screens/contacts/bloc/all_contacts.dart';
-import 'package:hello_flutter/presentation/screens/contacts/bloc/contacts_state.dart';
-import 'package:hello_flutter/presentation/screens/contacts/bloc/double_contacts.dart';
-import 'package:hello_flutter/presentation/screens/contacts/bloc/double_emails.dart';
-import 'package:hello_flutter/presentation/screens/contacts/bloc/double_phone.dart';
-import 'package:hello_flutter/presentation/screens/contacts/bloc/no_phone.dart';
-import 'package:hello_flutter/presentation/screens/contacts/bloc/no_name.dart';
-import 'package:hello_flutter/presentation/screens/contacts/bloc/similar_name.dart';
-import 'package:permission_handler/permission_handler.dart';
-import '../../../../utils/contacts_utils.dart';
-import 'contacts_bloc.dart';
+import 'package:hello_flutter/presentation/screens/contacts/blocs/contacts_bloc.dart';
+import 'package:hello_flutter/presentation/screens/contacts/blocs/phones_bloc.dart';
+import 'package:hello_flutter/presentation/screens/contacts/blocs/similar_bloc.dart';
+import 'package:hello_flutter/presentation/screens/contacts/blocs/similar_name.dart';
+import 'all_contacts.dart';
+import 'category_bloc.dart';
+import 'contacts_state.dart';
+import 'double_contacts.dart';
+import 'double_emails.dart';
+import 'double_phone.dart';
+import 'emails_bloc.dart';
+import 'names_bloc.dart';
+import 'no_name.dart';
+import 'no_names_bloc.dart';
+import 'no_phone.dart';
+import 'no_phones_bloc.dart';
 
 class ContactsInfo extends StatefulWidget {
   const ContactsInfo({super.key});
@@ -29,12 +34,7 @@ class _ContactsInfoState extends State<ContactsInfo> {
   late NoNameBloc _noNameBloc;
   late NoPhonesBloc _noPhonesBloc;
   late SimilarBloc _similarBloc;
-  // late PhonesBloc _phonesBloc;
-  // late ContactsBloc _bloc;
-  // late ContactsBloc _bloc;
-  // late ContactsBloc _bloc;
-  // late ContactsBloc _bloc;
-  // late ContactsBloc _bloc;
+
 
   bool contactsLoaded = false;//TODO: should be deleted
 

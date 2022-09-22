@@ -5,7 +5,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'contacts_bloc.dart';
+import 'category_bloc.dart';
 import 'contacts_event.dart';
 
 class ContactsRepo {
@@ -27,7 +27,7 @@ class ContactsRepo {
     List<Contact> contacts = [];
     if (await Permission.contacts.request().isGranted) {
       // bloc.add(StartScanningContactsEvent());
-      contacts = await ContactsService.getContacts();
+      contacts = await ContactsService.getContacts();//global
       // bloc.add(FinishScanningContactsEvent(
       // contactsSize: contacts.length));
     }

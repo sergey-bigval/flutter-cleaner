@@ -1,12 +1,14 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'contact_list.dart';
+import 'contacts_repo.dart';
 
 class AllContacts extends StatefulWidget {
   AllContacts({Key? key, title, required this.titles, required this.allContacts}) : super(key: key);
 
   final String titles;
   List<Contact> allContacts;
+  late final ContactsRepo contactsRepo;
 
   @override
   State<AllContacts> createState() => _AllContactsState(allContacts);
@@ -35,20 +37,18 @@ class _AllContactsState extends State<AllContacts> {
       ),
       body: Container(
         color: Colors.white,
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: <Widget>[
-            Container(
-              child: TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                    labelText: 'Search',
-                    border: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Theme.of(context).primaryColor)),
-                    prefixIcon: Icon(Icons.search,
-                        color: Theme.of(context).primaryColor)),
-              ),
+            TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                  labelText: 'Search',
+                  border: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Theme.of(context).primaryColor)),
+                  prefixIcon: Icon(Icons.search,
+                      color: Theme.of(context).primaryColor)),
             ),
             contactsLoaded == true
                 ? // if the contacts have not been loaded yet
@@ -60,12 +60,12 @@ class _AllContactsState extends State<AllContacts> {
                             isSearching == true ? contactsFiltered : contacts,
                       )
                     : Container(
-                        padding: EdgeInsets.only(top: 40),
+                        padding: const EdgeInsets.only(top: 40),
                 )
                 : Container(
                     // still loading contacts
-                    padding: EdgeInsets.only(top: 40),
-                    child: Center(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: const Center(
                       child: CircularProgressIndicator(),
                     ),
                   )
