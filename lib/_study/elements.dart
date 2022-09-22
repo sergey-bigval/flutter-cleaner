@@ -28,3 +28,6 @@
 
 // child: Lottie.network("https://assets7.lottiefiles.com/packages/lf20_bburfggv.json"),
 // child: Image(image: AssetImage('themes/imgs/darth_vader.png')),
+
+// DateFormat('yyyy-MM-dd – kk:mm').format(date);
+// DateFormat('MMMM yyyy').format(date);

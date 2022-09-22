@@ -35,4 +35,24 @@ class Styles {
       decoration: TextDecoration.none,
       fontWeight: FontWeight.bold
   );
+
+  static const text16B = TextStyle(
+      fontSize: 16,
+      color: Colors.black,
+      decoration: TextDecoration.none,
+      fontWeight: FontWeight.bold
+  );
+
+  static const text18 = TextStyle(
+    fontSize: 18,
+    color: Colors.black,
+    decoration: TextDecoration.none,
+  );
+
+  static TextStyle clickable16 = TextStyle(
+      fontSize: 16,
+      color: Colors.blue[600],
+      decoration: TextDecoration.none,
+      fontWeight: FontWeight.bold
+  );
 }
