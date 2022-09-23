@@ -19,7 +19,7 @@ class MonthCheckboxWidget extends StatelessWidget {
       bloc: bloc,
       builder: (BuildContext context, state) {
         return Checkbox(
-          value: bloc.calendarRepo.isCheckedMonthGroup(groupData.first.startDate),
+          value: bloc.calendarRepo.shouldCheckMonthGroup(groupData.first.startDate),
           onChanged: (isChecked) {
             if (isChecked!) {
               bloc.add(OldEventsGroupSelectedEvent(dateTime: groupData.first.startDate));

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hello_flutter/utils/logging.dart';
 
 import 'calendar_repo.dart';
 import 'old_events_events.dart';
@@ -10,7 +11,8 @@ class OldEventsBloc extends Bloc<OldEventsEvent, OldEventsState> {
   OldEventsBloc() : super(OldEventsState.initial()) {
     calendarRepo = CalendarRepo(bloc: this)..loadEvents();
 
-    on<OldEventsFoundNewEvent>(_onBigVideosFoundNewEvent);
+    on<OldEventsGetCalendarIdEvent>(_onOldEventsGetCalendarIdEvent);
+    on<OldEventsFoundNewEvent>(_onOldEventsFoundNewEvent);
     on<OldEventsScanFinishEvent>(_onOldEventsScanFinishEvent);
 
     on<OldEventsItemSelectedEvent>(_onOldEventsItemSelectedEvent);
@@ -21,10 +23,18 @@ class OldEventsBloc extends Bloc<OldEventsEvent, OldEventsState> {
 
     on<OldEventsTapSelectAllEvent>(_onOldEventsTapSelectAllEvent);
 
+    on<OldEventsDeleteEvent>(_onOldEventsDeleteEvent);
     on<OldEventsCancelJobEvent>(_onOldEventsCancelJobEvent);
   }
 
-  Future<void> _onBigVideosFoundNewEvent(
+  Future<void> _onOldEventsGetCalendarIdEvent(
+    OldEventsGetCalendarIdEvent event,
+    Emitter emitter,
+  ) async {
+    emitter(state.copyWith(calendarId: event.calendarId));
+  }
+
+  Future<void> _onOldEventsFoundNewEvent(
     OldEventsFoundNewEvent event,
     Emitter emitter,
   ) async {
@@ -76,6 +86,15 @@ class OldEventsBloc extends Bloc<OldEventsEvent, OldEventsState> {
   ) async {
     calendarRepo.addAllToRemoveList();
     emitter(state.copyWith(isAllSelected: !state.isAllSelected));
+  }
+
+  Future<void> _onOldEventsDeleteEvent(
+    OldEventsDeleteEvent event,
+    Emitter emitter,
+  ) async {
+    await calendarRepo.deleteSelected();
+    add(OldEventsFoundNewEvent(eventsCount: calendarRepo.allEventsList.length));
+    // emitter(state.copyWith(isJobCancelled: false));
   }
 
   Future<void> _onOldEventsCancelJobEvent(

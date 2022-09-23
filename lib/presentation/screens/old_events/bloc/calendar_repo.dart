@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 import 'package:manage_calendar_events/manage_calendar_events.dart';
-import 'package:photo_manager/photo_manager.dart';
 
 import '../../../../utils/logging.dart';
 import 'old_events_bloc.dart';
@@ -26,14 +25,17 @@ class CalendarRepo {
 
       lol("calendar.accountName = ${calendar.accountName}");
       lol("calendar.id = ${calendar.id}");
+
+      bloc.add(OldEventsGetCalendarIdEvent(calendarId: calendar.id!));
+
       var events = await _myPlugin.getEvents(calendarId: calendar.id!);
       final streamOfEvents = Stream.fromIterable(events ?? []);
       lol("======================== ${calendar.accountName} ========================");
       await for (CalendarEvent event in streamOfEvents) {
         if (event.startDate?.isBefore(DateTime.now().add(const Duration(days: -10))) ?? true) {
           allEventsList.add(event);
-          await Future.delayed(const Duration(
-              milliseconds: 20)); // todo: Удалить в релизе. Для эмуляции долгого поиска
+          // await Future.delayed(const Duration(
+          //     milliseconds: 20)); // todo: Удалить в релизе. Для эмуляции долгого поиска
           bloc.add(OldEventsFoundNewEvent(eventsCount: allEventsList.length));
           lol("MY EVENT title = ${event.title} - StartDate: ${getFormattedDate(event.startDate)} - ID = ${event.eventId}");
         }
@@ -47,27 +49,12 @@ class CalendarRepo {
     return DateFormat('yyyy-MM-dd – kk:mm').format(date ?? DateTime.now());
   }
 
-  Future<void> deleteSelected() async {
-    /////////////////////////////////////////
-    final List<String> deletedIds = await PhotoManager.editor.deleteWithIds(_idsToDelete.toList());
-    lol('DELETED ${deletedIds.length} events');
-    for (var id in deletedIds) {
-      // allEvents.removeWhere((element) => element.entity.id == id);
-      lol('DELETED EVENT # $id');
-      _idsToDelete.remove(id);
-    }
-  }
-
   void addItemToRemoveList(String id) {
     _idsToDelete.add(id);
   }
 
   void takeItemFromRemoveList(String id) {
     _idsToDelete.remove(id);
-  }
-
-  bool isCheckedById(String id) {
-    return _idsToDelete.contains(id);
   }
 
   List<List<CalendarEvent>> getEventsGroupedByMonth() {
@@ -89,30 +76,21 @@ class CalendarRepo {
         prevGroupStamp = groupStamp;
       }
     }
-    //// проверка
+    // _debugGroupCheck(groupedEvents);
+    return groupedEvents;
+  }
+
+  void _debugGroupCheck(List<List<CalendarEvent>> groupedEvents) {
+    //// проверка группирования
     for (List<CalendarEvent> list in groupedEvents) {
       lol('======== GROUP =======');
       for (CalendarEvent event in list) {
         lol('${event.startDate} --- ${event.title}');
       }
     }
-    return groupedEvents;
   }
 
-  removeItemByIndex(List<CalendarEvent> data, int index) {
-    // ранее было в UI
-    final deletedId = data[index].eventId;
-    _myPlugin.deleteEvent(calendarId: "3", eventId: data[index].eventId ?? '').then((value) {
-      if (value!) {
-        // ScaffoldMessenger.of(context)
-        //     .showSnackBar(SnackBar(content: Text("Event $deletedId deleted")));
-        data.removeAt(index);
-      }
-    });
-    // setState(() {});
-  }
-
-  bool isCheckedMonthGroup(DateTime? startDate) {
+  bool shouldCheckMonthGroup(DateTime? startDate) {
     var year = startDate?.year ?? 0;
     var month = startDate?.month ?? 0;
     var groupStamp = year * 100 + month;
@@ -175,5 +153,23 @@ class CalendarRepo {
         _idsToDelete.add(event.eventId!);
       }
     }
+  }
+
+  Future<void> deleteSelected() async {
+    /////////////////////////////////////////
+    lol('EVENTS TO DELETE ${_idsToDelete.length}');
+    for (String id in _idsToDelete) {
+      _myPlugin.deleteEvent(calendarId: bloc.state.calendarId, eventId: id).then((isDeleted) {
+        if (isDeleted!) {
+          lol('SUCCESSFULLY DELETED EVENT # $id');
+        }
+      });
+    }
+    _idsToDelete.clear();
+    await loadEvents();
+  }
+
+  int getCountToDelete() {
+    return _idsToDelete.length;
   }
 }

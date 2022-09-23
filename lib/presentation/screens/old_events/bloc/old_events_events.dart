@@ -2,6 +2,12 @@ import 'package:manage_calendar_events/manage_calendar_events.dart';
 
 abstract class OldEventsEvent {}
 
+class OldEventsGetCalendarIdEvent extends OldEventsEvent { // найден calendarID юзера
+  final String calendarId;
+
+  OldEventsGetCalendarIdEvent({required this.calendarId});
+}
+
 class OldEventsFoundNewEvent extends OldEventsEvent { // найдена очередная запись в календаре
   final int eventsCount;
 

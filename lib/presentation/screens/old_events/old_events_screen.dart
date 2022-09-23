@@ -36,11 +36,11 @@ class _OldEventsScreenState extends State<OldEventsScreen> {
           color: AppColors.mainBgColor,
           child: BlocBuilder<OldEventsBloc, OldEventsState>(
             bloc: _bloc,
-            buildWhen: (previous, current) => previous.isScanning != current.isScanning,
             builder: (BuildContext context, state) {
               if (state.isScanning) {
                 return const Center(child: CircularProgressIndicator());
               } else {
+                final data = _bloc.state.eventsData;
                 return Column(
                   children: [
                     Padding(
@@ -50,21 +50,48 @@ class _OldEventsScreenState extends State<OldEventsScreen> {
                         style: Styles.text16B,
                       ),
                     ),
-                    Expanded(
-                        child: BlocBuilder<OldEventsBloc, OldEventsState>(
-                            bloc: _bloc,
-                            builder: (BuildContext context, state) {
-                              final data = _bloc.state.eventsData;
-                              return _getListView(data);
-                            })),
+                    Expanded(child: _getListView(data)),
                   ],
                 );
               }
             },
           ),
         ),
+        floatingActionButton: _getFAB(),
       ),
     );
+  }
+
+  double _getFABOpacity() {
+    if (_bloc.state.isAllSelected) {
+      return 1.0;
+    } else {
+      return 0.0;
+    }
+  }
+
+  Widget _getFAB() {
+    return BlocBuilder<OldEventsBloc, OldEventsState>(
+        bloc: _bloc,
+        builder: (BuildContext context, state) {
+          return AnimatedOpacity(
+            duration: const Duration(milliseconds: 500),
+            opacity: _getFABOpacity(),
+            child: Align(
+              alignment:const Alignment(0.25, 0.93) ,
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  _bloc.add(OldEventsDeleteEvent());
+                },
+                label: Text(
+                  'Delete ${_bloc.calendarRepo.getCountToDelete()} Events',
+                  style: Styles.text20WhiteB,
+                ),
+                backgroundColor: AppColors.mainBtnColor,
+              ),
+            ),
+          );
+        });
   }
 
   AppBar _getCalendarBar() {
@@ -118,7 +145,7 @@ class _OldEventsScreenState extends State<OldEventsScreen> {
         color: Colors.white54,
         elevation: 5,
         shadowColor: Colors.black54,
-        margin: const EdgeInsets.all(5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: ListTile(
           title: Text(_getTitleWithFormattedDate(groupData[index].startDate), style: Styles.text15),
