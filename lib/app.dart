@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/presentation/screens/contacts/blocs/contact.dart';
-import 'package:hello_flutter/presentation/screens/contacts/blocs/contacts_category_list.dart';
+import 'package:hello_flutter/presentation/screens/contacts/blocs/widgets/contact.dart';
+import 'package:hello_flutter/presentation/screens/contacts/blocs/widgets/contacts_category_list.dart';
 import 'package:hello_flutter/presentation/screens/double_photos/double_photos_screen.dart';
 import 'package:hello_flutter/presentation/screens/double_photos/widgets/permissions_handler.dart';
 

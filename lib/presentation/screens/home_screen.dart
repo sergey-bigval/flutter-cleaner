@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/ads/AdBanner.dart';
-import 'contacts/blocs/contact.dart';
+import 'contacts/blocs/widgets/contact.dart';
 import 'device_info/device_info_page.dart';
 import 'double_photos/double_photos_pre_screen.dart';
 import 'old_events/old_events.dart';

@@ -1,7 +1,7 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'contact_list.dart';
-import 'contacts_repo.dart';
+import '../contacts_repo.dart';
 
 class AllContacts extends StatefulWidget {
   AllContacts({Key? key, title, required this.titles, required this.allContacts}) : super(key: key);

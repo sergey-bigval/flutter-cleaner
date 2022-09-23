@@ -5,7 +5,7 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'category_bloc.dart';
+import 'category_bloc/category_bloc.dart';
 import 'contacts_event.dart';
 
 class ContactsRepo {

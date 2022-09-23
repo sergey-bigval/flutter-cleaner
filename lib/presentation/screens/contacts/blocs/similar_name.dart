@@ -1,7 +1,7 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 // import '../../../../utils/contacts_utils.dart';
-import 'contact_list.dart';
+import 'widgets/contact_list.dart';
 
 class SimilarContacts extends StatefulWidget {
   SimilarContacts({Key? key, title, required this.titles, required this.similarContacts}) : super(key: key);
