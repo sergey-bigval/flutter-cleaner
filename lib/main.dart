@@ -6,6 +6,5 @@ import 'app.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-
   runApp(FlutterCleanerApp());
 }

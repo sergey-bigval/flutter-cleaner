@@ -3,14 +3,18 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hello_flutter/presentation/screens/double_photos/bloc/double_photos_bloc.dart';
+import 'package:hello_flutter/presentation/screens/double_photos/bloc/events.dart';
 import 'package:hello_flutter/presentation/screens/double_photos/bloc/state.dart';
+import 'package:hello_flutter/presentation/screens/double_photos/widgets/deleting_done_dialog.dart';
+import 'package:hello_flutter/presentation/screens/double_photos/widgets/title_doubles.dart';
+import 'package:hello_flutter/themes/styles.dart';
 
 import '../models/photo_model.dart';
 
-class PhotoList extends StatelessWidget {
+class ScanningResult extends StatelessWidget {
   final DoublePhotosBloc bloc;
 
-  const PhotoList({required this.bloc, super.key});
+  const ScanningResult({required this.bloc, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,24 +22,72 @@ class PhotoList extends StatelessWidget {
   }
 
   Widget getPhotosList() {
-    return BlocBuilder<DoublePhotosBloc, DoublePhotosState>(
+    return BlocConsumer<DoublePhotosBloc, DoublePhotosState>(
       bloc: bloc,
       buildWhen: (previous, current) =>
           previous.doublePhotosList != current.doublePhotosList,
+      listener: (context, state) {
+        if (state.isDeleted) {
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (BuildContext context) => const DeletingDoneDialog());
+        }
+      },
       builder: (context, state) {
-        return getPhotoGrid(state.doublePhotosList);
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: Column(children: [
+              const DoublePhotosTitle("DUPLICATES FOUND"),
+              Text(
+                textAlign: TextAlign.center,
+                state.doublePhotosCount.toString(),
+                style: Styles.textWhiteBold90,
+              ),
+              getPhotoGrid(state.doublePhotosList),
+            ]),
+          ),
+          floatingActionButton: getMyFAB(),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+        );
       },
     );
   }
 
+  Widget getMyFAB() {
+    return Container(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            primary: Colors.yellow,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            )),
+        child: const Padding(
+          padding: EdgeInsets.all(10),
+          child: Text(
+            "Delete",
+            style: TextStyle(color: Colors.lightBlue, fontSize: 24),
+          ),
+        ),
+        onPressed: () {
+          bloc.add(DoublePhotosDeletePhotosEvent());
+        },
+      ),
+    );
+  }
+
   Widget getPhotoGrid(List<List<PhotoModel>> photoList) {
-    return ListView.builder(
-      scrollDirection: Axis.vertical,
-      physics: const BouncingScrollPhysics(),
-      itemCount: photoList.length,
-      itemBuilder: (context, index) {
-        return getPhotoRow(photoRow: photoList[index]);
-      },
+    return Expanded(
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        physics: const BouncingScrollPhysics(),
+        itemCount: photoList.length,
+        itemBuilder: (context, index) {
+          return getPhotoRow(photoRow: photoList[index]);
+        },
+      ),
     );
   }
 

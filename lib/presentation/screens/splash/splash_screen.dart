@@ -96,7 +96,6 @@ class _SplashScreenState extends State<SplashScreen>
             height: 250,
             width: 250,
             child: Lottie.asset("themes/lottie/monkey.json"),
-
           ),
           const Text(
             "Flutter Monkey Cleaner",

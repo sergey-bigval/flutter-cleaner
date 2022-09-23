@@ -22,7 +22,7 @@ class _DoublePhotosButtonState extends State<DoublePhotosButton> {
       onPressed: checkDoubles,
       child: const Text(
         "Start searching double photos",
-        style: Styles.text20,
+        style: Styles.textWhiteBold20,
       ),
     );
   }

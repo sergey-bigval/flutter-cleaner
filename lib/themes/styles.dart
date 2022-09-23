@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hello_flutter/themes/app_colors.dart';
 
 class Styles {
   static const TextStyle titleStyle = TextStyle(
@@ -9,6 +8,15 @@ class Styles {
     letterSpacing: 4,
     fontFamily: "MouseMemoirs",
   );
+
+  static const textWhiteBold20 =
+      TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold);
+
+  static const textWhiteBold90 =
+      TextStyle(fontSize: 90, color: Colors.white, fontWeight: FontWeight.bold);
+
+  static const textWhite14 =
+      TextStyle(fontSize: 14, color: Colors.white);
 
   static const text20 = TextStyle(
     fontSize: 20,
@@ -23,11 +31,10 @@ class Styles {
   );
 
   static const text16White = TextStyle(
-    fontSize: 16,
-    color: Colors.white,
-    decoration: TextDecoration.none,
-    fontWeight: FontWeight.bold
-  );
+      fontSize: 16,
+      color: Colors.white,
+      decoration: TextDecoration.none,
+      fontWeight: FontWeight.bold);
 
   static const text20WhiteB = TextStyle(
       fontSize: 20,

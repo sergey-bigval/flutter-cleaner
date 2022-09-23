@@ -12,13 +12,13 @@ class DoublePhotosBloc extends Bloc<DoublePhotosEvent, DoublePhotosState> {
   DoublePhotosBloc() : super(DoublePhotosState.initial()) {
     on<DoublePhotosLoadPhotosEvent>(_onLoadPhotos);
     on<DoublePhotosDeletePhotosEvent>(_onDeletePhotos);
+    on<DoublePhotosCancelScanningEvent>(_onCancelScanning);
   }
 
-  int photosCount = 0;
   List<List<PhotoModel>> totalGroupedDoubles = [];
-  int totalGroupedDoublesCount = 0;
-
   List<List<PhotoModel>> totalGroupedDoublesList = [];
+  int photosCount = 0;
+  int totalGroupedDoublesCount = 0;
 
   Future<void> _onLoadPhotos(
     DoublePhotosLoadPhotosEvent event,
@@ -39,9 +39,10 @@ class DoublePhotosBloc extends Bloc<DoublePhotosEvent, DoublePhotosState> {
         List<AssetEntity> mediasInFolder =
             await folder.getAssetListRange(start: 0, end: countOfAssets);
 
-        emitter(state.copyWith(folderName: folder.name));
         List<PhotoModel> folderPhotos = [];
         for (AssetEntity media in mediasInFolder) {
+          if (state.isScanningCanceled) return;
+
           ///////// цикл по файлам в папке
           File? file = await media.originFile;
           String path = file?.path ?? 'NON';
@@ -50,9 +51,9 @@ class DoublePhotosBloc extends Bloc<DoublePhotosEvent, DoublePhotosState> {
           int timeInSeconds =
               media.createDateTime.millisecondsSinceEpoch ~/ 1000;
 
-          // if (mimeType.contains('image')) {
           photosCount++;
-          emitter(state.copyWith(photosCount: photosCount));
+          emitter(state.copyWith(
+              photosCount: photosCount, imagePath: path, isScanning: true));
 
           folderPhotos.add(PhotoModel(
               absolutePath: path,
@@ -60,8 +61,6 @@ class DoublePhotosBloc extends Bloc<DoublePhotosEvent, DoublePhotosState> {
               timeInSeconds: timeInSeconds,
               isSelected: false,
               entity: media));
-          // }
-
         } ///////// цикл по файлам в папке
 
         folderPhotos.sort((m1, m2) {
@@ -80,12 +79,11 @@ class DoublePhotosBloc extends Bloc<DoublePhotosEvent, DoublePhotosState> {
         totalGroupedDoublesList.addAll(newDoublesList); //////////////
 
         emitter(state.copyWith(
-          photosCount: photosCount,
-          doublePhotosCount: totalGroupedDoublesCount,
-          folderName: folder.name,
-          doublePhotosList: newDoublesList,
-        ));
+            photosCount: photosCount,
+            doublePhotosCount: totalGroupedDoublesCount,
+            doublePhotosList: newDoublesList));
       } ///////// цикл по папкам
+      emitter(state.copyWith(isScanning: false));
     }
   }
 
@@ -104,21 +102,30 @@ class DoublePhotosBloc extends Bloc<DoublePhotosEvent, DoublePhotosState> {
       }
     }
     lol("PREPARE ===== listToDelete.length = ${listToDelete.length} / list below:");
-    listToDelete.forEach((element) {
+    for (var element in listToDelete) {
       lol(element);
-    });
+    }
     final List<String> result =
         await PhotoManager.editor.deleteWithIds(listToDelete);
     lol("DELETED ============== ${result.length}");
+
+    emitter(state.copyWith(isDeleted: true));
+  }
+
+  Future<void> _onCancelScanning(
+    DoublePhotosCancelScanningEvent event,
+    Emitter emitter,
+  ) async {
+    emitter(state.copyWith(isScanningCanceled: true));
   }
 
   void _addCurrentFolderDoublesToTotalCount(
       List<List<PhotoModel>> groupedDoublesInFolder) {
-    groupedDoublesInFolder.forEach((element) {
-      element.forEach((element) {
+    for (var element in groupedDoublesInFolder) {
+      for (var element in element) {
         totalGroupedDoublesCount++;
-      });
-    });
+      }
+    }
   }
 
   List<List<PhotoModel>> _getGroupedDuplicatesInFolder({
@@ -139,15 +146,16 @@ class DoublePhotosBloc extends Bloc<DoublePhotosEvent, DoublePhotosState> {
       var imageModelNext =
           imageList[currentIndex + 1]; // следующий для сравнения
 
-      int filter1 =
-          (imageModelCurrent.timeInSeconds - imageModelNext.timeInSeconds)
-              .abs();
-      double filter2 = ((imageModelCurrent.size - imageModelNext.size) /
-              (imageModelCurrent.size / 2 + imageModelNext.size / 2))
-          .abs();
+      final isTimeDifferenceSmall = checkTimeDifference(
+          imageModelCurrent.timeInSeconds, imageModelNext.timeInSeconds);
+      final isSizeDifferenceSmall =
+          checkSizeDifference(imageModelCurrent.size, imageModelNext.size);
+      final isPhotoSizeOptimal = imageModelCurrent.size > 300000 /*in KB*/;
 
       // настройка определения дублей (3 степени фильтрации)
-      if (filter1 < 3 && filter2 < 0.05 && imageModelCurrent.size > 600000) {
+      if (isTimeDifferenceSmall &&
+          isSizeDifferenceSmall &&
+          isPhotoSizeOptimal) {
         if (isNewDoublePhotoList) {
           doublePhotosList.add(imageList[currentIndex]); // original
           isNewDoublePhotoList = false;
@@ -166,5 +174,25 @@ class DoublePhotosBloc extends Bloc<DoublePhotosEvent, DoublePhotosState> {
     }
 
     return listOfAllDoubleImages;
+  }
+
+  bool checkTimeDifference(int firstPhotoTime, int secondPhotoTime) {
+    const allowableSecondsDifference = 6;
+    return (firstPhotoTime - secondPhotoTime).abs() <
+        allowableSecondsDifference;
+  }
+
+  bool checkSizeDifference(int firstPhotoSize, int secondPhotoSize) {
+    var percentOfDifference = 20;
+    var percentDifferenceInNumber = 0.0;
+    var sizeDifference = 0;
+    if (firstPhotoSize > secondPhotoSize) {
+      percentDifferenceInNumber = (firstPhotoSize / 100) * percentOfDifference;
+      sizeDifference = firstPhotoSize - secondPhotoSize;
+    } else {
+      percentDifferenceInNumber = (firstPhotoSize / 100) * percentOfDifference;
+      sizeDifference = firstPhotoSize - secondPhotoSize;
+    }
+    return sizeDifference < percentDifferenceInNumber;
   }
 }
